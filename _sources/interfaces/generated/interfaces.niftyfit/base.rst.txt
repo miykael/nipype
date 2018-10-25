@@ -1,0 +1,36 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.niftyfit.base
+========================
+
+
+.. _nipype.interfaces.niftyfit.base.NiftyFitCommand:
+
+
+.. index:: NiftyFitCommand
+
+NiftyFitCommand
+---------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyfit/base.py#L26>`__
+
+Wraps command **None**
+
+Base support interface for NiftyFit commands.
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+
+Outputs::
+
+        None

@@ -1,0 +1,44 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.base.traits_extension
+================================
+
+
+.. module:: nipype.interfaces.base.traits_extension
+
+
+.. _nipype.interfaces.base.traits_extension.has_metadata:
+
+:func:`has_metadata`
+--------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/traits_extension.py#L297>`__
+
+
+
+Checks if a given trait has a metadata (and optionally if it is set to particular value)
+
+
+.. _nipype.interfaces.base.traits_extension.isdefined:
+
+:func:`isdefined`
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/traits_extension.py#L293>`__
+
+
+
+
+
+
+.. _nipype.interfaces.base.traits_extension.length:
+
+:func:`length`
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/traits_extension.py#L281>`__
+
+
+
+
+

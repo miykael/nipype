@@ -1,0 +1,54 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.slicer.legacy.converters
+===================================
+
+
+.. _nipype.interfaces.slicer.legacy.converters.BSplineToDeformationField:
+
+
+.. index:: BSplineToDeformationField
+
+BSplineToDeformationField
+-------------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/slicer/legacy/converters.py#L21>`__
+
+Wraps command **BSplineToDeformationField **
+
+title: BSpline to deformation field
+
+category: Legacy.Converters
+
+description: Create a dense deformation field from a bspline+bulk transform.
+
+version: 0.1.0.$Revision: 2104 $(alpha)
+
+documentation-url: http://wiki.slicer.org/slicerWiki/index.php/Documentation/4.1/Modules/BSplineToDeformationField
+
+contributor: Andrey Fedorov (SPL, BWH)
+
+acknowledgements: This work is funded by NIH grants R01 CA111288 and U01 CA151261.
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        defImage: (a boolean or a file name)
+                flag: --defImage %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        refImage: (an existing file name)
+                flag: --refImage %s
+        tfm: (an existing file name)
+                flag: --tfm %s
+
+Outputs::
+
+        defImage: (an existing file name)

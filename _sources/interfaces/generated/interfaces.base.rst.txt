@@ -1,0 +1,11 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.base
+===============
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   interfaces.base/*
+                    

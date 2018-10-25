@@ -1,0 +1,222 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.dcm2nii
+==================
+
+
+.. _nipype.interfaces.dcm2nii.Dcm2nii:
+
+
+.. index:: Dcm2nii
+
+Dcm2nii
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcm2nii.py#L103>`__
+
+Wraps command **dcm2nii**
+
+Uses MRIcron's dcm2nii to convert dicom files
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.dcm2nii import Dcm2nii
+>>> converter = Dcm2nii()
+>>> converter.inputs.source_names = ['functional_1.dcm', 'functional_2.dcm']
+>>> converter.inputs.gzip_output = True
+>>> converter.inputs.output_dir = '.'
+>>> converter.cmdline  # doctest: +ELLIPSIS
+'dcm2nii -a y -c y -b config.ini -v y -d y -e y -g y -i n -n y -o . -p y -x n -f n functional_1.dcm'
+
+Inputs::
+
+        [Mandatory]
+        source_dir: (an existing directory name)
+                flag: %s, position: -1
+                mutually_exclusive: source_names
+        source_names: (a list of items which are an existing file name)
+                flag: %s, position: -1
+                mutually_exclusive: source_dir
+
+        [Optional]
+        anonymize: (a boolean, nipype default value: True)
+                Remove identifying information
+                flag: -a
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        collapse_folders: (a boolean, nipype default value: True)
+                Collapse input folders
+                flag: -c
+        config_file: (an existing file name)
+                Load settings from specified inifile
+                flag: -b %s
+        convert_all_pars: (a boolean, nipype default value: True)
+                Convert every image in directory
+                flag: -v
+        date_in_filename: (a boolean, nipype default value: True)
+                Date in filename
+                flag: -d
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        events_in_filename: (a boolean, nipype default value: True)
+                Events (series/acq) in filename
+                flag: -e
+        gzip_output: (a boolean, nipype default value: False)
+                Gzip output (.gz)
+                flag: -g
+        id_in_filename: (a boolean, nipype default value: False)
+                ID in filename
+                flag: -i
+        nii_output: (a boolean, nipype default value: True)
+                Save as .nii - if no, create .hdr/.img pair
+                flag: -n
+        output_dir: (an existing directory name)
+                Output dir - if unspecified, source directory is used
+                flag: -o %s
+        protocol_in_filename: (a boolean, nipype default value: True)
+                Protocol in filename
+                flag: -p
+        reorient: (a boolean)
+                Reorient image to nearest orthogonal
+                flag: -r
+        reorient_and_crop: (a boolean, nipype default value: False)
+                Reorient and crop 3D images
+                flag: -x
+        source_in_filename: (a boolean, nipype default value: False)
+                Source filename
+                flag: -f
+        spm_analyze: (a boolean)
+                SPM2/Analyze not SPM5/NIfTI
+                flag: -s
+                mutually_exclusive: nii_output
+
+Outputs::
+
+        bvals: (a list of items which are an existing file name)
+        bvecs: (a list of items which are an existing file name)
+        converted_files: (a list of items which are an existing file name)
+        reoriented_and_cropped_files: (a list of items which are an existing
+                 file name)
+        reoriented_files: (a list of items which are an existing file name)
+
+.. _nipype.interfaces.dcm2nii.Dcm2niix:
+
+
+.. index:: Dcm2niix
+
+Dcm2niix
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcm2nii.py#L358>`__
+
+Wraps command **dcm2niix**
+
+Uses Chris Rorden's dcm2niix to convert dicom files
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.dcm2nii import Dcm2niix
+>>> converter = Dcm2niix()
+>>> converter.inputs.source_dir = 'dicomdir'
+>>> converter.inputs.compression = 5
+>>> converter.inputs.output_dir = 'ds005'
+>>> converter.cmdline
+'dcm2niix -b y -z y -5 -x n -t n -m n -o ds005 -s n -v n dicomdir'
+>>> converter.run() # doctest: +SKIP
+
+# In the example below, we note that the current version of dcm2niix
+# converts any files in the directory containing the files in the list. We
+# also do not support nested filenames with this option. Thus all files
+# should have a common root directory.
+>>> converter = Dcm2niix()
+>>> converter.inputs.source_names = ['functional_1.dcm', 'functional_2.dcm']
+>>> converter.inputs.compression = 5
+>>> converter.inputs.output_dir = 'ds005'
+>>> converter.cmdline
+'dcm2niix -b y -z y -5 -x n -t n -m n -o ds005 -s n -v n .'
+>>> converter.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        source_dir: (an existing directory name)
+                A directory containing dicom files to be converted
+                flag: %s, position: -1
+                mutually_exclusive: source_names
+        source_names: (a list of items which are an existing file name)
+                A set of filenames to be converted. Note that the current version
+                (1.0.20180328) of dcm2niix converts any files in the directory. To
+                only convert specific files they should be in an isolated directory
+                flag: %s, position: -1
+                mutually_exclusive: source_dir
+
+        [Optional]
+        anon_bids: (a boolean)
+                Anonymize BIDS
+                flag: -ba
+                requires: bids_format
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        bids_format: (a boolean, nipype default value: True)
+                Create a BIDS sidecar file
+                flag: -b
+        comment: (a unicode string)
+                Comment stored as NIfTI aux_file
+                flag: -c %s
+        compress: ('y' or 'i' or 'n' or '3', nipype default value: y)
+                Gzip compress images - [y=pigz, i=internal, n=no, 3=no,3D]
+                flag: -z %s
+        compression: (1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9)
+                Gz compression level (1=fastest, 9=smallest)
+                flag: -%d
+        crop: (a boolean, nipype default value: False)
+                Crop 3D T1 acquisitions
+                flag: -x
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        has_private: (a boolean, nipype default value: False)
+                Flag if text notes include private patient details
+                flag: -t
+        ignore_deriv: (a boolean)
+                Ignore derived, localizer and 2D images
+                flag: -i
+        merge_imgs: (a boolean, nipype default value: False)
+                merge 2D slices from same series
+                flag: -m
+        out_filename: (a unicode string)
+                Output filename template (%a=antenna (coil) number, %c=comments,
+                %d=description, %e=echo number, %f=folder name, %i=ID of patient,
+                %j=seriesInstanceUID, %k=studyInstanceUID, %m=manufacturer, %n=name
+                of patient, %p=protocol, %s=series number, %t=time, %u=acquisition
+                number, %v=vendor, %x=study ID; %z=sequence name)
+                flag: -f %s
+        output_dir: (an existing directory name, nipype default value: .)
+                Output directory
+                flag: -o %s
+        philips_float: (a boolean)
+                Philips precise float (not display) scaling
+                flag: -p
+        series_numbers: (a list of items which are a unicode string)
+                Selectively convert by series number - can be used up to 16 times
+                flag: -n %s...
+        single_file: (a boolean, nipype default value: False)
+                Single file mode
+                flag: -s
+        verbose: (a boolean, nipype default value: False)
+                Verbose output
+                flag: -v
+
+Outputs::
+
+        bids: (a list of items which are an existing file name)
+        bvals: (a list of items which are an existing file name)
+        bvecs: (a list of items which are an existing file name)
+        converted_files: (a list of items which are an existing file name)

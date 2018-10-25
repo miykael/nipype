@@ -1,0 +1,371 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../index.html">
+            <img src="../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../index.html">Home</a> ·
+<a class="navbar" href="../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">sphinxext.plot_workflow</a><ul>
+<li><a class="reference internal" href="#contains-doctest"><code class="docutils literal notranslate"><span class="pre">contains_doctest()</span></code></a></li>
+<li><a class="reference internal" href="#get-wf-formats"><code class="docutils literal notranslate"><span class="pre">get_wf_formats()</span></code></a></li>
+<li><a class="reference internal" href="#mark-wf-labels"><code class="docutils literal notranslate"><span class="pre">mark_wf_labels()</span></code></a></li>
+<li><a class="reference internal" href="#out-of-date"><code class="docutils literal notranslate"><span class="pre">out_of_date()</span></code></a></li>
+<li><a class="reference internal" href="#remove-coding"><code class="docutils literal notranslate"><span class="pre">remove_coding()</span></code></a></li>
+<li><a class="reference internal" href="#render-figures"><code class="docutils literal notranslate"><span class="pre">render_figures()</span></code></a></li>
+<li><a class="reference internal" href="#run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li><a class="reference internal" href="#run-code"><code class="docutils literal notranslate"><span class="pre">run_code()</span></code></a></li>
+<li><a class="reference internal" href="#setup"><code class="docutils literal notranslate"><span class="pre">setup()</span></code></a></li>
+<li><a class="reference internal" href="#unescape-doctest"><code class="docutils literal notranslate"><span class="pre">unescape_doctest()</span></code></a></li>
+<li><a class="reference internal" href="#wf-directive"><code class="docutils literal notranslate"><span class="pre">wf_directive()</span></code></a><ul>
+<li><a class="reference internal" href="#nipype-sphinxext-plot-workflow-workflow-plotting-extension"><code class="docutils literal notranslate"><span class="pre">nipype.sphinxext.plot_workflow</span></code> – Workflow plotting extension</a></li>
+<li><a class="reference internal" href="#options">Options</a></li>
+<li><a class="reference internal" href="#configuration-options">Configuration options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-nipype.sphinxext.plot_workflow">
+<span id="sphinxext-plot-workflow"></span><h1>sphinxext.plot_workflow<a class="headerlink" href="#module-nipype.sphinxext.plot_workflow" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="contains-doctest">
+<span id="nipype-sphinxext-plot-workflow-contains-doctest"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.contains_doctest" title="nipype.sphinxext.plot_workflow.contains_doctest"><code class="xref py py-func docutils literal notranslate"><span class="pre">contains_doctest()</span></code></a><a class="headerlink" href="#contains-doctest" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L291">Link to code</a></p>
+</div>
+<div class="section" id="get-wf-formats">
+<span id="nipype-sphinxext-plot-workflow-get-wf-formats"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.get_wf_formats" title="nipype.sphinxext.plot_workflow.get_wf_formats"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_wf_formats()</span></code></a><a class="headerlink" href="#get-wf-formats" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L498">Link to code</a></p>
+</div>
+<div class="section" id="mark-wf-labels">
+<span id="nipype-sphinxext-plot-workflow-mark-wf-labels"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.mark_wf_labels" title="nipype.sphinxext.plot_workflow.mark_wf_labels"><code class="xref py py-func docutils literal notranslate"><span class="pre">mark_wf_labels()</span></code></a><a class="headerlink" href="#mark-wf-labels" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L213">Link to code</a></p>
+<p>To make graphs referenceable, we need to move the reference from
+the “htmlonly” (or “latexonly”) node to the actual figure node
+itself.</p>
+</div>
+<div class="section" id="out-of-date">
+<span id="nipype-sphinxext-plot-workflow-out-of-date"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.out_of_date" title="nipype.sphinxext.plot_workflow.out_of_date"><code class="xref py py-func docutils literal notranslate"><span class="pre">out_of_date()</span></code></a><a class="headerlink" href="#out-of-date" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L411">Link to code</a></p>
+<p>Returns True if derivative is out-of-date wrt original,
+both of which are full file paths.</p>
+</div>
+<div class="section" id="remove-coding">
+<span id="nipype-sphinxext-plot-workflow-remove-coding"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.remove_coding" title="nipype.sphinxext.plot_workflow.remove_coding"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_coding()</span></code></a><a class="headerlink" href="#remove-coding" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L323">Link to code</a></p>
+<p>Remove the coding comment, which exec doesn’t like.</p>
+</div>
+<div class="section" id="render-figures">
+<span id="nipype-sphinxext-plot-workflow-render-figures"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.render_figures" title="nipype.sphinxext.plot_workflow.render_figures"><code class="xref py py-func docutils literal notranslate"><span class="pre">render_figures()</span></code></a><a class="headerlink" href="#render-figures" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L521">Link to code</a></p>
+<p>Run a nipype workflow creation script and save the graph in <em>output_dir</em>.
+Save the images under <em>output_dir</em> with file names derived from
+<em>output_base</em></p>
+</div>
+<div class="section" id="run">
+<span id="nipype-sphinxext-plot-workflow-run"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.run" title="nipype.sphinxext.plot_workflow.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a><a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L564">Link to code</a></p>
+</div>
+<div class="section" id="run-code">
+<span id="nipype-sphinxext-plot-workflow-run-code"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.run_code" title="nipype.sphinxext.plot_workflow.run_code"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_code()</span></code></a><a class="headerlink" href="#run-code" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L425">Link to code</a></p>
+<p>Import a Python module from a path, and run the function given by
+name, if function_name is not None.</p>
+</div>
+<div class="section" id="setup">
+<span id="nipype-sphinxext-plot-workflow-setup"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.setup" title="nipype.sphinxext.plot_workflow.setup"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup()</span></code></a><a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L244">Link to code</a></p>
+</div>
+<div class="section" id="unescape-doctest">
+<span id="nipype-sphinxext-plot-workflow-unescape-doctest"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.unescape_doctest" title="nipype.sphinxext.plot_workflow.unescape_doctest"><code class="xref py py-func docutils literal notranslate"><span class="pre">unescape_doctest()</span></code></a><a class="headerlink" href="#unescape-doctest" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L303">Link to code</a></p>
+<p>Extract code from a piece of text, which contains either Python code
+or doctests.</p>
+</div>
+<div class="section" id="wf-directive">
+<span id="nipype-sphinxext-plot-workflow-wf-directive"></span><h2><a class="reference internal" href="../../api/generated/nipype.sphinxext.plot_workflow.html#nipype.sphinxext.plot_workflow.wf_directive" title="nipype.sphinxext.plot_workflow.wf_directive"><code class="xref py py-func docutils literal notranslate"><span class="pre">wf_directive()</span></code></a><a class="headerlink" href="#wf-directive" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/sphinxext/plot_workflow.py#L170">Link to code</a></p>
+<div class="section" id="nipype-sphinxext-plot-workflow-workflow-plotting-extension">
+<h3><a class="reference internal" href="#module-nipype.sphinxext.plot_workflow" title="nipype.sphinxext.plot_workflow"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nipype.sphinxext.plot_workflow</span></code></a> – Workflow plotting extension<a class="headerlink" href="#nipype-sphinxext-plot-workflow-workflow-plotting-extension" title="Permalink to this headline">¶</a></h3>
+<p>A directive for including a nipype workflow graph in a Sphinx document.</p>
+<p>This code is forked from the plot_figure sphinx extension of matplotlib.</p>
+<p>By default, in HTML output, <cite>workflow</cite> will include a .png file with a
+link to a high-res .png.  In LaTeX output, it will include a
+.pdf.
+The source code for the workflow may be included as <strong>inline content</strong> to
+the directive <cite>workflow</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">workflow</span> <span class="p">::</span>
+    <span class="p">:</span><span class="n">graph2use</span><span class="p">:</span> <span class="n">flat</span>
+    <span class="p">:</span><span class="n">simple_form</span><span class="p">:</span> <span class="n">no</span>
+
+    <span class="kn">from</span> <span class="nn">nipype.workflows.dmri.camino.connectivity_mapping</span> <span class="k">import</span> <span class="n">create_connectivity_pipeline</span>
+    <span class="n">wf</span> <span class="o">=</span> <span class="n">create_connectivity_pipeline</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For example, the following graph has been generated inserting the previous
+code block in this documentation:</p>
+<div class="figure">
+<img alt="../../_images/nipype-sphinxext-plot_workflow-11.png" src="../../_images/nipype-sphinxext-plot_workflow-11.png" />
+</div>
+<p>(<a class="reference external" href="../../interfaces/generated/nipype-sphinxext-plot_workflow-1.py">Source code</a>, <a class="reference external" href="../../interfaces/generated/nipype-sphinxext-plot_workflow-1.png">png</a>, <a class="reference external" href="../../interfaces/generated/nipype-sphinxext-plot_workflow-1.svg">svg</a>, <a class="reference external" href="../../interfaces/generated/nipype-sphinxext-plot_workflow-1.pdf">pdf</a>)</p>
+</div>
+<div class="section" id="options">
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>The <code class="docutils literal notranslate"><span class="pre">workflow</span></code> directive supports the following options:</dt>
+<dd><dl class="first last docutils">
+<dt>graph2use <span class="classifier-delimiter">:</span> <span class="classifier">{‘hierarchical’, ‘colored’, ‘flat’, ‘orig’, ‘exec’}</span></dt>
+<dd>Specify the type of graph to be generated.</dd>
+<dt>simple_form: bool</dt>
+<dd>Whether the graph will be in detailed or simple form.</dd>
+<dt>format <span class="classifier-delimiter">:</span> <span class="classifier">{‘python’, ‘doctest’}</span></dt>
+<dd>Specify the format of the input</dd>
+<dt>include-source <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>Whether to display the source code. The default can be changed
+using the <cite>workflow_include_source</cite> variable in conf.py</dd>
+<dt>encoding <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>If this source file is in a non-UTF8 or non-ASCII encoding,
+the encoding must be specified using the <cite>:encoding:</cite> option.
+The encoding will not be inferred using the <code class="docutils literal notranslate"><span class="pre">-*-</span> <span class="pre">coding</span> <span class="pre">-*-</span></code>
+metacomment.</dd>
+</dl>
+</dd>
+</dl>
+<p>Additionally, this directive supports all of the options of the
+<cite>image</cite> directive, except for <cite>target</cite> (since workflow will add its own
+target).  These include <cite>alt</cite>, <cite>height</cite>, <cite>width</cite>, <cite>scale</cite>, <cite>align</cite> and
+<cite>class</cite>.</p>
+</div>
+<div class="section" id="configuration-options">
+<h3>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>The workflow directive has the following configuration options:</dt>
+<dd><dl class="first last docutils">
+<dt>graph2use</dt>
+<dd>Select a graph type to use</dd>
+<dt>simple_form</dt>
+<dd>determines if the node name shown in the visualization is either of the form nodename
+(package) when set to True or nodename.Class.package when set to False.</dd>
+<dt>wf_include_source</dt>
+<dd>Default value for the include-source option</dd>
+<dt>wf_html_show_source_link</dt>
+<dd>Whether to show a link to the source in HTML.</dd>
+<dt>wf_pre_code</dt>
+<dd>Code that should be executed before each workflow.</dd>
+<dt>wf_basedir</dt>
+<dd>Base directory, to which <code class="docutils literal notranslate"><span class="pre">workflow::</span></code> file names are relative
+to.  (If None or empty, file names are relative to the
+directory where the file containing the directive is.)</dd>
+<dt>wf_formats</dt>
+<dd><dl class="first docutils">
+<dt>File formats to generate. List of tuples or strings::</dt>
+<dd>[(suffix, dpi), suffix, …]</dd>
+</dl>
+<p class="last">that determine the file format and the DPI. For entries whose
+DPI was omitted, sensible defaults are chosen. When passing from
+the command line through sphinx_build the list should be passed as
+suffix:dpi,suffix:dpi, ….</p>
+</dd>
+<dt>wf_html_show_formats</dt>
+<dd>Whether to show links to the files in HTML.</dd>
+<dt>wf_rcparams</dt>
+<dd>A dictionary containing any non-standard rcParams that should
+be applied before each workflow.</dd>
+<dt>wf_apply_rcparams</dt>
+<dd>By default, rcParams are applied when <cite>context</cite> option is not used in
+a workflow directive.  This configuration option overrides this behavior
+and applies rcParams before each workflow.</dd>
+<dt>wf_working_directory</dt>
+<dd>By default, the working directory will be changed to the directory of
+the example, so the code can get at its data files, if any.  Also its
+path will be added to <cite>sys.path</cite> so it can import any helper modules
+sitting beside it.  This configuration option can be used to specify
+a central directory (also added to <cite>sys.path</cite>) where data files and
+helper modules for all code are located.</dd>
+<dt>wf_template</dt>
+<dd>Provide a customized template for preparing restructured text.</dd>
+</dl>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

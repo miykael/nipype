@@ -1,0 +1,769 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../index.html">
+            <img src="../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../index.html">Home</a> ·
+<a class="navbar" href="../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">algorithms.confounds</a><ul>
+<li><a class="reference internal" href="#acompcor">ACompCor</a></li>
+<li><a class="reference internal" href="#compcor">CompCor</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#computedvars">ComputeDVARS</a></li>
+<li><a class="reference internal" href="#framewisedisplacement">FramewiseDisplacement</a></li>
+<li><a class="reference internal" href="#nonsteadystatedetector">NonSteadyStateDetector</a></li>
+<li><a class="reference internal" href="#tcompcor">TCompCor</a><ul>
+<li><a class="reference internal" href="#id2">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tsnr">TSNR</a><ul>
+<li><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#combine-mask-files"><code class="docutils literal notranslate"><span class="pre">combine_mask_files()</span></code></a></li>
+<li><a class="reference internal" href="#compute-dvars"><code class="docutils literal notranslate"><span class="pre">compute_dvars()</span></code></a></li>
+<li><a class="reference internal" href="#compute-noise-components"><code class="docutils literal notranslate"><span class="pre">compute_noise_components()</span></code></a></li>
+<li><a class="reference internal" href="#cosine-filter"><code class="docutils literal notranslate"><span class="pre">cosine_filter()</span></code></a></li>
+<li><a class="reference internal" href="#is-outlier"><code class="docutils literal notranslate"><span class="pre">is_outlier()</span></code></a></li>
+<li><a class="reference internal" href="#plot-confound"><code class="docutils literal notranslate"><span class="pre">plot_confound()</span></code></a></li>
+<li><a class="reference internal" href="#regress-poly"><code class="docutils literal notranslate"><span class="pre">regress_poly()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="algorithms-confounds">
+<h1>algorithms.confounds<a class="headerlink" href="#algorithms-confounds" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-algorithms-confounds-acompcor"></span><div class="section" id="acompcor">
+<span id="index-0"></span><h2>ACompCor<a class="headerlink" href="#acompcor" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L611">Link to code</a></p>
+<p>Anatomical compcor: for inputs and outputs, see CompCor.
+When the mask provided is an anatomical mask, then CompCor
+is equivalent to ACompCor.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+realigned_file: (an existing file name)
+        already realigned brain image (4D)
+
+[Optional]
+components_file: (a unicode string, nipype default value:
+         components_file.txt)
+        Filename to store physiological components
+header_prefix: (a unicode string)
+        the desired header for the output tsv file (one column). If
+        undefined, will default to &quot;CompCor&quot;
+high_pass_cutoff: (a float, nipype default value: 128)
+        Cutoff (in seconds) for &quot;cosine&quot; pre-filter
+ignore_initial_volumes: (a long integer &gt;= 0, nipype default value:
+         0)
+        Number of volumes at start of series to ignore
+mask_files: (a list of items which are an existing file name)
+        One or more mask files that determines ROI (3D). When more that one
+        file is provided `merge_method` or `merge_index` must be provided
+mask_index: (a long integer &gt;= 0)
+        Position of mask in `mask_files` to use - first is the default.
+        mutually_exclusive: merge_method
+        requires: mask_files
+merge_method: (&#39;union&#39; or &#39;intersect&#39; or &#39;none&#39;)
+        Merge method if multiple masks are present - `union` uses voxels
+        included in at least one input mask, `intersect` uses only voxels
+        present in all input masks, `none` performs CompCor on each mask
+        individually
+        mutually_exclusive: mask_index
+        requires: mask_files
+num_components: (an integer (int or long), nipype default value: 6)
+pre_filter: (&#39;polynomial&#39; or &#39;cosine&#39; or False, nipype default value:
+         polynomial)
+        Detrend time series prior to component extraction
+regress_poly_degree: (a long integer &gt;= 1, nipype default value: 1)
+        the degree polynomial to use
+repetition_time: (a float)
+        Repetition time (TR) of series - derived from image header if
+        unspecified
+save_pre_filter: (a boolean or a file name)
+        Save pre-filter basis as text file
+use_regress_poly: (a boolean)
+        use polynomial regression pre-component extraction
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">components_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">text</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">the</span> <span class="n">noise</span> <span class="n">components</span>
+<span class="n">pre_filter_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">text</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">high</span><span class="o">-</span><span class="k">pass</span> <span class="nb">filter</span> <span class="n">basis</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{compcor_2007">‘<span>&#64;</span>article{compcor_2007</a>,title = {A component based noise correction method (CompCor) for BOLD and perfusion based},volume = {37},number = {1},doi = {10.1016/j.neuroimage.2007.04.042},urldate = {2016-08-13},journal = {NeuroImage},author = {Behzadi, Yashar and Restom, Khaled and Liau, Joy and Liu, Thomas T.},year = {2007},pages = {90-101},}’, key=’compcor_2007’)</p>
+<span class="target" id="nipype-algorithms-confounds-compcor"></span></div>
+<div class="section" id="compcor">
+<span id="index-1"></span><h2>CompCor<a class="headerlink" href="#compcor" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L424">Link to code</a></p>
+<p>Interface with core CompCor computation, used in aCompCor and tCompCor</p>
+<p>CompCor provides three pre-filter options, all of which include per-voxel
+mean removal:</p>
+<blockquote>
+<div><ul class="simple">
+<li>polynomial: Legendre polynomial basis</li>
+<li>cosine: Discrete cosine basis</li>
+<li>False: mean-removal only</li>
+</ul>
+</div></blockquote>
+<p>In the case of <code class="docutils literal notranslate"><span class="pre">polynomial</span></code> and <code class="docutils literal notranslate"><span class="pre">cosine</span></code> filters, a pre-filter file may
+be saved with a row for each volume/timepoint, and a column for each
+non-constant regressor.
+If no non-constant (mean-removal) columns are used, this file may be empty.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">ignore_initial_volumes</span></code> is set, then the specified number of initial
+volumes are excluded both from pre-filtering and CompCor component
+extraction.
+Each column in the components and pre-filter files are prefixe with zeros
+for each excluded volume so that the number of rows continues to match the
+number of volumes in the input file.
+In addition, for each excluded volume, a column is added to the pre-filter
+file with a 1 in the corresponding row.</p>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span> <span class="o">=</span> <span class="n">CompCor</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">realigned_file</span> <span class="o">=</span> <span class="s1">&#39;functional.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mask_files</span> <span class="o">=</span> <span class="s1">&#39;mask.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">pre_filter</span> <span class="o">=</span> <span class="s1">&#39;polynomial&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">regress_poly_degree</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+realigned_file: (an existing file name)
+        already realigned brain image (4D)
+
+[Optional]
+components_file: (a unicode string, nipype default value:
+         components_file.txt)
+        Filename to store physiological components
+header_prefix: (a unicode string)
+        the desired header for the output tsv file (one column). If
+        undefined, will default to &quot;CompCor&quot;
+high_pass_cutoff: (a float, nipype default value: 128)
+        Cutoff (in seconds) for &quot;cosine&quot; pre-filter
+ignore_initial_volumes: (a long integer &gt;= 0, nipype default value:
+         0)
+        Number of volumes at start of series to ignore
+mask_files: (a list of items which are an existing file name)
+        One or more mask files that determines ROI (3D). When more that one
+        file is provided `merge_method` or `merge_index` must be provided
+mask_index: (a long integer &gt;= 0)
+        Position of mask in `mask_files` to use - first is the default.
+        mutually_exclusive: merge_method
+        requires: mask_files
+merge_method: (&#39;union&#39; or &#39;intersect&#39; or &#39;none&#39;)
+        Merge method if multiple masks are present - `union` uses voxels
+        included in at least one input mask, `intersect` uses only voxels
+        present in all input masks, `none` performs CompCor on each mask
+        individually
+        mutually_exclusive: mask_index
+        requires: mask_files
+num_components: (an integer (int or long), nipype default value: 6)
+pre_filter: (&#39;polynomial&#39; or &#39;cosine&#39; or False, nipype default value:
+         polynomial)
+        Detrend time series prior to component extraction
+regress_poly_degree: (a long integer &gt;= 1, nipype default value: 1)
+        the degree polynomial to use
+repetition_time: (a float)
+        Repetition time (TR) of series - derived from image header if
+        unspecified
+save_pre_filter: (a boolean or a file name)
+        Save pre-filter basis as text file
+use_regress_poly: (a boolean)
+        use polynomial regression pre-component extraction
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">components_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">text</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">the</span> <span class="n">noise</span> <span class="n">components</span>
+<span class="n">pre_filter_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">text</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">high</span><span class="o">-</span><span class="k">pass</span> <span class="nb">filter</span> <span class="n">basis</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{compcor_2007">‘<span>&#64;</span>article{compcor_2007</a>,title = {A component based noise correction method (CompCor) for BOLD and perfusion based},volume = {37},number = {1},doi = {10.1016/j.neuroimage.2007.04.042},urldate = {2016-08-13},journal = {NeuroImage},author = {Behzadi, Yashar and Restom, Khaled and Liau, Joy and Liu, Thomas T.},year = {2007},pages = {90-101},}’, key=’compcor_2007’)</p>
+<span class="target" id="nipype-algorithms-confounds-computedvars"></span></div>
+</div>
+<div class="section" id="computedvars">
+<span id="index-2"></span><h2>ComputeDVARS<a class="headerlink" href="#computedvars" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L81">Link to code</a></p>
+<p>Computes the DVARS.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">in_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">functional</span> <span class="n">data</span><span class="p">,</span> <span class="n">after</span> <span class="n">HMC</span>
+<span class="n">in_mask</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">a</span> <span class="n">brain</span> <span class="n">mask</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">figdpi</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">int</span> <span class="ow">or</span> <span class="n">long</span><span class="p">),</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">dpi</span> <span class="k">for</span> <span class="n">the</span> <span class="n">plot</span>
+<span class="n">figformat</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;png&#39;</span> <span class="ow">or</span> <span class="s1">&#39;pdf&#39;</span> <span class="ow">or</span> <span class="s1">&#39;svg&#39;</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="n">png</span><span class="p">)</span>
+        <span class="n">output</span> <span class="nb">format</span> <span class="k">for</span> <span class="n">figures</span>
+<span class="n">figsize</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">tuple</span> <span class="n">of</span> <span class="n">the</span> <span class="n">form</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">,</span> <span class="n">a</span> <span class="nb">float</span><span class="p">),</span> <span class="n">nipype</span> <span class="n">default</span>
+         <span class="n">value</span><span class="p">:</span> <span class="p">(</span><span class="mf">11.7</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">))</span>
+        <span class="n">output</span> <span class="n">figure</span> <span class="n">size</span>
+<span class="n">intensity_normalization</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">)</span>
+        <span class="n">Divide</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">each</span> <span class="n">voxel</span> <span class="n">at</span> <span class="n">each</span> <span class="n">timepoint</span> <span class="n">by</span> <span class="n">the</span> <span class="n">median</span>
+        <span class="n">calculated</span> <span class="n">across</span> <span class="nb">all</span> <span class="n">voxelsand</span> <span class="n">timepoints</span> <span class="n">within</span> <span class="n">the</span> <span class="n">mask</span> <span class="p">(</span><span class="k">if</span>
+        <span class="n">specified</span><span class="p">)</span><span class="ow">and</span> <span class="n">then</span> <span class="n">multiply</span> <span class="n">by</span> <span class="n">the</span> <span class="n">value</span> <span class="n">specified</span> <span class="n">bythis</span> <span class="n">parameter</span><span class="o">.</span>
+        <span class="n">By</span> <span class="n">using</span> <span class="n">the</span> <span class="n">default</span> <span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="n">output</span> <span class="n">DVARS</span> <span class="n">will</span> <span class="n">be</span> <span class="n">expressed</span> <span class="ow">in</span> <span class="n">x10</span> <span class="o">%</span>
+        <span class="n">BOLD</span> <span class="n">units</span> <span class="n">compatible</span> <span class="k">with</span> <span class="n">Power</span> <span class="n">et</span> <span class="n">al</span><span class="o">.</span><span class="mf">2012.</span> <span class="n">Set</span> <span class="n">this</span> <span class="n">to</span> <span class="mi">0</span> <span class="n">to</span>
+        <span class="n">disable</span> <span class="n">intensitynormalization</span> <span class="n">altogether</span><span class="o">.</span>
+<span class="n">remove_zerovariance</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">remove</span> <span class="n">voxels</span> <span class="k">with</span> <span class="n">zero</span> <span class="n">variance</span>
+<span class="n">save_all</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">output</span> <span class="nb">all</span> <span class="n">DVARS</span>
+<span class="n">save_nstd</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">save</span> <span class="n">non</span><span class="o">-</span><span class="n">standardized</span> <span class="n">DVARS</span>
+<span class="n">save_plot</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">write</span> <span class="n">DVARS</span> <span class="n">plot</span>
+<span class="n">save_std</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">save</span> <span class="n">standardized</span> <span class="n">DVARS</span>
+<span class="n">save_vxstd</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">save</span> <span class="n">voxel</span><span class="o">-</span><span class="n">wise</span> <span class="n">standardized</span> <span class="n">DVARS</span>
+<span class="n">series_tr</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">repetition</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">sec</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">avg_nstd</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+<span class="n">avg_std</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+<span class="n">avg_vxstd</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+<span class="n">fig_nstd</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">DVARS</span> <span class="n">plot</span>
+<span class="n">fig_std</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">DVARS</span> <span class="n">plot</span>
+<span class="n">fig_vxstd</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">DVARS</span> <span class="n">plot</span>
+<span class="n">out_all</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">text</span> <span class="n">file</span>
+<span class="n">out_nstd</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">text</span> <span class="n">file</span>
+<span class="n">out_std</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">text</span> <span class="n">file</span>
+<span class="n">out_vxstd</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">text</span> <span class="n">file</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;techreport{nichols_notes_2013">‘<span>&#64;</span>techreport{nichols_notes_2013</a>,n    address = {Coventry, UK},n    title = {Notes on {Creating} a {Standardized} {Version} of {DVARS}},n    url = {<a class="reference external" href="http://www2.warwick.ac.uk/fac/sci/statistics/staff/academic-research/nichols/scripts/fsl/standardizeddvars.pdf">http://www2.warwick.ac.uk/fac/sci/statistics/staff/academic-research/nichols/scripts/fsl/standardizeddvars.pdf</a>},n    urldate = {2016-08-16},n    institution = {University of Warwick},n    author = {Nichols, Thomas},n    year = {2013}n}’, key=’nichols_notes_2013’)
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{power_spurious_2012">‘<span>&#64;</span>article{power_spurious_2012</a>,n    title = {Spurious but systematic correlations in functional connectivity {MRI} networks arise from subject motion},n    volume = {59},n    doi = {10.1016/j.neuroimage.2011.10.018},n    number = {3},n    urldate = {2016-08-16},n    journal = {NeuroImage},n    author = {Power, Jonathan D. and Barnes, Kelly A. and Snyder, Abraham Z. and Schlaggar, Bradley L. and Petersen, Steven E.},n    year = {2012},n    pages = {2142–2154},n}’, key=’power_spurious_2012’)</p>
+<span class="target" id="nipype-algorithms-confounds-framewisedisplacement"></span></div>
+<div class="section" id="framewisedisplacement">
+<span id="index-3"></span><h2>FramewiseDisplacement<a class="headerlink" href="#framewisedisplacement" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L267">Link to code</a></p>
+<p>Calculate the <abbr title="framewise displacement">FD</abbr> as in <a class="reference internal" href="#power2012" id="id1">[Power2012]</a>.
+This implementation reproduces the calculation in fsl_motion_outliers</p>
+<table class="docutils citation" frame="void" id="power2012" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Power2012]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> Power et al., Spurious but systematic correlations in functional
+connectivity MRI networks arise from subject motion, NeuroImage 59(3),
+2012. doi:<a class="reference external" href="http://dx.doi.org/10.1016/j.neuroimage.2011.10.018">10.1016/j.neuroimage.2011.10.018</a>.</td></tr>
+</tbody>
+</table>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">in_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">motion</span> <span class="n">parameters</span>
+<span class="n">parameter_source</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;FSL&#39;</span> <span class="ow">or</span> <span class="s1">&#39;AFNI&#39;</span> <span class="ow">or</span> <span class="s1">&#39;SPM&#39;</span> <span class="ow">or</span> <span class="s1">&#39;FSFAST&#39;</span> <span class="ow">or</span> <span class="s1">&#39;NIPY&#39;</span><span class="p">)</span>
+        <span class="n">Source</span> <span class="n">of</span> <span class="n">movement</span> <span class="n">parameters</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">figdpi</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">int</span> <span class="ow">or</span> <span class="n">long</span><span class="p">),</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">dpi</span> <span class="k">for</span> <span class="n">the</span> <span class="n">FD</span> <span class="n">plot</span>
+<span class="n">figsize</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">tuple</span> <span class="n">of</span> <span class="n">the</span> <span class="n">form</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">,</span> <span class="n">a</span> <span class="nb">float</span><span class="p">),</span> <span class="n">nipype</span> <span class="n">default</span>
+         <span class="n">value</span><span class="p">:</span> <span class="p">(</span><span class="mf">11.7</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">))</span>
+        <span class="n">output</span> <span class="n">figure</span> <span class="n">size</span>
+<span class="n">normalize</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">calculate</span> <span class="n">FD</span> <span class="ow">in</span> <span class="n">mm</span><span class="o">/</span><span class="n">s</span>
+<span class="n">out_figure</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="n">fd_power_2012</span><span class="o">.</span><span class="n">pdf</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">figure</span> <span class="n">name</span>
+<span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="n">fd_power_2012</span><span class="o">.</span><span class="n">txt</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span>
+<span class="n">radius</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">radius</span> <span class="ow">in</span> <span class="n">mm</span> <span class="n">to</span> <span class="n">calculate</span> <span class="n">angular</span> <span class="n">FDs</span><span class="p">,</span> <span class="mi">50</span><span class="n">mm</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">default</span> <span class="n">since</span> <span class="n">it</span>
+        <span class="ow">is</span> <span class="n">used</span> <span class="ow">in</span> <span class="n">Power</span> <span class="n">et</span> <span class="n">al</span><span class="o">.</span> <span class="mi">2012</span>
+<span class="n">save_plot</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">write</span> <span class="n">FD</span> <span class="n">plot</span>
+<span class="n">series_tr</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">repetition</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">sec</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fd_average</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">average</span> <span class="n">FD</span>
+<span class="n">out_figure</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">image</span> <span class="n">file</span>
+<span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">calculated</span> <span class="n">FD</span> <span class="n">per</span> <span class="n">timestep</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{power_spurious_2012">‘<span>&#64;</span>article{power_spurious_2012</a>,n    title = {Spurious but systematic correlations in functional connectivity {MRI} networks arise from subject motion},n    volume = {59},n    doi = {10.1016/j.neuroimage.2011.10.018},n    number = {3},n    urldate = {2016-08-16},n    journal = {NeuroImage},n    author = {Power, Jonathan D. and Barnes, Kelly A. and Snyder, Abraham Z. and Schlaggar, Bradley L. and Petersen, Steven E.},n    year = {2012},n    pages = {2142–2154},n}’, key=’power_spurious_2012’)</p>
+<span class="target" id="nipype-algorithms-confounds-nonsteadystatedetector"></span></div>
+<div class="section" id="nonsteadystatedetector">
+<span id="index-4"></span><h2>NonSteadyStateDetector<a class="headerlink" href="#nonsteadystatedetector" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L817">Link to code</a></p>
+<p>Returns the number of non-steady state volumes detected at the beginning
+of the scan.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">in_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="mi">4</span><span class="n">D</span> <span class="n">NIFTI</span> <span class="n">EPI</span> <span class="n">file</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_volumes_to_discard</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">int</span> <span class="ow">or</span> <span class="n">long</span><span class="p">))</span>
+        <span class="n">Number</span> <span class="n">of</span> <span class="n">non</span><span class="o">-</span><span class="n">steady</span> <span class="n">state</span> <span class="n">volumesdetected</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">beginning</span> <span class="n">of</span> <span class="n">the</span>
+        <span class="n">scan</span><span class="o">.</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-algorithms-confounds-tcompcor"></span></div>
+<div class="section" id="tcompcor">
+<span id="index-5"></span><h2>TCompCor<a class="headerlink" href="#tcompcor" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L650">Link to code</a></p>
+<p>Interface for tCompCor. Computes a ROI mask based on variance of voxels.</p>
+<div class="section" id="id2">
+<h3>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span> <span class="o">=</span> <span class="n">TCompCor</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">realigned_file</span> <span class="o">=</span> <span class="s1">&#39;functional.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mask_files</span> <span class="o">=</span> <span class="s1">&#39;mask.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">pre_filter</span> <span class="o">=</span> <span class="s1">&#39;polynomial&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">regress_poly_degree</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ccinterface</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">percentile_threshold</span> <span class="o">=</span> <span class="o">.</span><span class="mi">03</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+realigned_file: (an existing file name)
+        already realigned brain image (4D)
+
+[Optional]
+components_file: (a unicode string, nipype default value:
+         components_file.txt)
+        Filename to store physiological components
+header_prefix: (a unicode string)
+        the desired header for the output tsv file (one column). If
+        undefined, will default to &quot;CompCor&quot;
+high_pass_cutoff: (a float, nipype default value: 128)
+        Cutoff (in seconds) for &quot;cosine&quot; pre-filter
+ignore_initial_volumes: (a long integer &gt;= 0, nipype default value:
+         0)
+        Number of volumes at start of series to ignore
+mask_files: (a list of items which are an existing file name)
+        One or more mask files that determines ROI (3D). When more that one
+        file is provided `merge_method` or `merge_index` must be provided
+mask_index: (a long integer &gt;= 0)
+        Position of mask in `mask_files` to use - first is the default.
+        mutually_exclusive: merge_method
+        requires: mask_files
+merge_method: (&#39;union&#39; or &#39;intersect&#39; or &#39;none&#39;)
+        Merge method if multiple masks are present - `union` uses voxels
+        included in at least one input mask, `intersect` uses only voxels
+        present in all input masks, `none` performs CompCor on each mask
+        individually
+        mutually_exclusive: mask_index
+        requires: mask_files
+num_components: (an integer (int or long), nipype default value: 6)
+percentile_threshold: (0.0 &lt; a floating point number &lt; 1.0, nipype
+         default value: 0.02)
+        the percentile used to select highest-variance voxels, represented
+        by a number between 0 and 1, exclusive. By default, this value is
+        set to .02. That is, the 2% of voxels with the highest variance are
+        used.
+pre_filter: (&#39;polynomial&#39; or &#39;cosine&#39; or False, nipype default value:
+         polynomial)
+        Detrend time series prior to component extraction
+regress_poly_degree: (a long integer &gt;= 1, nipype default value: 1)
+        the degree polynomial to use
+repetition_time: (a float)
+        Repetition time (TR) of series - derived from image header if
+        unspecified
+save_pre_filter: (a boolean or a file name)
+        Save pre-filter basis as text file
+use_regress_poly: (a boolean)
+        use polynomial regression pre-component extraction
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">components_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">text</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">the</span> <span class="n">noise</span> <span class="n">components</span>
+<span class="n">high_variance_masks</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span>
+         <span class="n">name</span><span class="p">)</span>
+        <span class="n">voxels</span> <span class="n">exceeding</span> <span class="n">the</span> <span class="n">variance</span> <span class="n">threshold</span>
+<span class="n">pre_filter_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">text</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">high</span><span class="o">-</span><span class="k">pass</span> <span class="nb">filter</span> <span class="n">basis</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{compcor_2007">‘<span>&#64;</span>article{compcor_2007</a>,title = {A component based noise correction method (CompCor) for BOLD and perfusion based},volume = {37},number = {1},doi = {10.1016/j.neuroimage.2007.04.042},urldate = {2016-08-13},journal = {NeuroImage},author = {Behzadi, Yashar and Restom, Khaled and Liau, Joy and Liu, Thomas T.},year = {2007},pages = {90-101},}’, key=’compcor_2007’)</p>
+<span class="target" id="nipype-algorithms-confounds-tsnr"></span></div>
+</div>
+<div class="section" id="tsnr">
+<span id="index-6"></span><h2>TSNR<a class="headerlink" href="#tsnr" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L743">Link to code</a></p>
+<p>Computes the time-course SNR for a time series</p>
+<p>Typically you want to run this on a realigned time-series.</p>
+<div class="section" id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tsnr</span> <span class="o">=</span> <span class="n">TSNR</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tsnr</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;functional.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">tsnr</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">in_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">realigned</span> <span class="mi">4</span><span class="n">D</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="mi">3</span><span class="n">D</span> <span class="n">files</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">detrended_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="n">detrend</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="n">file</span> <span class="n">after</span> <span class="n">detrending</span>
+<span class="n">mean_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="n">mean</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">mean</span> <span class="n">file</span>
+<span class="n">regress_poly</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">long</span> <span class="n">integer</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">Remove</span> <span class="n">polynomials</span>
+<span class="n">stddev_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="n">stdev</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">tSNR</span> <span class="n">file</span>
+<span class="n">tsnr_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="n">tsnr</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">tSNR</span> <span class="n">file</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">detrended_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">detrended</span> <span class="nb">input</span> <span class="n">file</span>
+<span class="n">mean_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="n">image</span> <span class="n">file</span>
+<span class="n">stddev_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">std</span> <span class="n">dev</span> <span class="n">image</span> <span class="n">file</span>
+<span class="n">tsnr_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">tsnr</span> <span class="n">image</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="module-nipype.algorithms.confounds"></span></div>
+</div>
+<div class="section" id="combine-mask-files">
+<span id="nipype-algorithms-confounds-combine-mask-files"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">combine_mask_files()</span></code><a class="headerlink" href="#combine-mask-files" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L1073">Link to code</a></p>
+<p>Combines input mask files into a single nibabel image</p>
+<p>A helper function for CompCor</p>
+<dl class="docutils">
+<dt>mask_files: a list</dt>
+<dd>one or more binary mask files</dd>
+<dt>mask_method: enum (‘union’, ‘intersect’, ‘none’)</dt>
+<dd>determines how to combine masks</dd>
+<dt>mask_index: an integer</dt>
+<dd>determines which file to return (mutually exclusive with mask_method)</dd>
+</dl>
+<p>returns: a list of nibabel images</p>
+</div>
+<div class="section" id="compute-dvars">
+<span id="nipype-algorithms-confounds-compute-dvars"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_dvars()</span></code><a class="headerlink" href="#compute-dvars" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L839">Link to code</a></p>
+<p>Compute the <abbr title="D referring to temporal derivative of timecourses, VARS referring to RMS variance over voxels">DVARS</abbr>
+<a class="reference internal" href="#power2012" id="id4">[Power2012]</a>.</p>
+<p>Particularly, the <em>standardized</em> <abbr title="D referring to temporal derivative of timecourses, VARS referring to RMS variance over voxels">DVARS</abbr>
+<a class="reference internal" href="#nichols2013" id="id5">[Nichols2013]</a> are computed.</p>
+<table class="docutils citation" frame="void" id="nichols2013" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[Nichols2013]</a></td><td>Nichols T, <a class="reference external" href="http://www2.warwick.ac.uk/fac/sci/statistics/staff/academic-research/nichols/scripts/fsl/standardizeddvars.pdf">Notes on creating a standardized version of
+DVARS</a>, 2013.</td></tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Implementation details</p>
+<p class="last">Uses the implementation of the <a class="reference external" href="http://nipy.org/nitime/api/generated/nitime.algorithms.autoregressive.html#nitime.algorithms.autoregressive.AR_est_YW">Yule-Walker equations
+from nitime</a>
+for the <abbr title="auto-regressive">AR</abbr> filtering of the fMRI signal.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">param numpy.ndarray func:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">functional data, after head-motion-correction.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param numpy.ndarray mask:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">a 3D mask of the brain</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param bool output_all:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">write out all dvars</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param str out_file:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">a path to which the standardized dvars should be saved.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body">the standardized DVARS</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="compute-noise-components">
+<span id="nipype-algorithms-confounds-compute-noise-components"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_noise_components()</span></code><a class="headerlink" href="#compute-noise-components" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L1128">Link to code</a></p>
+<p>Compute the noise components from the imgseries for each mask</p>
+<p>imgseries: a nibabel img
+mask_images: a list of nibabel images
+num_components: number of noise components to return
+filter_type: type off filter to apply to time series before computing</p>
+<blockquote>
+<div><blockquote>
+<div>noise components.</div></blockquote>
+<p>‘polynomial’ - Legendre polynomial basis
+‘cosine’ - Discrete cosine (DCT) basis
+False - None (mean-removal only)</p>
+</div></blockquote>
+<p>Filter options:</p>
+<p>degree: order of polynomial used to remove trends from the timeseries
+period_cut: minimum period (in sec) for DCT high-pass filter
+repetition_time: time (in sec) between volume acquisitions</p>
+<p>returns:</p>
+<p>components: a numpy array
+basis: a numpy array containing the (non-constant) filter regressors</p>
+</div>
+<div class="section" id="cosine-filter">
+<span id="nipype-algorithms-confounds-cosine-filter"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">cosine_filter()</span></code><a class="headerlink" href="#cosine-filter" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L1012">Link to code</a></p>
+</div>
+<div class="section" id="is-outlier">
+<span id="nipype-algorithms-confounds-is-outlier"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">is_outlier()</span></code><a class="headerlink" href="#is-outlier" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L974">Link to code</a></p>
+<p>Returns a boolean array with True if points are outliers and False
+otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">param nparray points:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">an numobservations by numdimensions numpy array of observations</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param float thresh:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">the modified z-score to use as a threshold. Observations with
+a modified z-score (based on the median absolute deviation) greater
+than this value will be classified as outliers.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body">A bolean mask, of size numobservations-length array.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>References</p>
+<p class="last">Boris Iglewicz and David Hoaglin (1993), “Volume 16: How to Detect and
+Handle Outliers”, The ASQC Basic References in Quality Control:
+Statistical Techniques, Edward F. Mykytka, Ph.D., Editor.</p>
+</div>
+</div>
+<div class="section" id="plot-confound">
+<span id="nipype-algorithms-confounds-plot-confound"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_confound()</span></code><a class="headerlink" href="#plot-confound" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L927">Link to code</a></p>
+<p>A helper function to plot <abbr title="functional MRI">fMRI</abbr> confounds.</p>
+</div>
+<div class="section" id="regress-poly">
+<span id="nipype-algorithms-confounds-regress-poly"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">regress_poly()</span></code><a class="headerlink" href="#regress-poly" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/confounds.py#L1033">Link to code</a></p>
+<p>Returns data with degree polynomial regressed out.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">param bool remove_mean:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">whether or not demean data (i.e. degree 0),</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param int axis:</th><td class="field-body">numpy array axes along which regression is performed</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

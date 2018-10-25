@@ -1,0 +1,36 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.workbench.base
+=========================
+
+
+.. _nipype.interfaces.workbench.base.WBCommand:
+
+
+.. index:: WBCommand
+
+WBCommand
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/workbench/base.py#L38>`__
+
+Wraps command **None**
+
+Base support for workbench commands.
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+
+Outputs::
+
+        None

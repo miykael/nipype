@@ -1,0 +1,186 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+workflows.dmri.dtitk.tensor_registration
+========================================
+
+
+.. module:: nipype.workflows.dmri.dtitk.tensor_registration
+
+
+.. _nipype.workflows.dmri.dtitk.tensor_registration.affine_tensor_pipeline:
+
+:func:`affine_tensor_pipeline`
+------------------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/workflows/dmri/dtitk/tensor_registration.py#L11>`__
+
+
+
+Workflow that performs a linear registration
+(Rigid followed by Affine)
+
+Example
+~~~~~~~
+
+>>> from nipype.workflows.dmri.dtitk.tensor_registration import affine_tensor_pipeline
+>>> affine = affine_tensor_pipeline()
+>>> affine.inputs.inputnode.fixed_file = 'im1.nii'
+>>> affine.inputs.inputnode.moving_file = 'im2.nii'
+>>> affine.run() # doctest: +SKIP
+
+
+Graph
+~~~~~
+
+.. graphviz::
+
+	digraph AffTen{
+
+	  label="AffTen";
+
+	  AffTen_inputnode[label="inputnode (utility)"];
+
+	  AffTen_rigid_node[label="rigid_node (dtitk)"];
+
+	  AffTen_affine_node[label="affine_node (dtitk)"];
+
+	  AffTen_outputnode[label="outputnode (utility)"];
+
+	  AffTen_inputnode -> AffTen_rigid_node;
+
+	  AffTen_inputnode -> AffTen_rigid_node;
+
+	  AffTen_inputnode -> AffTen_affine_node;
+
+	  AffTen_inputnode -> AffTen_affine_node;
+
+	  AffTen_rigid_node -> AffTen_affine_node;
+
+	  AffTen_affine_node -> AffTen_outputnode;
+
+	  AffTen_affine_node -> AffTen_outputnode;
+
+	}
+
+
+.. _nipype.workflows.dmri.dtitk.tensor_registration.diffeomorphic_tensor_pipeline:
+
+:func:`diffeomorphic_tensor_pipeline`
+-------------------------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/workflows/dmri/dtitk/tensor_registration.py#L51>`__
+
+
+
+Workflow that performs a diffeomorphic registration
+(Rigid and Affine followed by Diffeomorphic)
+Note: the requirements for a diffeomorphic registration specify that
+the dimension 0 is a power of 2 so images are resliced prior to
+registration. Remember to move origin and reslice prior to applying xfm to
+another file!
+
+Example
+~~~~~~~
+
+>>> from nipype.workflows.dmri.dtitk.tensor_registration import diffeomorphic_tensor_pipeline
+>>> diffeo = diffeomorphic_tensor_pipeline()
+>>> diffeo.inputs.inputnode.fixed_file = 'im1.nii'
+>>> diffeo.inputs.inputnode.moving_file = 'im2.nii'
+>>> diffeo.run() # doctest: +SKIP
+
+
+Graph
+~~~~~
+
+.. graphviz::
+
+	digraph DiffeoTen{
+
+	  label="DiffeoTen";
+
+	  DiffeoTen_inputnode[label="inputnode (utility)"];
+
+	  DiffeoTen_origin_node_moving[label="origin_node_moving (dtitk)"];
+
+	  DiffeoTen_origin_node_fixed[label="origin_node_fixed (dtitk)"];
+
+	  DiffeoTen_reslice_node_pow2[label="reslice_node_pow2 (dtitk)"];
+
+	  DiffeoTen_mask_node[label="mask_node (dtitk)"];
+
+	  DiffeoTen_reslice_node_moving[label="reslice_node_moving (dtitk)"];
+
+	  DiffeoTen_rigid_node[label="rigid_node (dtitk)"];
+
+	  DiffeoTen_affine_node[label="affine_node (dtitk)"];
+
+	  DiffeoTen_diffeo_node[label="diffeo_node (dtitk)"];
+
+	  DiffeoTen_compose_xfm_node[label="compose_xfm_node (dtitk)"];
+
+	  DiffeoTen_apply_xfm_node[label="apply_xfm_node (dtitk)"];
+
+	  DiffeoTen_input_fa[label="input_fa (dtitk)"];
+
+	  DiffeoTen_adjust_vs_node_to_input[label="adjust_vs_node_to_input (dtitk)"];
+
+	  DiffeoTen_reslice_node_to_input[label="reslice_node_to_input (dtitk)"];
+
+	  DiffeoTen_outputnode[label="outputnode (utility)"];
+
+	  DiffeoTen_inputnode -> DiffeoTen_input_fa;
+
+	  DiffeoTen_inputnode -> DiffeoTen_origin_node_fixed;
+
+	  DiffeoTen_inputnode -> DiffeoTen_origin_node_moving;
+
+	  DiffeoTen_origin_node_moving -> DiffeoTen_reslice_node_moving;
+
+	  DiffeoTen_origin_node_fixed -> DiffeoTen_reslice_node_pow2;
+
+	  DiffeoTen_reslice_node_pow2 -> DiffeoTen_reslice_node_moving;
+
+	  DiffeoTen_reslice_node_pow2 -> DiffeoTen_rigid_node;
+
+	  DiffeoTen_reslice_node_pow2 -> DiffeoTen_affine_node;
+
+	  DiffeoTen_reslice_node_pow2 -> DiffeoTen_mask_node;
+
+	  DiffeoTen_reslice_node_pow2 -> DiffeoTen_diffeo_node;
+
+	  DiffeoTen_reslice_node_pow2 -> DiffeoTen_outputnode;
+
+	  DiffeoTen_mask_node -> DiffeoTen_diffeo_node;
+
+	  DiffeoTen_reslice_node_moving -> DiffeoTen_rigid_node;
+
+	  DiffeoTen_reslice_node_moving -> DiffeoTen_affine_node;
+
+	  DiffeoTen_reslice_node_moving -> DiffeoTen_apply_xfm_node;
+
+	  DiffeoTen_reslice_node_moving -> DiffeoTen_outputnode;
+
+	  DiffeoTen_rigid_node -> DiffeoTen_affine_node;
+
+	  DiffeoTen_affine_node -> DiffeoTen_diffeo_node;
+
+	  DiffeoTen_affine_node -> DiffeoTen_compose_xfm_node;
+
+	  DiffeoTen_diffeo_node -> DiffeoTen_compose_xfm_node;
+
+	  DiffeoTen_compose_xfm_node -> DiffeoTen_apply_xfm_node;
+
+	  DiffeoTen_compose_xfm_node -> DiffeoTen_outputnode;
+
+	  DiffeoTen_apply_xfm_node -> DiffeoTen_adjust_vs_node_to_input;
+
+	  DiffeoTen_input_fa -> DiffeoTen_adjust_vs_node_to_input;
+
+	  DiffeoTen_input_fa -> DiffeoTen_reslice_node_to_input;
+
+	  DiffeoTen_adjust_vs_node_to_input -> DiffeoTen_reslice_node_to_input;
+
+	  DiffeoTen_reslice_node_to_input -> DiffeoTen_outputnode;
+
+	}
+

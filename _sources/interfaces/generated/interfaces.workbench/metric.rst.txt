@@ -1,0 +1,113 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.workbench.metric
+===========================
+
+
+.. _nipype.interfaces.workbench.metric.MetricResample:
+
+
+.. index:: MetricResample
+
+MetricResample
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/workbench/metric.py#L95>`__
+
+Wraps command **wb_command -metric-resample**
+
+Resample a metric file to a different mesh
+
+Resamples a metric file, given two spherical surfaces that are in
+register.  If ``ADAP_BARY_AREA`` is used, exactly one of -area-surfs or
+``-area-metrics`` must be specified.
+
+The ``ADAP_BARY_AREA`` method is recommended for ordinary metric data,
+because it should use all data while downsampling, unlike ``BARYCENTRIC``.
+The recommended areas option for most data is individual midthicknesses
+for individual data, and averaged vertex area metrics from individual
+midthicknesses for group average data.
+
+The ``-current-roi`` option only masks the input, the output may be slightly
+dilated in comparison, consider using ``-metric-mask`` on the output when
+using ``-current-roi``.
+
+The ``-largest option`` results in nearest vertex behavior when used with
+``BARYCENTRIC``.  When resampling a binary metric, consider thresholding at
+0.5 after resampling rather than using ``-largest``.
+
+>>> from nipype.interfaces.workbench import MetricResample
+>>> metres = MetricResample()
+>>> metres.inputs.in_file = 'sub-01_task-rest_bold_space-fsaverage5.L.func.gii'
+>>> metres.inputs.method = 'ADAP_BARY_AREA'
+>>> metres.inputs.current_sphere = 'fsaverage5_std_sphere.L.10k_fsavg_L.surf.gii'
+>>> metres.inputs.new_sphere = 'fs_LR-deformed_to-fsaverage.L.sphere.32k_fs_LR.surf.gii'
+>>> metres.inputs.area_metrics = True
+>>> metres.inputs.current_area = 'fsaverage5.L.midthickness_va_avg.10k_fsavg_L.shape.gii'
+>>> metres.inputs.new_area = 'fs_LR.L.midthickness_va_avg.32k_fs_LR.shape.gii'
+>>> metres.cmdline
+'wb_command -metric-resample sub-01_task-rest_bold_space-fsaverage5.L.func.gii     fsaverage5_std_sphere.L.10k_fsavg_L.surf.gii     fs_LR-deformed_to-fsaverage.L.sphere.32k_fs_LR.surf.gii     ADAP_BARY_AREA fs_LR-deformed_to-fsaverage.L.sphere.32k_fs_LR.surf.out     -area-metrics fsaverage5.L.midthickness_va_avg.10k_fsavg_L.shape.gii     fs_LR.L.midthickness_va_avg.32k_fs_LR.shape.gii'
+
+Inputs::
+
+        [Mandatory]
+        current_sphere: (an existing file name)
+                A sphere surface with the mesh that the metric is currently on
+                flag: %s, position: 1
+        in_file: (an existing file name)
+                The metric file to resample
+                flag: %s, position: 0
+        method: ('ADAP_BARY_AREA' or 'BARYCENTRIC')
+                The method name - ADAP_BARY_AREA method is recommended for ordinary
+                metric data, because it should use all data while downsampling,
+                unlike BARYCENTRIC. If ADAP_BARY_AREA is used, exactly one of
+                area_surfs or area_metrics must be specified
+                flag: %s, position: 3
+        new_sphere: (an existing file name)
+                A sphere surface that is in register with <current-sphere> and has
+                the desired output mesh
+                flag: %s, position: 2
+
+        [Optional]
+        area_metrics: (a boolean)
+                Specify vertex area metrics to do area correction based on
+                flag: -area-metrics, position: 5
+                mutually_exclusive: area_surfs
+        area_surfs: (a boolean)
+                Specify surfaces to do vertex area correction based on
+                flag: -area-surfs, position: 5
+                mutually_exclusive: area_metrics
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        current_area: (an existing file name)
+                A relevant anatomical surface with <current-sphere> mesh OR a metric
+                file with vertex areas for <current-sphere> mesh
+                flag: %s, position: 6
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        largest: (a boolean)
+                Use only the value of the vertex with the largest weight
+                flag: -largest, position: 10
+        new_area: (an existing file name)
+                A relevant anatomical surface with <current-sphere> mesh OR a metric
+                file with vertex areas for <current-sphere> mesh
+                flag: %s, position: 7
+        out_file: (a file name)
+                The output metric
+                flag: %s, position: 4
+        roi_metric: (an existing file name)
+                Input roi on the current mesh used to exclude non-data vertices
+                flag: -current-roi %s, position: 8
+        valid_roi_out: (a boolean)
+                Output the ROI of vertices that got data from valid source vertices
+                flag: -valid-roi-out, position: 9
+
+Outputs::
+
+        out_file: (an existing file name)
+                the output metric
+        roi_file: (a file name)
+                ROI of vertices that got data from valid source vertices

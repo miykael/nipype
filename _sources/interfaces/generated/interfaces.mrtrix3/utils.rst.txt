@@ -1,0 +1,763 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.mrtrix3.utils
+========================
+
+
+.. _nipype.interfaces.mrtrix3.utils.BrainMask:
+
+
+.. index:: BrainMask
+
+BrainMask
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L34>`__
+
+Wraps command **dwi2mask**
+
+Convert a mesh surface to a partial volume estimation image
+
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> bmsk = mrt.BrainMask()
+>>> bmsk.inputs.in_file = 'dwi.mif'
+>>> bmsk.cmdline                               # doctest: +ELLIPSIS
+'dwi2mask dwi.mif brainmask.mif'
+>>> bmsk.run()                                 # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input diffusion weighted images
+                flag: %s, position: -2
+        out_file: (a file name, nipype default value: brainmask.mif)
+                output brain mask
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        bval_scale: ('yes' or 'no')
+                specifies whether the b - values should be scaled by the square of
+                the corresponding DW gradient norm, as often required for multishell
+                or DSI DW acquisition schemes. The default action can also be set in
+                the MRtrix config file, under the BValueScaling entry. Valid choices
+                are yes / no, true / false, 0 / 1 (default: true).
+                flag: -bvalue_scaling %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        grad_file: (an existing file name)
+                dw gradient scheme (MRTrix format
+                flag: -grad %s
+        grad_fsl: (a tuple of the form: (an existing file name, an existing
+                 file name))
+                (bvecs, bvals) dw gradient scheme (FSL format
+                flag: -fslgrad %s %s
+        in_bval: (an existing file name)
+                bvals file in FSL format
+        in_bvec: (an existing file name)
+                bvecs file in FSL format
+                flag: -fslgrad %s %s
+        nthreads: (an integer (int or long))
+                number of threads. if zero, the number of available cpus will be
+                used
+                flag: -nthreads %d
+
+Outputs::
+
+        out_file: (an existing file name)
+                the output response file
+
+.. _nipype.interfaces.mrtrix3.utils.ComputeTDI:
+
+
+.. index:: ComputeTDI
+
+ComputeTDI
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L368>`__
+
+Wraps command **tckmap**
+
+Use track data as a form of contrast for producing a high-resolution
+image.
+
+.. admonition:: References
+
+  * For TDI or DEC TDI: Calamante, F.; Tournier, J.-D.; Jackson, G. D. &
+    Connelly, A. Track-density imaging (TDI): Super-resolution white
+    matter imaging using whole-brain track-density mapping. NeuroImage,
+    2010, 53, 1233-1243
+
+  * If using -contrast length and -stat_vox mean: Pannek, K.; Mathias,
+    J. L.; Bigler, E. D.; Brown, G.; Taylor, J. D. & Rose, S. E. The
+    average pathlength map: A diffusion MRI tractography-derived index
+    for studying brain pathology. NeuroImage, 2011, 55, 133-141
+
+  * If using -dixel option with TDI contrast only: Smith, R.E., Tournier,
+    J-D., Calamante, F., Connelly, A. A novel paradigm for automated
+    segmentation of very large whole-brain probabilistic tractography
+    data sets. In proc. ISMRM, 2011, 19, 673
+
+  * If using -dixel option with any other contrast: Pannek, K., Raffelt,
+    D., Salvado, O., Rose, S. Incorporating directional information in
+    diffusion tractography derived maps: angular track imaging (ATI).
+    In Proc. ISMRM, 2012, 20, 1912
+
+  * If using -tod option: Dhollander, T., Emsell, L., Van Hecke, W., Maes,
+    F., Sunaert, S., Suetens, P. Track Orientation Density Imaging (TODI)
+    and Track Orientation Distribution (TOD) based tractography.
+    NeuroImage, 2014, 94, 312-336
+
+  * If using other contrasts / statistics: Calamante, F.; Tournier, J.-D.;
+    Smith, R. E. & Connelly, A. A generalised framework for
+    super-resolution track-weighted imaging. NeuroImage, 2012, 59,
+    2494-2503
+
+  * If using -precise mapping option: Smith, R. E.; Tournier, J.-D.;
+    Calamante, F. & Connelly, A. SIFT: Spherical-deconvolution informed
+    filtering of tractograms. NeuroImage, 2013, 67, 298-312 (Appendix 3)
+
+
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> tdi = mrt.ComputeTDI()
+>>> tdi.inputs.in_file = 'dti.mif'
+>>> tdi.cmdline                               # doctest: +ELLIPSIS
+'tckmap dti.mif tdi.mif'
+>>> tdi.run()                                 # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input tractography
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        contrast: ('tdi' or 'length' or 'invlength' or 'scalar_map' or
+                 'scalar_map_conut' or 'fod_amp' or 'curvature')
+                define the desired form of contrast for the output image
+                flag: -constrast %s
+        data_type: ('float' or 'unsigned int')
+                specify output image data type
+                flag: -datatype %s
+        dixel: (a file name)
+                map streamlines todixels within each voxel. Directions are stored
+                asazimuth elevation pairs.
+                flag: -dixel %s
+        ends_only: (a boolean)
+                only map the streamline endpoints to the image
+                flag: -ends_only
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fwhm_tck: (a float)
+                define the statistic for choosing the contribution to be made by
+                each streamline as a function of the samples taken along their
+                lengths
+                flag: -fwhm_tck %f
+        in_map: (an existing file name)
+                provide thescalar image map for generating images with 'scalar_map'
+                contrasts, or the SHs image for fod_amp
+                flag: -image %s
+        map_zero: (a boolean)
+                if a streamline has zero contribution based on the contrast &
+                statistic, typically it is not mapped; use this option to still
+                contribute to the map even if this is the case (these non-
+                contributing voxels can then influence the mean value in each voxel
+                of the map)
+                flag: -map_zero
+        max_tod: (an integer (int or long))
+                generate a Track Orientation Distribution (TOD) in each voxel.
+                flag: -tod %d
+        nthreads: (an integer (int or long))
+                number of threads. if zero, the number of available cpus will be
+                used
+                flag: -nthreads %d
+        out_file: (a file name, nipype default value: tdi.mif)
+                output TDI file
+                flag: %s, position: -1
+        precise: (a boolean)
+                use a more precise streamline mapping strategy, that accurately
+                quantifies the length through each voxel (these lengths are then
+                taken into account during TWI calculation)
+                flag: -precise
+        reference: (an existing file name)
+                a referenceimage to be used as template
+                flag: -template %s
+        stat_tck: ('mean' or 'sum' or 'min' or 'max' or 'median' or
+                 'mean_nonzero' or 'gaussian' or 'ends_min' or 'ends_mean' or
+                 'ends_max' or 'ends_prod')
+                define the statistic for choosing the contribution to be made by
+                each streamline as a function of the samples taken along their
+                lengths.
+                flag: -stat_tck %s
+        stat_vox: ('sum' or 'min' or 'mean' or 'max')
+                define the statistic for choosing the finalvoxel intesities for a
+                given contrast
+                flag: -stat_vox %s
+        tck_weights: (an existing file name)
+                specify a text scalar file containing the streamline weights
+                flag: -tck_weights_in %s
+        upsample: (an integer (int or long))
+                upsample the tracks by some ratio using Hermite interpolation before
+                mappping
+                flag: -upsample %d
+        use_dec: (a boolean)
+                perform mapping in DEC space
+                flag: -dec
+        vox_size: (a list of items which are an integer (int or long))
+                voxel dimensions
+                flag: -vox %s
+
+Outputs::
+
+        out_file: (a file name)
+                output TDI file
+
+.. _nipype.interfaces.mrtrix3.utils.DWIExtract:
+
+
+.. index:: DWIExtract
+
+DWIExtract
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L520>`__
+
+Wraps command **dwiextract**
+
+Extract diffusion-weighted volumes, b=0 volumes, or certain shells from a
+DWI dataset
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> dwiextract = mrt.DWIExtract()
+>>> dwiextract.inputs.in_file = 'dwi.mif'
+>>> dwiextract.inputs.bzero = True
+>>> dwiextract.inputs.out_file = 'b0vols.mif'
+>>> dwiextract.inputs.grad_fsl = ('bvecs', 'bvals')
+>>> dwiextract.cmdline                             # doctest: +ELLIPSIS
+'dwiextract -bzero -fslgrad bvecs bvals dwi.mif b0vols.mif'
+>>> dwiextract.run()                               # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input image
+                flag: %s, position: -2
+        out_file: (a file name)
+                output image
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        bval_scale: ('yes' or 'no')
+                specifies whether the b - values should be scaled by the square of
+                the corresponding DW gradient norm, as often required for multishell
+                or DSI DW acquisition schemes. The default action can also be set in
+                the MRtrix config file, under the BValueScaling entry. Valid choices
+                are yes / no, true / false, 0 / 1 (default: true).
+                flag: -bvalue_scaling %s
+        bzero: (a boolean)
+                extract b=0 volumes
+                flag: -bzero
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        grad_file: (an existing file name)
+                dw gradient scheme (MRTrix format
+                flag: -grad %s
+        grad_fsl: (a tuple of the form: (an existing file name, an existing
+                 file name))
+                (bvecs, bvals) dw gradient scheme (FSL format
+                flag: -fslgrad %s %s
+        in_bval: (an existing file name)
+                bvals file in FSL format
+        in_bvec: (an existing file name)
+                bvecs file in FSL format
+                flag: -fslgrad %s %s
+        nobzero: (a boolean)
+                extract non b=0 volumes
+                flag: -no_bzero
+        nthreads: (an integer (int or long))
+                number of threads. if zero, the number of available cpus will be
+                used
+                flag: -nthreads %d
+        shell: (a list of items which are a float)
+                specify one or more gradient shells
+                flag: -shell %s
+        singleshell: (a boolean)
+                extract volumes with a specific shell
+                flag: -singleshell
+
+Outputs::
+
+        out_file: (an existing file name)
+                output image
+
+.. _nipype.interfaces.mrtrix3.utils.Generate5tt:
+
+
+.. index:: Generate5tt
+
+Generate5tt
+-----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L142>`__
+
+Wraps command **5ttgen**
+
+Generate a 5TT image suitable for ACT using the selected algorithm
+
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> gen5tt = mrt.Generate5tt()
+>>> gen5tt.inputs.in_file = 'T1.nii.gz'
+>>> gen5tt.inputs.algorithm = 'fsl'
+>>> gen5tt.inputs.out_file = '5tt.mif'
+>>> gen5tt.cmdline                             # doctest: +ELLIPSIS
+'5ttgen fsl T1.nii.gz 5tt.mif'
+>>> gen5tt.run()                               # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        algorithm: ('fsl' or 'gif' or 'freesurfer')
+                tissue segmentation algorithm
+                flag: %s, position: -3
+        in_file: (an existing file name)
+                input image
+                flag: %s, position: -2
+        out_file: (a file name)
+                output image
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        bval_scale: ('yes' or 'no')
+                specifies whether the b - values should be scaled by the square of
+                the corresponding DW gradient norm, as often required for multishell
+                or DSI DW acquisition schemes. The default action can also be set in
+                the MRtrix config file, under the BValueScaling entry. Valid choices
+                are yes / no, true / false, 0 / 1 (default: true).
+                flag: -bvalue_scaling %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        grad_file: (an existing file name)
+                dw gradient scheme (MRTrix format
+                flag: -grad %s
+        grad_fsl: (a tuple of the form: (an existing file name, an existing
+                 file name))
+                (bvecs, bvals) dw gradient scheme (FSL format
+                flag: -fslgrad %s %s
+        in_bval: (an existing file name)
+                bvals file in FSL format
+        in_bvec: (an existing file name)
+                bvecs file in FSL format
+                flag: -fslgrad %s %s
+        nthreads: (an integer (int or long))
+                number of threads. if zero, the number of available cpus will be
+                used
+                flag: -nthreads %d
+
+Outputs::
+
+        out_file: (an existing file name)
+                output image
+
+.. _nipype.interfaces.mrtrix3.utils.MRConvert:
+
+
+.. index:: MRConvert
+
+MRConvert
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L589>`__
+
+Wraps command **mrconvert**
+
+Perform conversion between different file types and optionally extract a
+subset of the input image
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> mrconvert = mrt.MRConvert()
+>>> mrconvert.inputs.in_file = 'dwi.nii.gz'
+>>> mrconvert.inputs.grad_fsl = ('bvecs', 'bvals')
+>>> mrconvert.cmdline                             # doctest: +ELLIPSIS
+'mrconvert -fslgrad bvecs bvals dwi.nii.gz dwi.mif'
+>>> mrconvert.run()                               # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input image
+                flag: %s, position: -2
+        out_file: (a file name, nipype default value: dwi.mif)
+                output image
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        axes: (a list of items which are an integer (int or long))
+                specify the axes that will be used
+                flag: -axes %s
+        bval_scale: ('yes' or 'no')
+                specifies whether the b - values should be scaled by the square of
+                the corresponding DW gradient norm, as often required for multishell
+                or DSI DW acquisition schemes. The default action can also be set in
+                the MRtrix config file, under the BValueScaling entry. Valid choices
+                are yes / no, true / false, 0 / 1 (default: true).
+                flag: -bvalue_scaling %s
+        coord: (a list of items which are a float)
+                extract data at the specified coordinates
+                flag: -coord %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        grad_file: (an existing file name)
+                dw gradient scheme (MRTrix format
+                flag: -grad %s
+        grad_fsl: (a tuple of the form: (an existing file name, an existing
+                 file name))
+                (bvecs, bvals) dw gradient scheme (FSL format
+                flag: -fslgrad %s %s
+        in_bval: (an existing file name)
+                bvals file in FSL format
+        in_bvec: (an existing file name)
+                bvecs file in FSL format
+                flag: -fslgrad %s %s
+        nthreads: (an integer (int or long))
+                number of threads. if zero, the number of available cpus will be
+                used
+                flag: -nthreads %d
+        scaling: (a list of items which are a float)
+                specify the data scaling parameter
+                flag: -scaling %s
+        vox: (a list of items which are a float)
+                change the voxel dimensions
+                flag: -vox %s
+
+Outputs::
+
+        out_file: (an existing file name)
+                output image
+
+.. _nipype.interfaces.mrtrix3.utils.MRMath:
+
+
+.. index:: MRMath
+
+MRMath
+------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L652>`__
+
+Wraps command **mrmath**
+
+Compute summary statistic on image intensities
+along a specified axis of a single image
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> mrmath = mrt.MRMath()
+>>> mrmath.inputs.in_file = 'dwi.mif'
+>>> mrmath.inputs.operation = 'mean'
+>>> mrmath.inputs.axis = 3
+>>> mrmath.inputs.out_file = 'dwi_mean.mif'
+>>> mrmath.inputs.grad_fsl = ('bvecs', 'bvals')
+>>> mrmath.cmdline                             # doctest: +ELLIPSIS
+'mrmath -axis 3 -fslgrad bvecs bvals dwi.mif mean dwi_mean.mif'
+>>> mrmath.run()                               # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input image
+                flag: %s, position: -3
+        operation: ('mean' or 'median' or 'sum' or 'product' or 'rms' or
+                 'norm' or 'var' or 'std' or 'min' or 'max' or 'absmax' or 'magmax')
+                operation to computer along a specified axis
+                flag: %s, position: -2
+        out_file: (a file name)
+                output image
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        axis: (an integer (int or long))
+                specfied axis to perform the operation along
+                flag: -axis %d
+        bval_scale: ('yes' or 'no')
+                specifies whether the b - values should be scaled by the square of
+                the corresponding DW gradient norm, as often required for multishell
+                or DSI DW acquisition schemes. The default action can also be set in
+                the MRtrix config file, under the BValueScaling entry. Valid choices
+                are yes / no, true / false, 0 / 1 (default: true).
+                flag: -bvalue_scaling %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        grad_file: (an existing file name)
+                dw gradient scheme (MRTrix format
+                flag: -grad %s
+        grad_fsl: (a tuple of the form: (an existing file name, an existing
+                 file name))
+                (bvecs, bvals) dw gradient scheme (FSL format
+                flag: -fslgrad %s %s
+        in_bval: (an existing file name)
+                bvals file in FSL format
+        in_bvec: (an existing file name)
+                bvecs file in FSL format
+                flag: -fslgrad %s %s
+        nthreads: (an integer (int or long))
+                number of threads. if zero, the number of available cpus will be
+                used
+                flag: -nthreads %d
+
+Outputs::
+
+        out_file: (an existing file name)
+                output image
+
+.. _nipype.interfaces.mrtrix3.utils.Mesh2PVE:
+
+
+.. index:: Mesh2PVE
+
+Mesh2PVE
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L91>`__
+
+Wraps command **mesh2pve**
+
+Convert a mesh surface to a partial volume estimation image
+
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> m2p = mrt.Mesh2PVE()
+>>> m2p.inputs.in_file = 'surf1.vtk'
+>>> m2p.inputs.reference = 'dwi.mif'
+>>> m2p.inputs.in_first = 'T1.nii.gz'
+>>> m2p.cmdline                               # doctest: +ELLIPSIS
+'mesh2pve -first T1.nii.gz surf1.vtk dwi.mif mesh2volume.nii.gz'
+>>> m2p.run()                                 # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input mesh
+                flag: %s, position: -3
+        out_file: (a file name, nipype default value: mesh2volume.nii.gz)
+                output file containing SH coefficients
+                flag: %s, position: -1
+        reference: (an existing file name)
+                input reference image
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        in_first: (an existing file name)
+                indicates that the mesh file is provided by FSL FIRST
+                flag: -first %s
+
+Outputs::
+
+        out_file: (an existing file name)
+                the output response file
+
+.. _nipype.interfaces.mrtrix3.utils.TCK2VTK:
+
+
+.. index:: TCK2VTK
+
+TCK2VTK
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L469>`__
+
+Wraps command **tck2vtk**
+
+Convert a track file to a vtk format, cave: coordinates are in XYZ
+coordinates not reference
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> vtk = mrt.TCK2VTK()
+>>> vtk.inputs.in_file = 'tracks.tck'
+>>> vtk.inputs.reference = 'b0.nii'
+>>> vtk.cmdline                               # doctest: +ELLIPSIS
+'tck2vtk -image b0.nii tracks.tck tracks.vtk'
+>>> vtk.run()                                 # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input tractography
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        nthreads: (an integer (int or long))
+                number of threads. if zero, the number of available cpus will be
+                used
+                flag: -nthreads %d
+        out_file: (a file name, nipype default value: tracks.vtk)
+                output VTK file
+                flag: %s, position: -1
+        reference: (an existing file name)
+                if specified, the properties of this image will be used to convert
+                track point positions from real (scanner) coordinates into image
+                coordinates (in mm).
+                flag: -image %s
+        voxel: (an existing file name)
+                if specified, the properties of this image will be used to convert
+                track point positions from real (scanner) coordinates into image
+                coordinates.
+                flag: -image %s
+
+Outputs::
+
+        out_file: (a file name)
+                output VTK file
+
+.. _nipype.interfaces.mrtrix3.utils.TensorMetrics:
+
+
+.. index:: TensorMetrics
+
+TensorMetrics
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L212>`__
+
+Wraps command **tensor2metric**
+
+Compute metrics from tensors
+
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.mrtrix3 as mrt
+>>> comp = mrt.TensorMetrics()
+>>> comp.inputs.in_file = 'dti.mif'
+>>> comp.inputs.out_fa = 'fa.mif'
+>>> comp.cmdline                               # doctest: +ELLIPSIS
+'tensor2metric -num 1 -fa fa.mif dti.mif'
+>>> comp.run()                                 # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input DTI image
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        component: (a list of items which are any value, nipype default
+                 value: [1])
+                specify the desired eigenvalue/eigenvector(s). Note that several
+                eigenvalues can be specified as a number sequence
+                flag: -num %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        in_mask: (an existing file name)
+                only perform computation within the specified binary brain mask
+                image
+                flag: -mask %s
+        modulate: ('FA' or 'none' or 'eval')
+                how to modulate the magnitude of the eigenvectors
+                flag: -modulate %s
+        out_adc: (a file name)
+                output ADC file
+                flag: -adc %s
+        out_eval: (a file name)
+                output selected eigenvalue(s) file
+                flag: -value %s
+        out_evec: (a file name)
+                output selected eigenvector(s) file
+                flag: -vector %s
+        out_fa: (a file name)
+                output FA file
+                flag: -fa %s
+
+Outputs::
+
+        out_adc: (a file name)
+                output ADC file
+        out_eval: (a file name)
+                output selected eigenvalue(s) file
+        out_evec: (a file name)
+                output selected eigenvector(s) file
+        out_fa: (a file name)
+                output FA file

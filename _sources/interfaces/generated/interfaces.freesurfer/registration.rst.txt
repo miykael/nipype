@@ -1,0 +1,506 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.freesurfer.registration
+==================================
+
+
+.. _nipype.interfaces.freesurfer.registration.EMRegister:
+
+
+.. index:: EMRegister
+
+EMRegister
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L223>`__
+
+Wraps command **mri_em_register**
+
+This program creates a tranform in lta format
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.freesurfer import EMRegister
+>>> register = EMRegister()
+>>> register.inputs.in_file = 'norm.mgz'
+>>> register.inputs.template = 'aseg.mgz'
+>>> register.inputs.out_file = 'norm_transform.lta'
+>>> register.inputs.skull = True
+>>> register.inputs.nbrspacing = 9
+>>> register.cmdline
+'mri_em_register -uns 9 -skull norm.mgz aseg.mgz norm_transform.lta'
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                in brain volume
+                flag: %s, position: -3
+        template: (an existing file name)
+                template gca
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        mask: (an existing file name)
+                use volume as a mask
+                flag: -mask %s
+        nbrspacing: (an integer (int or long))
+                align to atlas containing skull setting unknown_nbr_spacing =
+                nbrspacing
+                flag: -uns %d
+        num_threads: (an integer (int or long))
+                allows for specifying more threads
+        out_file: (a file name)
+                output transform
+                flag: %s, position: -1
+        skull: (a boolean)
+                align to atlas containing skull (uns=5)
+                flag: -skull
+        subjects_dir: (an existing directory name)
+                subjects directory
+        transform: (an existing file name)
+                Previously computed transform
+                flag: -t %s
+
+Outputs::
+
+        out_file: (a file name)
+                output transform
+
+.. _nipype.interfaces.freesurfer.registration.MPRtoMNI305:
+
+
+.. index:: MPRtoMNI305
+
+MPRtoMNI305
+-----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L43>`__
+
+Wraps command **mpr2mni305**
+
+For complete details, see FreeSurfer documentation
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.freesurfer import MPRtoMNI305, Info
+>>> mprtomni305 = MPRtoMNI305()
+>>> mprtomni305.inputs.target = 'structural.nii'
+>>> mprtomni305.inputs.reference_dir = '.' # doctest: +SKIP
+>>> mprtomni305.cmdline # doctest: +SKIP
+'mpr2mni305 output'
+>>> mprtomni305.inputs.out_file = 'struct_out' # doctest: +SKIP
+>>> mprtomni305.cmdline # doctest: +SKIP
+'mpr2mni305 struct_out' # doctest: +SKIP
+>>> mprtomni305.inputs.environ['REFDIR'] == os.path.join(Info.home(), 'average') # doctest: +SKIP
+True
+>>> mprtomni305.inputs.environ['MPR2MNI305_TARGET'] # doctest: +SKIP
+'structural'
+>>> mprtomni305.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        reference_dir: (an existing directory name, nipype default value: )
+                TODO
+        target: (a string, nipype default value: )
+                input atlas file
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        in_file: (a file name, nipype default value: )
+                the input file prefix for MPRtoMNI305
+                flag: %s
+        subjects_dir: (an existing directory name)
+                subjects directory
+
+Outputs::
+
+        log_file: (an existing file name, nipype default value:
+                 output.nipype)
+                The output log
+        out_file: (a file name)
+                The output file '<in_file>_to_<target>_t4_vox2vox.txt'
+
+.. _nipype.interfaces.freesurfer.registration.MRICoreg:
+
+
+.. index:: MRICoreg
+
+MRICoreg
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L538>`__
+
+Wraps command **mri_coreg**
+
+This program registers one volume to another
+
+mri_coreg is a C reimplementation of spm_coreg in FreeSurfer
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.freesurfer import MRICoreg
+>>> coreg = MRICoreg()
+>>> coreg.inputs.source_file = 'moving1.nii'
+>>> coreg.inputs.reference_file = 'fixed1.nii'
+>>> coreg.inputs.subjects_dir = '.'
+>>> coreg.cmdline # doctest: +ELLIPSIS
+'mri_coreg --lta .../registration.lta --ref fixed1.nii --mov moving1.nii --sd .'
+
+If passing a subject ID, the reference mask may be disabled:
+
+>>> coreg = MRICoreg()
+>>> coreg.inputs.source_file = 'moving1.nii'
+>>> coreg.inputs.subjects_dir = '.'
+>>> coreg.inputs.subject_id = 'fsaverage'
+>>> coreg.inputs.reference_mask = False
+>>> coreg.cmdline # doctest: +ELLIPSIS
+'mri_coreg --s fsaverage --no-ref-mask --lta .../registration.lta --mov moving1.nii --sd .'
+
+Spatial scales may be specified as a list of one or two separations:
+
+>>> coreg.inputs.sep = [4]
+>>> coreg.cmdline # doctest: +ELLIPSIS
+'mri_coreg --s fsaverage --no-ref-mask --lta .../registration.lta --sep 4 --mov moving1.nii --sd .'
+
+>>> coreg.inputs.sep = [4, 5]
+>>> coreg.cmdline # doctest: +ELLIPSIS
+'mri_coreg --s fsaverage --no-ref-mask --lta .../registration.lta --sep 4 --sep 5 --mov moving1.nii --sd .'
+
+Inputs::
+
+        [Mandatory]
+        reference_file: (a file name)
+                reference (target) file
+                flag: --ref %s
+                mutually_exclusive: subject_id
+        source_file: (a file name)
+                source file to be registered
+                flag: --mov %s
+        subject_id: (a unicode string)
+                freesurfer subject ID (implies ``reference_mask == aparc+aseg.mgz``
+                unless otherwise specified)
+                flag: --s %s, position: 1
+                mutually_exclusive: reference_file
+                requires: subjects_dir
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        brute_force_limit: (a float)
+                constrain brute force search to +/- lim
+                flag: --bf-lim %g
+                mutually_exclusive: no_brute_force
+        brute_force_samples: (an integer (int or long))
+                number of samples in brute force search
+                flag: --bf-nsamp %d
+                mutually_exclusive: no_brute_force
+        conform_reference: (a boolean)
+                conform reference without rescaling
+                flag: --conf-ref
+        dof: (6 or 9 or 12)
+                number of transform degrees of freedom
+                flag: --dof %d
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        ftol: (a float)
+                floating-point tolerance (default=1e-7)
+                flag: --ftol %e
+        initial_rotation: (a tuple of the form: (a float, a float, a float))
+                initial rotation in degrees
+                flag: --rot %g %g %g
+        initial_scale: (a tuple of the form: (a float, a float, a float))
+                initial scale
+                flag: --scale %g %g %g
+        initial_shear: (a tuple of the form: (a float, a float, a float))
+                initial shear (Hxy, Hxz, Hyz)
+                flag: --shear %g %g %g
+        initial_translation: (a tuple of the form: (a float, a float, a
+                 float))
+                initial translation in mm (implies no_cras0)
+                flag: --trans %g %g %g
+        linmintol: (a float)
+                flag: --linmintol %e
+        max_iters: (a long integer >= 1)
+                maximum iterations (default: 4)
+                flag: --nitersmax %d
+        no_brute_force: (a boolean)
+                do not brute force search
+                flag: --no-bf
+        no_coord_dithering: (a boolean)
+                turn off coordinate dithering
+                flag: --no-coord-dither
+        no_cras0: (a boolean)
+                do not set translation parameters to align centers of source and
+                reference files
+                flag: --no-cras0
+        no_intensity_dithering: (a boolean)
+                turn off intensity dithering
+                flag: --no-intensity-dither
+        no_smooth: (a boolean)
+                do not apply smoothing to either reference or source file
+                flag: --no-smooth
+        num_threads: (an integer (int or long))
+                number of OpenMP threads
+                flag: --threads %d
+        out_lta_file: (a bool or None or a file name, nipype default value:
+                 True)
+                output registration file (LTA format)
+                flag: --lta %s
+        out_params_file: (a bool or None or a file name)
+                output parameters file
+                flag: --params %s
+        out_reg_file: (a bool or None or a file name)
+                output registration file (REG format)
+                flag: --regdat %s
+        ref_fwhm: (a float)
+                apply smoothing to reference file
+                flag: --ref-fwhm
+        reference_mask: (a bool or None or a unicode string)
+                mask reference volume with given mask, or None if ``False``
+                flag: --ref-mask %s, position: 2
+        saturation_threshold: (0.0 <= a floating point number <= 100.0)
+                saturation threshold (default=9.999)
+                flag: --sat %g
+        sep: (a list of from 1 to 2 items which are any value)
+                set spatial scales, in voxels (default [2, 4])
+                flag: --sep %s...
+        source_mask: (a unicode string)
+                mask source file with given mask
+                flag: --mov-mask
+        source_oob: (a boolean)
+                count source voxels that are out-of-bounds as 0
+                flag: --mov-oob
+        subjects_dir: (an existing directory name)
+                FreeSurfer SUBJECTS_DIR
+                flag: --sd %s
+
+Outputs::
+
+        out_lta_file: (an existing file name)
+                output LTA-style registration file
+        out_params_file: (an existing file name)
+                output parameters file
+        out_reg_file: (an existing file name)
+                output registration file
+
+.. _nipype.interfaces.freesurfer.registration.Paint:
+
+
+.. index:: Paint
+
+Paint
+-----
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L372>`__
+
+Wraps command **mrisp_paint**
+
+This program is useful for extracting one of the arrays ("a variable")
+from a surface-registration template file. The output is a file
+containing a surface-worth of per-vertex values, saved in "curvature"
+format. Because the template data is sampled to a particular surface
+mesh, this conjures the idea of "painting to a surface".
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.freesurfer import Paint
+>>> paint = Paint()
+>>> paint.inputs.in_surf = 'lh.pial'
+>>> paint.inputs.template = 'aseg.mgz'
+>>> paint.inputs.averages = 5
+>>> paint.inputs.out_file = 'lh.avg_curv'
+>>> paint.cmdline
+'mrisp_paint -a 5 aseg.mgz lh.pial lh.avg_curv'
+
+Inputs::
+
+        [Mandatory]
+        in_surf: (an existing file name)
+                Surface file with grid (vertices) onto which the template data is to
+                be sampled or 'painted'
+                flag: %s, position: -2
+        template: (an existing file name)
+                Template file
+                flag: %s, position: -3
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        averages: (an integer (int or long))
+                Average curvature patterns
+                flag: -a %d
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        out_file: (a file name)
+                File containing a surface-worth of per-vertex values, saved in
+                'curvature' format.
+                flag: %s, position: -1
+        subjects_dir: (an existing directory name)
+                subjects directory
+        template_param: (an integer (int or long))
+                Frame number of the input template
+
+Outputs::
+
+        out_file: (a file name)
+                File containing a surface-worth of per-vertex values, saved in
+                'curvature' format.
+
+.. _nipype.interfaces.freesurfer.registration.Register:
+
+
+.. index:: Register
+
+Register
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L294>`__
+
+Wraps command **mris_register**
+
+This program registers a surface to an average surface template.
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.freesurfer import Register
+>>> register = Register()
+>>> register.inputs.in_surf = 'lh.pial'
+>>> register.inputs.in_smoothwm = 'lh.pial'
+>>> register.inputs.in_sulc = 'lh.pial'
+>>> register.inputs.target = 'aseg.mgz'
+>>> register.inputs.out_file = 'lh.pial.reg'
+>>> register.inputs.curv = True
+>>> register.cmdline
+'mris_register -curv lh.pial aseg.mgz lh.pial.reg'
+
+Inputs::
+
+        [Mandatory]
+        in_sulc: (an existing file name)
+                Undocumented mandatory input file
+                ${SUBJECTS_DIR}/surf/{hemisphere}.sulc
+        in_surf: (an existing file name)
+                Surface to register, often {hemi}.sphere
+                flag: %s, position: -3
+        target: (an existing file name)
+                The data to register to. In normal recon-all usage, this is a
+                template file for average surface.
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        curv: (a boolean)
+                Use smoothwm curvature for final alignment
+                flag: -curv
+                requires: in_smoothwm
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        in_smoothwm: (an existing file name)
+                Undocumented input file ${SUBJECTS_DIR}/surf/{hemisphere}.smoothwm
+        out_file: (a file name)
+                Output surface file to capture registration
+                flag: %s, position: -1
+        subjects_dir: (an existing directory name)
+                subjects directory
+
+Outputs::
+
+        out_file: (a file name)
+                Output surface file to capture registration
+
+.. _nipype.interfaces.freesurfer.registration.RegisterAVItoTalairach:
+
+
+.. index:: RegisterAVItoTalairach
+
+RegisterAVItoTalairach
+----------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L141>`__
+
+Wraps command **avi2talxfm**
+
+converts the vox2vox from talairach_avi to a talairach.xfm file
+
+This is a script that converts the vox2vox from talairach_avi to a
+talairach.xfm file. It is meant to replace the following cmd line:
+
+tkregister2_cmdl         --mov $InVol         --targ $FREESURFER_HOME/average/mni305.cor.mgz         --xfmout ${XFM}         --vox2vox talsrcimg_to_${target}_t4_vox2vox.txt         --noedit         --reg talsrcimg.reg.tmp.dat
+set targ = $FREESURFER_HOME/average/mni305.cor.mgz
+set subject = mgh-02407836-v2
+set InVol = $SUBJECTS_DIR/$subject/mri/orig.mgz
+set vox2vox = $SUBJECTS_DIR/$subject/mri/transforms/talsrcimg_to_711-2C_as_mni_average_305_t4_vox2vox.txt
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.freesurfer import RegisterAVItoTalairach
+>>> register = RegisterAVItoTalairach()
+>>> register.inputs.in_file = 'structural.mgz'                         # doctest: +SKIP
+>>> register.inputs.target = 'mni305.cor.mgz'                          # doctest: +SKIP
+>>> register.inputs.vox2vox = 'talsrcimg_to_structural_t4_vox2vox.txt' # doctest: +SKIP
+>>> register.cmdline                                                   # doctest: +SKIP
+'avi2talxfm structural.mgz mni305.cor.mgz talsrcimg_to_structural_t4_vox2vox.txt talairach.auto.xfm'
+
+>>> register.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                The input file
+                flag: %s, position: 0
+        target: (an existing file name)
+                The target file
+                flag: %s, position: 1
+        vox2vox: (an existing file name)
+                The vox2vox file
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        out_file: (a file name, nipype default value: talairach.auto.xfm)
+                The transform output
+                flag: %s, position: 3
+        subjects_dir: (an existing directory name)
+                subjects directory
+
+Outputs::
+
+        log_file: (an existing file name, nipype default value:
+                 output.nipype)
+                The output log
+        out_file: (a file name)
+                The output file for RegisterAVItoTalairach

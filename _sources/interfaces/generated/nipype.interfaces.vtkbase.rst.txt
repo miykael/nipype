@@ -1,0 +1,33 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.vtkbase
+==================
+
+
+.. module:: nipype.interfaces.vtkbase
+
+
+.. _nipype.interfaces.vtkbase.configure_input_data:
+
+:func:`configure_input_data`
+----------------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/vtkbase.py#L69>`__
+
+
+
+Configure the input data for vtk pipeline object obj.
+Copied from latest version of mayavi
+
+
+.. _nipype.interfaces.vtkbase.vtk_output:
+
+:func:`vtk_output`
+------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/vtkbase.py#L80>`__
+
+
+
+Configure the input data for vtk pipeline object obj.
+

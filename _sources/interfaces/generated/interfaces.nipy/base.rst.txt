@@ -1,0 +1,23 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.nipy.base
+====================
+
+
+.. _nipype.interfaces.nipy.base.NipyBaseInterface:
+
+
+.. index:: NipyBaseInterface
+
+NipyBaseInterface
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/nipy/base.py#L19>`__
+
+Inputs::
+
+        None
+
+Outputs::
+
+        None

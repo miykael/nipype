@@ -1,0 +1,57 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.dipy.base
+====================
+
+
+.. _nipype.interfaces.dipy.base.DipyBaseInterface:
+
+
+.. index:: DipyBaseInterface
+
+DipyBaseInterface
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dipy/base.py#L33>`__
+
+A base interface for py:mod:`dipy` computations
+
+Inputs::
+
+        None
+
+Outputs::
+
+        None
+
+.. _nipype.interfaces.dipy.base.DipyDiffusionInterface:
+
+
+.. index:: DipyDiffusionInterface
+
+DipyDiffusionInterface
+----------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dipy/base.py#L48>`__
+
+A base interface for py:mod:`dipy` computations
+
+Inputs::
+
+        [Mandatory]
+        in_bval: (an existing file name)
+                input b-values table
+        in_bvec: (an existing file name)
+                input b-vectors table
+        in_file: (an existing file name)
+                input diffusion data
+
+        [Optional]
+        b0_thres: (an integer (int or long), nipype default value: 700)
+                b0 threshold
+        out_prefix: (a unicode string)
+                output prefix for file names
+
+Outputs::
+
+        None

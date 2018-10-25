@@ -1,0 +1,21 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.base.support
+=======================
+
+
+.. module:: nipype.interfaces.base.support
+
+
+.. _nipype.interfaces.base.support.load_template:
+
+:func:`load_template`
+---------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/support.py#L293>`__
+
+
+
+Deprecated stub for backwards compatibility,
+please use nipype.interfaces.fsl.model.load_template
+

@@ -1,0 +1,725 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.niftyseg.maths</a><ul>
+<li><a class="reference internal" href="#binarymaths">BinaryMaths</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#binarymathsinteger">BinaryMathsInteger</a><ul>
+<li><a class="reference internal" href="#id3">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mathscommand">MathsCommand</a></li>
+<li><a class="reference internal" href="#merge">Merge</a><ul>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tuplemaths">TupleMaths</a><ul>
+<li><a class="reference internal" href="#id9">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#unarymaths">UnaryMaths</a><ul>
+<li><a class="reference internal" href="#id12">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-niftyseg-maths">
+<h1>interfaces.niftyseg.maths<a class="headerlink" href="#interfaces-niftyseg-maths" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-niftyseg-maths-binarymaths"></span><div class="section" id="binarymaths">
+<span id="index-0"></span><h2>BinaryMaths<a class="headerlink" href="#binarymaths" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/maths.py#L277">Link to code</a></p>
+<p>Wraps command <strong>seg_maths</strong></p>
+<p>Interface for executable seg_maths from NiftySeg platform.</p>
+<p>Interface to use any binary mathematical operations that can be performed</p>
+<p>with the seg_maths command-line program.</p>
+<p>See below for those operations:</p>
+<p>mul - &lt;float/file&gt; - Multiply image &lt;float&gt; value or by other image.</p>
+<p>div - &lt;float/file&gt; - Divide image by &lt;float&gt; or by other image.</p>
+<p>add - &lt;float/file&gt; - Add image by &lt;float&gt; or by other image.</p>
+<p>sub - &lt;float/file&gt; - Subtract image by &lt;float&gt; or by other image.</p>
+<p>pow - &lt;float&gt; - Image to the power of &lt;float&gt;.</p>
+<p>thr - &lt;float&gt; - Threshold the image below &lt;float&gt;.</p>
+<p>uthr - &lt;float&gt; - Threshold image above &lt;float&gt;.</p>
+<p>smo - &lt;float&gt; - Gaussian smoothing by std &lt;float&gt; (in voxels and up to 4-D).</p>
+<p>edge - &lt;float&gt; - Calculate the edges of the image using a threshold &lt;float&gt;.</p>
+<p>sobel3 - &lt;float&gt; - Calculate the edges of all timepoints using a Sobel filter with a 3x3x3 kernel and applying &lt;float&gt; gaussian smoothing.</p>
+<p>sobel5 - &lt;float&gt; - Calculate the edges of all timepoints using a Sobel filter with a 5x5x5 kernel and applying &lt;float&gt; gaussian smoothing.</p>
+<p>min - &lt;file&gt; - Get the min per voxel between &lt;current&gt; and &lt;file&gt;.</p>
+<p>smol - &lt;float&gt; - Gaussian smoothing of a 3D label image.</p>
+<p>geo - &lt;float/file&gt; - Geodesic distance according to the speed function &lt;float/file&gt;</p>
+<p>llsnorm  &lt;file_norm&gt; - Linear LS normalisation between current and &lt;file_norm&gt;</p>
+<p>masknan &lt;file_norm&gt; - Assign everything outside the mask (mask==0) with NaNs</p>
+<p>hdr_copy &lt;file&gt; - Copy header from working image to &lt;file&gt; and save in &lt;output&gt;.</p>
+<p>splitinter &lt;x/y/z&gt; - Split interleaved slices in direction &lt;x/y/z&gt; into separate time points</p>
+<p><a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg">Source code</a> |
+<a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg_documentation">Documentation</a></p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyseg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary</span> <span class="o">=</span> <span class="n">niftyseg</span><span class="o">.</span><span class="n">BinaryMaths</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_datatype</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test sub operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sub</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sub</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;sub&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sub</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_file</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sub</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -sub im2.nii -odt float im1_sub.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sub</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test mul operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_mul</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_mul</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;mul&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_mul</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_value</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_mul</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -mul 2.00000000 -odt float im1_mul.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_mul</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test llsnorm operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_llsnorm</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_llsnorm</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;llsnorm&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_llsnorm</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_file</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_llsnorm</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -llsnorm im2.nii -odt float im1_llsnorm.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_llsnorm</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test splitinter operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_splitinter</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_splitinter</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;splitinter&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_splitinter</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_str</span> <span class="o">=</span> <span class="s1">&#39;z&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_splitinter</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -splitinter z -odt float im1_splitinter.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_splitinter</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+operand_file: (an existing file name)
+        second image to perform operation with
+        flag: %s, position: 5
+        mutually_exclusive: operand_value, operand_str
+operand_str: (&#39;x&#39; or &#39;y&#39; or &#39;z&#39;)
+        string value to perform operation splitinter
+        flag: %s, position: 5
+        mutually_exclusive: operand_value, operand_file
+operand_value: (a float)
+        float value to perform operation with
+        flag: %.8f, position: 5
+        mutually_exclusive: operand_file, operand_str
+operation: (&#39;mul&#39; or &#39;div&#39; or &#39;add&#39; or &#39;sub&#39; or &#39;pow&#39; or &#39;thr&#39; or
+         &#39;uthr&#39; or &#39;smo&#39; or &#39;edge&#39; or &#39;sobel3&#39; or &#39;sobel5&#39; or &#39;min&#39; or
+         &#39;smol&#39; or &#39;geo&#39; or &#39;llsnorm&#39; or &#39;masknan&#39; or &#39;hdr_copy&#39; or
+         &#39;splitinter&#39;)
+        operation to perform
+        flag: -%s, position: 4
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+out_file: (a file name)
+        image to write
+        flag: %s, position: -2
+output_datatype: (&#39;float&#39; or &#39;char&#39; or &#39;int&#39; or &#39;short&#39; or &#39;double&#39;
+         or &#39;input&#39;)
+        datatype to use for output (default uses input type)
+        flag: -odt %s, position: -3
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">image</span> <span class="n">written</span> <span class="n">after</span> <span class="n">calculations</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyseg-maths-binarymathsinteger"></span></div>
+</div>
+<div class="section" id="binarymathsinteger">
+<span id="index-1"></span><h2>BinaryMathsInteger<a class="headerlink" href="#binarymathsinteger" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/maths.py#L437">Link to code</a></p>
+<p>Wraps command <strong>seg_maths</strong></p>
+<p>Interface for executable seg_maths from NiftySeg platform.</p>
+<p>Interface to use any integer mathematical operations that can be performed</p>
+<p>with the seg_maths command-line program.</p>
+<p>See below for those operations:: (requiring integer values)</p>
+<p>equal - &lt;int&gt; - Get voxels equal to &lt;int&gt;</p>
+<p>dil - &lt;int&gt;  - Dilate the image &lt;int&gt; times (in voxels).</p>
+<p>ero - &lt;int&gt; - Erode the image &lt;int&gt; times (in voxels).</p>
+<p>tp - &lt;int&gt; - Extract time point &lt;int&gt;</p>
+<p>crop - &lt;int&gt; - Crop &lt;int&gt; voxels around each 3D volume.</p>
+<p>pad - &lt;int&gt; -  Pad &lt;int&gt; voxels with NaN value around each 3D volume.</p>
+<p><a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg">Source code</a> |
+<a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg_documentation">Documentation</a></p>
+<div class="section" id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.niftyseg</span> <span class="k">import</span> <span class="n">BinaryMathsInteger</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi</span> <span class="o">=</span> <span class="n">BinaryMathsInteger</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_datatype</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test dil operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_dil</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binaryi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_dil</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;dil&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_dil</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_value</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_dil</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -dil 2 -odt float im1_dil.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_dil</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test dil operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_ero</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binaryi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_ero</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;ero&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_ero</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_value</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_ero</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -ero 1 -odt float im1_ero.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_ero</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test pad operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_pad</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binaryi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_pad</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;pad&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_pad</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_value</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_pad</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -pad 4 -odt float im1_pad.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaryi_pad</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+operand_value: (an integer (int or long))
+        int value to perform operation with
+        flag: %d, position: 5
+operation: (&#39;dil&#39; or &#39;ero&#39; or &#39;tp&#39; or &#39;equal&#39; or &#39;pad&#39; or &#39;crop&#39;)
+        operation to perform
+        flag: -%s, position: 4
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+out_file: (a file name)
+        image to write
+        flag: %s, position: -2
+output_datatype: (&#39;float&#39; or &#39;char&#39; or &#39;int&#39; or &#39;short&#39; or &#39;double&#39;
+         or &#39;input&#39;)
+        datatype to use for output (default uses input type)
+        flag: -odt %s, position: -3
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">image</span> <span class="n">written</span> <span class="n">after</span> <span class="n">calculations</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyseg-maths-mathscommand"></span></div>
+</div>
+<div class="section" id="mathscommand">
+<span id="index-2"></span><h2>MathsCommand<a class="headerlink" href="#mathscommand" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/maths.py#L57">Link to code</a></p>
+<p>Wraps command <strong>seg_maths</strong></p>
+<p>Base Command Interface for seg_maths interfaces.</p>
+<p>The executable seg_maths enables the sequential execution of arithmetic
+operations, like multiplication (-mul), division (-div) or addition
+(-add), binarisation (-bin) or thresholding (-thr) operations and
+convolution by a Gaussian kernel (-smo). It also alows mathematical
+morphology based operations like dilation (-dil), erosion (-ero),
+connected components (-lconcomp) and hole filling (-fill), Euclidean
+(- euc) and geodesic (-geo) distance transforms, local image similarity
+metric calculation (-lncc and -lssd). Finally, it allows multiple
+operations over the dimensionality of the image, from merging 3D images
+together as a 4D image (-merge) or splitting (-split or -tp) 4D images
+into several 3D images, to estimating the maximum, minimum and average
+over all time-points, etc.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+out_file: (a file name)
+        image to write
+        flag: %s, position: -2
+output_datatype: (&#39;float&#39; or &#39;char&#39; or &#39;int&#39; or &#39;short&#39; or &#39;double&#39;
+         or &#39;input&#39;)
+        datatype to use for output (default uses input type)
+        flag: -odt %s, position: -3
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">image</span> <span class="n">written</span> <span class="n">after</span> <span class="n">calculations</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyseg-maths-merge"></span></div>
+<div class="section" id="merge">
+<span id="index-3"></span><h2>Merge<a class="headerlink" href="#merge" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/maths.py#L608">Link to code</a></p>
+<p>Wraps command <strong>seg_maths</strong></p>
+<p>Interface for executable seg_maths from NiftySeg platform.</p>
+<p>Interface to use the merge operation that can be performed</p>
+<p>with the seg_maths command-line program.</p>
+<p>See below for this option:</p>
+<p>merge  &lt;i&gt; &lt;d&gt; &lt;files&gt;  Merge &lt;i&gt; images and the working image in the &lt;d&gt; dimension</p>
+<p><a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg">Source code</a> |
+<a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg_documentation">Documentation</a></p>
+<div class="section" id="id6">
+<h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyseg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyseg</span><span class="o">.</span><span class="n">Merge</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;im2.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;im3.nii&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">merge_files</span> <span class="o">=</span> <span class="n">files</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_datatype</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -merge 2 2 im2.nii im3.nii -odt float im1_merged.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+dimension: (an integer (int or long))
+        Dimension to merge the images.
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+merge_files: (a list of items which are an existing file name)
+        List of images to merge to the working image &lt;input&gt;.
+        flag: %s, position: 4
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+out_file: (a file name)
+        image to write
+        flag: %s, position: -2
+output_datatype: (&#39;float&#39; or &#39;char&#39; or &#39;int&#39; or &#39;short&#39; or &#39;double&#39;
+         or &#39;input&#39;)
+        datatype to use for output (default uses input type)
+        flag: -odt %s, position: -3
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">image</span> <span class="n">written</span> <span class="n">after</span> <span class="n">calculations</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyseg-maths-tuplemaths"></span></div>
+</div>
+<div class="section" id="tuplemaths">
+<span id="index-4"></span><h2>TupleMaths<a class="headerlink" href="#tuplemaths" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/maths.py#L538">Link to code</a></p>
+<p>Wraps command <strong>seg_maths</strong></p>
+<p>Interface for executable seg_maths from NiftySeg platform.</p>
+<p>Interface to use any tuple mathematical operations that can be performed</p>
+<p>with the seg_maths command-line program.</p>
+<p>See below for those operations:</p>
+<p>lncc &lt;file&gt; &lt;std&gt; Local CC between current img and &lt;file&gt; on a kernel with &lt;std&gt;</p>
+<p>lssd &lt;file&gt; &lt;std&gt; Local SSD between current img and &lt;file&gt; on a kernel with &lt;std&gt;</p>
+<p>lltsnorm &lt;file_norm&gt; &lt;float&gt;  Linear LTS normalisation assuming &lt;float&gt; percent outliers</p>
+<p><a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg">Source code</a> |
+<a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg_documentation">Documentation</a></p>
+<div class="section" id="id9">
+<h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyseg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">tuple</span> <span class="o">=</span> <span class="n">niftyseg</span><span class="o">.</span><span class="n">TupleMaths</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">tuple</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">tuple</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_datatype</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test lncc operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lncc</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lncc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;lncc&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lncc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_file1</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lncc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_value2</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lncc</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -lncc im2.nii 2.00000000 -odt float im1_lncc.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lncc</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test lssd operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lssd</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lssd</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;lssd&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lssd</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_file1</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lssd</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_value2</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lssd</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -lssd im2.nii 1.00000000 -odt float im1_lssd.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lssd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test lltsnorm operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lltsnorm</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lltsnorm</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;lltsnorm&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lltsnorm</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_file1</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lltsnorm</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_value2</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lltsnorm</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -lltsnorm im2.nii 0.01000000 -odt float im1_lltsnorm.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tuple_lltsnorm</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+operand_file1: (an existing file name)
+        image to perform operation 1 with
+        flag: %s, position: 5
+        mutually_exclusive: operand_value1
+operand_file2: (an existing file name)
+        image to perform operation 2 with
+        flag: %s, position: 6
+        mutually_exclusive: operand_value2
+operand_value1: (a float)
+        float value to perform operation 1 with
+        flag: %.8f, position: 5
+        mutually_exclusive: operand_file1
+operand_value2: (a float)
+        float value to perform operation 2 with
+        flag: %.8f, position: 6
+        mutually_exclusive: operand_file2
+operation: (&#39;lncc&#39; or &#39;lssd&#39; or &#39;lltsnorm&#39;)
+        operation to perform
+        flag: -%s, position: 4
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+out_file: (a file name)
+        image to write
+        flag: %s, position: -2
+output_datatype: (&#39;float&#39; or &#39;char&#39; or &#39;int&#39; or &#39;short&#39; or &#39;double&#39;
+         or &#39;input&#39;)
+        datatype to use for output (default uses input type)
+        flag: -odt %s, position: -3
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">image</span> <span class="n">written</span> <span class="n">after</span> <span class="n">calculations</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyseg-maths-unarymaths"></span></div>
+</div>
+<div class="section" id="unarymaths">
+<span id="index-5"></span><h2>UnaryMaths<a class="headerlink" href="#unarymaths" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/maths.py#L122">Link to code</a></p>
+<p>Wraps command <strong>seg_maths</strong></p>
+<p>Interface for executable seg_maths from NiftySeg platform.</p>
+<p>Interface to use any unary mathematical operations that can be performed</p>
+<p>with the seg_maths command-line program.</p>
+<p>See below for those operations:</p>
+<p>sqrt - Square root of the image).</p>
+<p>exp - Exponential root of the image.</p>
+<p>log - Log of the image.</p>
+<p>recip - Reciprocal (1/I) of the image.</p>
+<p>abs - Absolute value of the image.</p>
+<p>bin - Binarise the image.</p>
+<p>otsu - Otsu thresholding of the current image.</p>
+<p>lconcomp - Take the largest connected component</p>
+<p>concomp6 - Label the different connected components with a 6NN kernel</p>
+<p>concomp26 - Label the different connected components with a 26NN kernel</p>
+<p>fill - Fill holes in binary object (e.g. fill ventricle in brain mask).</p>
+<p>euc - Euclidean distance trasnform</p>
+<p>tpmax - Get the time point with the highest value (binarise 4D probabilities)</p>
+<p>tmean - Mean value of all time points.</p>
+<p>tmax - Max value of all time points.</p>
+<p>tmin - Mean value of all time points.</p>
+<p>splitlab - Split the integer labels into multiple timepoints</p>
+<p>removenan - Remove all NaNs and replace then with 0</p>
+<p>isnan - Binary image equal to 1 if the value is NaN and 0 otherwise</p>
+<p>subsamp2 - Subsample the image by 2 using NN sampling (qform and sform scaled)</p>
+<p>scl  - Reset scale and slope info.</p>
+<p>4to5 - Flip the 4th and 5th dimension.</p>
+<p>range - Reset the image range to the min max.</p>
+<p><a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg">Source code</a> |
+<a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg_documentation">Documentation</a></p>
+<div class="section" id="id12">
+<h3>Examples<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyseg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary</span> <span class="o">=</span> <span class="n">niftyseg</span><span class="o">.</span><span class="n">UnaryMaths</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_datatype</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test sqrt operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_sqrt</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_sqrt</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;sqrt&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_sqrt</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -sqrt -odt float im1_sqrt.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_sqrt</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test sqrt operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_abs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_abs</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;abs&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_abs</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -abs -odt float im1_abs.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_abs</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test bin operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_bin</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_bin</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;bin&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_bin</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -bin -odt float im1_bin.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_bin</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test otsu operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_otsu</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_otsu</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;otsu&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_otsu</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -otsu -odt float im1_otsu.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_otsu</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test isnan operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_isnan</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_isnan</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;isnan&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_isnan</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_maths im1.nii -isnan -odt float im1_isnan.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_isnan</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+operation: (&#39;sqrt&#39; or &#39;exp&#39; or &#39;log&#39; or &#39;recip&#39; or &#39;abs&#39; or &#39;bin&#39; or
+         &#39;otsu&#39; or &#39;lconcomp&#39; or &#39;concomp6&#39; or &#39;concomp26&#39; or &#39;fill&#39; or
+         &#39;euc&#39; or &#39;tpmax&#39; or &#39;tmean&#39; or &#39;tmax&#39; or &#39;tmin&#39; or &#39;splitlab&#39; or
+         &#39;removenan&#39; or &#39;isnan&#39; or &#39;subsamp2&#39; or &#39;scl&#39; or &#39;4to5&#39; or &#39;range&#39;)
+        operation to perform
+        flag: -%s, position: 4
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+out_file: (a file name)
+        image to write
+        flag: %s, position: -2
+output_datatype: (&#39;float&#39; or &#39;char&#39; or &#39;int&#39; or &#39;short&#39; or &#39;double&#39;
+         or &#39;input&#39;)
+        datatype to use for output (default uses input type)
+        flag: -odt %s, position: -3
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">image</span> <span class="n">written</span> <span class="n">after</span> <span class="n">calculations</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

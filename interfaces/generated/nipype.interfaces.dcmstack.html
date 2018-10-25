@@ -1,0 +1,427 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../index.html">
+            <img src="../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../index.html">Home</a> ·
+<a class="navbar" href="../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.dcmstack</a><ul>
+<li><a class="reference internal" href="#copymeta">CopyMeta</a></li>
+<li><a class="reference internal" href="#dcmstack">DcmStack</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#groupandstack">GroupAndStack</a></li>
+<li><a class="reference internal" href="#lookupmeta">LookupMeta</a><ul>
+<li><a class="reference internal" href="#id1">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mergenifti">MergeNifti</a></li>
+<li><a class="reference internal" href="#niftigeneratorbase">NiftiGeneratorBase</a></li>
+<li><a class="reference internal" href="#splitnifti">SplitNifti</a></li>
+<li><a class="reference internal" href="#make-key-func"><code class="docutils literal notranslate"><span class="pre">make_key_func()</span></code></a></li>
+<li><a class="reference internal" href="#sanitize-path-comp"><code class="docutils literal notranslate"><span class="pre">sanitize_path_comp()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-dcmstack">
+<h1>interfaces.dcmstack<a class="headerlink" href="#interfaces-dcmstack" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-dcmstack-copymeta"></span><div class="section" id="copymeta">
+<span id="index-0"></span><h2>CopyMeta<a class="headerlink" href="#copymeta" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L283">Link to code</a></p>
+<p>Copy meta data from one Nifti file to another. Useful for preserving
+meta data after some processing steps.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">dest_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">src_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">exclude_classes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">classifications</span> <span class="n">to</span> <span class="n">exclude</span>
+<span class="n">include_classes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">specific</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">classifications</span> <span class="n">to</span> <span class="n">include</span><span class="o">.</span> <span class="n">If</span> <span class="ow">not</span>
+        <span class="n">specified</span> <span class="n">include</span> <span class="n">everything</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dest_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-dcmstack-dcmstack"></span></div>
+<div class="section" id="dcmstack">
+<span id="index-1"></span><h2>DcmStack<a class="headerlink" href="#dcmstack" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L111">Link to code</a></p>
+<p>Create one Nifti file from a set of DICOM files. Can optionally embed
+meta data.</p>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.dcmstack</span> <span class="k">import</span> <span class="n">DcmStack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stacker</span> <span class="o">=</span> <span class="n">DcmStack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stacker</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dicom_files</span> <span class="o">=</span> <span class="s1">&#39;path/to/series/&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stacker</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">out_file</span> <span class="c1"># doctest: +SKIP</span>
+<span class="go">&#39;/path/to/cwd/sequence.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">dicom_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">an</span>
+         <span class="n">existing</span> <span class="n">directory</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">embed_meta</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">)</span>
+        <span class="n">Embed</span> <span class="n">DICOM</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">into</span> <span class="n">result</span>
+<span class="n">exclude_regexes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">Meta</span> <span class="n">data</span> <span class="n">to</span> <span class="n">exclude</span><span class="p">,</span> <span class="n">suplementing</span> <span class="nb">any</span> <span class="n">default</span> <span class="n">exclude</span> <span class="n">filters</span>
+<span class="n">force_read</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Force</span> <span class="n">reading</span> <span class="n">files</span> <span class="n">without</span> <span class="n">DICM</span> <span class="n">marker</span>
+<span class="n">include_regexes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">Meta</span> <span class="n">data</span> <span class="n">to</span> <span class="n">include</span><span class="p">,</span> <span class="n">overriding</span> <span class="nb">any</span> <span class="n">exclude</span> <span class="n">filters</span>
+<span class="n">out_ext</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">)</span>
+        <span class="n">Determines</span> <span class="n">output</span> <span class="n">file</span> <span class="nb">type</span>
+<span class="n">out_format</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+        <span class="n">String</span> <span class="n">which</span> <span class="n">can</span> <span class="n">be</span> <span class="n">formatted</span> <span class="k">with</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">to</span> <span class="n">create</span> <span class="n">the</span> <span class="n">output</span>
+        <span class="n">filename</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">out_path</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">path</span><span class="p">,</span> <span class="n">current</span> <span class="n">working</span> <span class="n">directory</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-dcmstack-groupandstack"></span></div>
+</div>
+<div class="section" id="groupandstack">
+<span id="index-2"></span><h2>GroupAndStack<a class="headerlink" href="#groupandstack" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L172">Link to code</a></p>
+<p>Create (potentially) multiple Nifti files for a set of DICOM files.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">dicom_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">an</span>
+         <span class="n">existing</span> <span class="n">directory</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">embed_meta</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">)</span>
+        <span class="n">Embed</span> <span class="n">DICOM</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">into</span> <span class="n">result</span>
+<span class="n">exclude_regexes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">Meta</span> <span class="n">data</span> <span class="n">to</span> <span class="n">exclude</span><span class="p">,</span> <span class="n">suplementing</span> <span class="nb">any</span> <span class="n">default</span> <span class="n">exclude</span> <span class="n">filters</span>
+<span class="n">force_read</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">Force</span> <span class="n">reading</span> <span class="n">files</span> <span class="n">without</span> <span class="n">DICM</span> <span class="n">marker</span>
+<span class="n">include_regexes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">Meta</span> <span class="n">data</span> <span class="n">to</span> <span class="n">include</span><span class="p">,</span> <span class="n">overriding</span> <span class="nb">any</span> <span class="n">exclude</span> <span class="n">filters</span>
+<span class="n">out_ext</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">)</span>
+        <span class="n">Determines</span> <span class="n">output</span> <span class="n">file</span> <span class="nb">type</span>
+<span class="n">out_format</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+        <span class="n">String</span> <span class="n">which</span> <span class="n">can</span> <span class="n">be</span> <span class="n">formatted</span> <span class="k">with</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">to</span> <span class="n">create</span> <span class="n">the</span> <span class="n">output</span>
+        <span class="n">filename</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">out_path</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">path</span><span class="p">,</span> <span class="n">current</span> <span class="n">working</span> <span class="n">directory</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_list</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">output</span> <span class="n">nifti</span> <span class="n">files</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-dcmstack-lookupmeta"></span></div>
+<div class="section" id="lookupmeta">
+<span id="index-3"></span><h2>LookupMeta<a class="headerlink" href="#lookupmeta" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L212">Link to code</a></p>
+<p>Lookup meta data values from a Nifti with embedded meta data.</p>
+<div class="section" id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">dcmstack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lookup</span> <span class="o">=</span> <span class="n">dcmstack</span><span class="o">.</span><span class="n">LookupMeta</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lookup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;functional.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lookup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">meta_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;RepetitionTime&#39;</span> <span class="p">:</span> <span class="s1">&#39;TR&#39;</span><span class="p">,</span>                                    <span class="s1">&#39;EchoTime&#39;</span> <span class="p">:</span> <span class="s1">&#39;TE&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">lookup</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">TR</span> <span class="c1"># doctest: +SKIP</span>
+<span class="go">9500.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">TE</span> <span class="c1"># doctest: +SKIP</span>
+<span class="go">95.0</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">in_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="nb">input</span> <span class="n">Nifti</span> <span class="n">file</span>
+<span class="n">meta_keys</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">dictionary</span> <span class="k">with</span>
+         <span class="n">keys</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span> <span class="ow">and</span> <span class="k">with</span> <span class="n">values</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">keys</span> <span class="n">to</span> <span class="n">lookup</span><span class="p">,</span> <span class="ow">or</span> <span class="n">a</span> <span class="nb">dict</span> <span class="n">where</span> <span class="n">keys</span> <span class="n">specify</span> <span class="n">the</span>
+        <span class="n">meta</span> <span class="n">data</span> <span class="n">keys</span> <span class="n">to</span> <span class="n">lookup</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">values</span> <span class="n">specify</span> <span class="n">the</span> <span class="n">output</span> <span class="n">names</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">None</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-dcmstack-mergenifti"></span></div>
+</div>
+<div class="section" id="mergenifti">
+<span id="index-4"></span><h2>MergeNifti<a class="headerlink" href="#mergenifti" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L350">Link to code</a></p>
+<p>Merge multiple Nifti files into one. Merges together meta data
+extensions as well.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">in_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">Nifti</span> <span class="n">files</span> <span class="n">to</span> <span class="n">merge</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">merge_dim</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">int</span> <span class="ow">or</span> <span class="n">long</span><span class="p">))</span>
+        <span class="n">Dimension</span> <span class="n">to</span> <span class="n">merge</span> <span class="n">along</span><span class="o">.</span> <span class="n">If</span> <span class="ow">not</span> <span class="n">specified</span><span class="p">,</span> <span class="n">the</span> <span class="n">last</span> <span class="n">singular</span> <span class="ow">or</span>
+        <span class="n">non</span><span class="o">-</span><span class="n">existant</span> <span class="n">dimension</span> <span class="ow">is</span> <span class="n">used</span><span class="o">.</span>
+<span class="n">out_ext</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">)</span>
+        <span class="n">Determines</span> <span class="n">output</span> <span class="n">file</span> <span class="nb">type</span>
+<span class="n">out_format</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+        <span class="n">String</span> <span class="n">which</span> <span class="n">can</span> <span class="n">be</span> <span class="n">formatted</span> <span class="k">with</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">to</span> <span class="n">create</span> <span class="n">the</span> <span class="n">output</span>
+        <span class="n">filename</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">out_path</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">path</span><span class="p">,</span> <span class="n">current</span> <span class="n">working</span> <span class="n">directory</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span>
+<span class="n">sort_order</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span> <span class="ow">or</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="nb">any</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">One</span> <span class="ow">or</span> <span class="n">more</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">keys</span> <span class="n">to</span> <span class="n">sort</span> <span class="n">files</span> <span class="n">by</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Merged</span> <span class="n">Nifti</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-dcmstack-niftigeneratorbase"></span></div>
+<div class="section" id="niftigeneratorbase">
+<span id="index-5"></span><h2>NiftiGeneratorBase<a class="headerlink" href="#niftigeneratorbase" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L48">Link to code</a></p>
+<p>Base class for interfaces that produce Nifti files, potentially with
+embedded meta data.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">None</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">None</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-dcmstack-splitnifti"></span></div>
+<div class="section" id="splitnifti">
+<span id="index-6"></span><h2>SplitNifti<a class="headerlink" href="#splitnifti" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L390">Link to code</a></p>
+<p>Split one Nifti file into many along the specified dimension. Each
+result has an updated meta data extension as well.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">in_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Nifti</span> <span class="n">file</span> <span class="n">to</span> <span class="n">split</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">out_ext</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span><span class="p">)</span>
+        <span class="n">Determines</span> <span class="n">output</span> <span class="n">file</span> <span class="nb">type</span>
+<span class="n">out_format</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+        <span class="n">String</span> <span class="n">which</span> <span class="n">can</span> <span class="n">be</span> <span class="n">formatted</span> <span class="k">with</span> <span class="n">meta</span> <span class="n">data</span> <span class="n">to</span> <span class="n">create</span> <span class="n">the</span> <span class="n">output</span>
+        <span class="n">filename</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">out_path</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">path</span><span class="p">,</span> <span class="n">current</span> <span class="n">working</span> <span class="n">directory</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span>
+<span class="n">split_dim</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">int</span> <span class="ow">or</span> <span class="n">long</span><span class="p">))</span>
+        <span class="n">Dimension</span> <span class="n">to</span> <span class="n">split</span> <span class="n">along</span><span class="o">.</span> <span class="n">If</span> <span class="ow">not</span> <span class="n">specified</span><span class="p">,</span> <span class="n">the</span> <span class="n">last</span> <span class="n">dimension</span> <span class="ow">is</span>
+        <span class="n">used</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_list</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Split</span> <span class="n">Nifti</span> <span class="n">files</span>
+</pre></div>
+</div>
+<span class="target" id="module-nipype.interfaces.dcmstack"></span></div>
+<div class="section" id="make-key-func">
+<span id="nipype-interfaces-dcmstack-make-key-func"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">make_key_func()</span></code><a class="headerlink" href="#make-key-func" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L342">Link to code</a></p>
+</div>
+<div class="section" id="sanitize-path-comp">
+<span id="nipype-interfaces-dcmstack-sanitize-path-comp"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">sanitize_path_comp()</span></code><a class="headerlink" href="#sanitize-path-comp" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dcmstack.py#L29">Link to code</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

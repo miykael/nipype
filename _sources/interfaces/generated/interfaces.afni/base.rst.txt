@@ -1,0 +1,46 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.afni.base
+====================
+
+
+.. _nipype.interfaces.afni.base.AFNIPythonCommand:
+
+
+.. index:: AFNIPythonCommand
+
+AFNIPythonCommand
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/base.py#L294>`__
+
+Wraps command **None**
+
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        None
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')

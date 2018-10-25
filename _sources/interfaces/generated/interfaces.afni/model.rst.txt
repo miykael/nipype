@@ -1,0 +1,586 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.afni.model
+=====================
+
+
+.. _nipype.interfaces.afni.model.Deconvolve:
+
+
+.. index:: Deconvolve
+
+Deconvolve
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/model.py#L231>`__
+
+Wraps command **3dDeconvolve**
+
+Performs OLS regression given a 4D neuroimage file and stimulus timings
+
+For complete details, see the `3dDeconvolve Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dDeconvolve.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> deconvolve = afni.Deconvolve()
+>>> deconvolve.inputs.in_files = ['functional.nii', 'functional2.nii']
+>>> deconvolve.inputs.out_file = 'output.nii'
+>>> deconvolve.inputs.x1D = 'output.1D'
+>>> stim_times = [(1, 'timeseries.txt', 'SPMG1(4)')]
+>>> deconvolve.inputs.stim_times = stim_times
+>>> deconvolve.inputs.stim_label = [(1, 'Houses')]
+>>> deconvolve.inputs.gltsym = ['SYM: +Houses']
+>>> deconvolve.inputs.glt_label = [(1, 'Houses')]
+>>> deconvolve.cmdline
+"3dDeconvolve -input functional.nii functional2.nii -bucket output.nii -x1D output.1D -num_stimts 1 -stim_times 1 timeseries.txt 'SPMG1(4)' -stim_label 1 Houses -num_glt 1 -gltsym 'SYM: +Houses' -glt_label 1 Houses"
+>>> res = deconvolve.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        STATmask: (an existing file name)
+                build a mask from provided file, and use this mask for the purpose
+                of reporting truncation-to float issues AND for computing the FDR
+                curves. The actual results ARE not masked with this option (only
+                with 'mask' or 'automask' options).
+                flag: -STATmask %s
+        TR_1D: (a float)
+                TR to use with 'input1D'. This option has no effect if you do not
+                also use 'input1D'.
+                flag: -TR_1D %f
+        allzero_OK: (a boolean)
+                don't consider all zero matrix columns to be the type of error that
+                'gotforit' is needed to ignore.
+                flag: -allzero_OK
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        automask: (a boolean)
+                build a mask automatically from input data (will be slow for long
+                time series datasets)
+                flag: -automask
+        cbucket: (a unicode string)
+                Name for dataset in which to save the regression coefficients (no
+                statistics). This dataset will be used in a -xrestore run [not yet
+                implemented] instead of the bucket dataset, if possible.
+                flag: -cbucket %s
+        censor: (an existing file name)
+                filename of censor .1D time series. This is a file of 1s and 0s,
+                indicating which time points are to be included (1) and which are to
+                be excluded (0).
+                flag: -censor %s
+        dmbase: (a boolean)
+                de-mean baseline time series (default if 'polort' >= 0)
+                flag: -dmbase
+        dname: (a tuple of the form: (a unicode string, a unicode string))
+                set environmental variable to provided value
+                flag: -D%s=%s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        force_TR: (a float)
+                use this value instead of the TR in the 'input' dataset. (It's
+                better to fix the input using Refit.)
+                flag: -force_TR %f, position: 0
+        fout: (a boolean)
+                output F-statistic for each stimulus
+                flag: -fout
+        global_times: (a boolean)
+                use global timing for stimulus timing files
+                flag: -global_times
+                mutually_exclusive: local_times
+        glt_label: (a list of items which are a tuple of the form: (an
+                 integer (int or long), a unicode string))
+                general linear test (i.e., contrast) labels
+                flag: -glt_label %d %s..., position: -1
+                requires: gltsym
+        gltsym: (a list of items which are a unicode string)
+                general linear tests (i.e., contrasts) using symbolic conventions
+                (e.g., '+Label1 -Label2')
+                flag: -gltsym 'SYM: %s'..., position: -2
+        goforit: (an integer (int or long))
+                use this to proceed even if the matrix has bad problems (e.g.,
+                duplicate columns, large condition number, etc.).
+                flag: -GOFORIT %i
+        in_files: (a list of items which are an existing file name)
+                filenames of 3D+time input datasets. More than one filename can be
+                given and the datasets will be auto-catenated in time. You can input
+                a 1D time series file here, but the time axis should run along the
+                ROW direction, not the COLUMN direction as in the 'input1D' option.
+                flag: -input %s, position: 1
+        input1D: (an existing file name)
+                filename of single (fMRI) .1D time series where time runs down the
+                column.
+                flag: -input1D %s
+        legendre: (a boolean)
+                use Legendre polynomials for null hypothesis (baseline model)
+                flag: -legendre
+        local_times: (a boolean)
+                use local timing for stimulus timing files
+                flag: -local_times
+                mutually_exclusive: global_times
+        mask: (an existing file name)
+                filename of 3D mask dataset; only data time series from within the
+                mask will be analyzed; results for voxels outside the mask will be
+                set to zero.
+                flag: -mask %s
+        noblock: (a boolean)
+                normally, if you input multiple datasets with 'input', then the
+                separate datasets are taken to be separate image runs that get
+                separate baseline models. Use this options if you want to have the
+                program consider these to be all one big run.* If any of the input
+                dataset has only 1 sub-brick, then this option is automatically
+                invoked!* If the auto-catenation feature isn't used, then this
+                option has no effect, no how, no way.
+                flag: -noblock
+        nocond: (a boolean)
+                DON'T calculate matrix condition number
+                flag: -nocond
+        nodmbase: (a boolean)
+                don't de-mean baseline time series
+                flag: -nodmbase
+        nofdr: (a boolean)
+                Don't compute the statistic-vs-FDR curves for the bucket dataset.
+                flag: -noFDR
+        nolegendre: (a boolean)
+                use power polynomials for null hypotheses. Don't do this unless you
+                are crazy!
+                flag: -nolegendre
+        nosvd: (a boolean)
+                use Gaussian elimination instead of SVD
+                flag: -nosvd
+        num_glt: (an integer (int or long))
+                number of general linear tests (i.e., contrasts)
+                flag: -num_glt %d, position: -3
+        num_stimts: (an integer (int or long))
+                number of stimulus timing files
+                flag: -num_stimts %d, position: -6
+        num_threads: (an integer (int or long))
+                run the program with provided number of sub-processes
+                flag: -jobs %d
+        ortvec: (a tuple of the form: (an existing file name, a unicode
+                 string))
+                this option lets you input a rectangular array of 1 or more baseline
+                vectors from a file. This method is a fast way to include a lot of
+                baseline regressors in one step.
+                flag: -ortvec %s %s
+        out_file: (a file name)
+                output statistics file
+                flag: -bucket %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        polort: (an integer (int or long))
+                degree of polynomial corresponding to the null hypothesis [default:
+                1]
+                flag: -polort %d
+        rmsmin: (a float)
+                minimum rms error to reject reduced model (default = 0; don't use
+                this option normally!)
+                flag: -rmsmin %f
+        rout: (a boolean)
+                output the R^2 statistic for each stimulus
+                flag: -rout
+        sat: (a boolean)
+                check the dataset time series for initial saturation transients,
+                which should normally have been excised before data analysis.
+                flag: -sat
+                mutually_exclusive: trans
+        singvals: (a boolean)
+                print out the matrix singular values
+                flag: -singvals
+        stim_label: (a list of items which are a tuple of the form: (an
+                 integer (int or long), a unicode string))
+                label for kth input stimulus (e.g., Label1)
+                flag: -stim_label %d %s..., position: -4
+                requires: stim_times
+        stim_times: (a list of items which are a tuple of the form: (an
+                 integer (int or long), an existing file name, a unicode string))
+                generate a response model from a set of stimulus times given in
+                file.
+                flag: -stim_times %d %s '%s'..., position: -5
+        stim_times_subtract: (a float)
+                this option means to subtract specified seconds from each time
+                encountered in any 'stim_times' option. The purpose of this option
+                is to make it simple to adjust timing files for the removal of
+                images from the start of each imaging run.
+                flag: -stim_times_subtract %f
+        svd: (a boolean)
+                use SVD instead of Gaussian elimination (default)
+                flag: -svd
+        tout: (a boolean)
+                output the T-statistic for each stimulus
+                flag: -tout
+        trans: (a boolean)
+                check the dataset time series for initial saturation transients,
+                which should normally have been excised before data analysis.
+                flag: -trans
+                mutually_exclusive: sat
+        vout: (a boolean)
+                output the sample variance (MSE) for each stimulus
+                flag: -vout
+        x1D: (a file name)
+                specify name for saved X matrix
+                flag: -x1D %s
+        x1D_stop: (a boolean)
+                stop running after writing .xmat.1D file
+                flag: -x1D_stop
+
+Outputs::
+
+        cbucket: (a file name)
+                output regression coefficients file (if generated)
+        out_file: (an existing file name)
+                output statistics file
+        reml_script: (an existing file name)
+                automatical generated script to run 3dREMLfit
+        x1D: (an existing file name)
+                save out X matrix
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.model.Remlfit:
+
+
+.. index:: Remlfit
+
+Remlfit
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/model.py#L545>`__
+
+Wraps command **3dREMLfit**
+
+Performs Generalized least squares time series fit with Restricted
+Maximum Likelihood (REML) estimation of the temporal auto-correlation
+structure.
+
+For complete details, see the `3dREMLfit Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dREMLfit.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> remlfit = afni.Remlfit()
+>>> remlfit.inputs.in_files = ['functional.nii', 'functional2.nii']
+>>> remlfit.inputs.out_file = 'output.nii'
+>>> remlfit.inputs.matrix = 'output.1D'
+>>> remlfit.inputs.gltsym = [('SYM: +Lab1 -Lab2', 'TestSYM'), ('timeseries.txt', 'TestFile')]
+>>> remlfit.cmdline
+'3dREMLfit -gltsym "SYM: +Lab1 -Lab2" TestSYM -gltsym "timeseries.txt" TestFile -input "functional.nii functional2.nii" -matrix output.1D -Rbuck output.nii'
+>>> res = remlfit.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_files: (a list of items which are an existing file name)
+                Read time series dataset
+                flag: -input "%s"
+        matrix: (a file name)
+                the design matrix file, which should have been output from
+                Deconvolve via the 'x1D' option
+                flag: -matrix %s
+
+        [Optional]
+        STATmask: (an existing file name)
+                filename of 3D mask dataset to be used for the purpose of reporting
+                truncation-to float issues AND for computing the FDR curves. The
+                actual results ARE not masked with this option (only with 'mask' or
+                'automask' options).
+                flag: -STATmask %s
+        addbase: (a list of items which are an existing file name)
+                file(s) to add baseline model columns to the matrix with this
+                option. Each column in the specified file(s) will be appended to the
+                matrix. File(s) must have at least as many rows as the matrix does.
+                flag: -addbase %s
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        automask: (a boolean, nipype default value: False)
+                build a mask automatically from input data (will be slow for long
+                time series datasets)
+                flag: -automask
+        dsort: (an existing file name)
+                4D dataset to be used as voxelwise baseline regressor
+                flag: -dsort %s
+        dsort_nods: (a boolean)
+                if 'dsort' option is used, this command will output additional
+                results files excluding the 'dsort' file
+                flag: -dsort_nods
+                requires: dsort
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        errts_file: (a file name)
+                output dataset for REML residuals = data - fitted model
+                flag: -Rerrts %s
+        fitts_file: (a file name)
+                ouput dataset for REML fitted model
+                flag: -Rfitts %s
+        fout: (a boolean)
+                output F-statistic for each stimulus
+                flag: -fout
+        glt_file: (a file name)
+                output dataset for beta + statistics from the REML estimation, but
+                ONLY for the GLTs added on the REMLfit command line itself via
+                'gltsym'; GLTs from Deconvolve's command line will NOT be included.
+                flag: -Rglt %s
+        gltsym: (a list of items which are a tuple of the form: (an existing
+                 file name, a unicode string) or a tuple of the form: (a unicode
+                 string, a unicode string))
+                read a symbolic GLT from input file and associate it with a label.
+                As in Deconvolve, you can also use the 'SYM:' method to provide the
+                definition of the GLT directly as a string (e.g., with 'SYM: +Label1
+                -Label2'). Unlike Deconvolve, you MUST specify 'SYM: ' if providing
+                the GLT directly as a string instead of from a file
+                flag: -gltsym "%s" %s...
+        mask: (an existing file name)
+                filename of 3D mask dataset; only data time series from within the
+                mask will be analyzed; results for voxels outside the mask will be
+                set to zero.
+                flag: -mask %s
+        matim: (a file name)
+                read a standard file as the matrix. You can use only Col as a name
+                in GLTs with these nonstandard matrix input methods, since the other
+                names come from the 'matrix' file. These mutually exclusive options
+                are ignored if 'matrix' is used.
+                flag: -matim %s
+                mutually_exclusive: matrix
+        nobout: (a boolean)
+                do NOT add baseline (null hypothesis) regressor betas to the
+                'rbeta_file' and/or 'obeta_file' output datasets.
+                flag: -nobout
+        nodmbase: (a boolean)
+                by default, baseline columns added to the matrix via 'addbase' or
+                'slibase' or 'dsort' will each have their mean removed (as is done
+                in Deconvolve); this option turns this centering off
+                flag: -nodmbase
+                requires: addbase, dsort
+        nofdr: (a boolean)
+                do NOT add FDR curve data to bucket datasets; FDR curves can take a
+                long time if 'tout' is used
+                flag: -noFDR
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        obeta: (a file name)
+                dataset for beta weights from the OLSQ estimation
+                flag: -Obeta %s
+        obuck: (a file name)
+                dataset for beta + statistics from the OLSQ estimation
+                flag: -Obuck %s
+        oerrts: (a file name)
+                dataset for OLSQ residuals (data - fitted model)
+                flag: -Oerrts %s
+        ofitts: (a file name)
+                dataset for OLSQ fitted model
+                flag: -Ofitts %s
+        oglt: (a file name)
+                dataset for beta + statistics from 'gltsym' options
+                flag: -Oglt %s
+        out_file: (a file name)
+                output dataset for beta + statistics from the REML estimation; also
+                contains the results of any GLT analysis requested in the Deconvolve
+                setup, similar to the 'bucket' output from Deconvolve. This dataset
+                does NOT get the betas (or statistics) of those regressors marked as
+                'baseline' in the matrix file.
+                flag: -Rbuck %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        ovar: (a file name)
+                dataset for OLSQ st.dev. parameter (kind of boring)
+                flag: -Ovar %s
+        polort: (an integer (int or long))
+                if no 'matrix' option is given, AND no 'matim' option, create a
+                matrix with Legendre polynomial regressorsup to the specified order.
+                The default value is 0, whichproduces a matrix with a single column
+                of all ones
+                flag: -polort %d
+                mutually_exclusive: matrix
+        quiet: (a boolean)
+                turn off most progress messages
+                flag: -quiet
+        rbeta_file: (a file name)
+                output dataset for beta weights from the REML estimation, similar to
+                the 'cbucket' output from Deconvolve. This dataset will contain all
+                the beta weights, for baseline and stimulus regressors alike, unless
+                the '-nobout' option is given -- in that case, this dataset will
+                only get the betas for the stimulus regressors.
+                flag: -Rbeta %s
+        rout: (a boolean)
+                output the R^2 statistic for each stimulus
+                flag: -rout
+        slibase: (a list of items which are an existing file name)
+                similar to 'addbase' in concept, BUT each specified file must have
+                an integer multiple of the number of slices in the input dataset(s);
+                then, separate regression matrices are generated for each slice,
+                with the first column of the file appended to the matrix for the
+                first slice of the dataset, the second column of the file appended
+                to the matrix for the first slice of the dataset, and so on.
+                Intended to help model physiological noise in FMRI, or other effects
+                you want to regress out that might change significantly in the
+                inter-slice time intervals. This will slow the program down, and
+                make it use a lot more memory (to hold all the matrix stuff).
+                flag: -slibase %s
+        slibase_sm: (a list of items which are an existing file name)
+                similar to 'slibase', BUT each file much be in slice major order
+                (i.e. all slice0 columns come first, then all slice1 columns, etc).
+                flag: -slibase_sm %s
+        tout: (a boolean)
+                output the T-statistic for each stimulus; if you use 'out_file' and
+                do not give any of 'fout', 'tout',or 'rout', then the program
+                assumes 'fout' is activated.
+                flag: -tout
+        usetemp: (a boolean)
+                write intermediate stuff to disk, to economize on RAM. Using this
+                option might be necessary to run with 'slibase' and with 'Grid'
+                values above the default, since the program has to store a large
+                number of matrices for such a problem: two for every slice and for
+                every (a,b) pair in the ARMA parameter grid. Temporary files are
+                written to the directory given in environment variable TMPDIR, or in
+                /tmp, or in ./ (preference is in that order)
+                flag: -usetemp
+        var_file: (a file name)
+                output dataset for REML variance parameters
+                flag: -Rvar %s
+        verb: (a boolean)
+                turns on more progress messages, including memory usage progress
+                reports at various stages
+                flag: -verb
+        wherr_file: (a file name)
+                dataset for REML residual, whitened using the estimated ARMA(1,1)
+                correlation matrix of the noise
+                flag: -Rwherr %s
+
+Outputs::
+
+        errts_file: (a file name)
+                output dataset for REML residuals = data - fitted model (if
+                generated
+        fitts_file: (a file name)
+                ouput dataset for REML fitted model (if generated)
+        glt_file: (a file name)
+                output dataset for beta + statistics from the REML estimation, but
+                ONLY for the GLTs added on the REMLfit command line itself via
+                'gltsym' (if generated)
+        obeta: (a file name)
+                dataset for beta weights from the OLSQ estimation (if generated)
+        obuck: (a file name)
+                dataset for beta + statistics from the OLSQ estimation (if
+                generated)
+        oerrts: (a file name)
+                dataset for OLSQ residuals = data - fitted model (if generated
+        ofitts: (a file name)
+                dataset for OLSQ fitted model (if generated)
+        oglt: (a file name)
+                dataset for beta + statistics from 'gltsym' options (if generated
+        out_file: (a file name)
+                dataset for beta + statistics from the REML estimation (if generated
+        ovar: (a file name)
+                dataset for OLSQ st.dev. parameter (if generated)
+        rbeta_file: (a file name)
+                output dataset for beta weights from the REML estimation (if
+                generated
+        var_file: (a file name)
+                dataset for REML variance parameters (if generated)
+        wherr_file: (a file name)
+                dataset for REML residual, whitened using the estimated ARMA(1,1)
+                correlation matrix of the noise (if generated)
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.model.Synthesize:
+
+
+.. index:: Synthesize
+
+Synthesize
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/model.py#L634>`__
+
+Wraps command **3dSynthesize**
+
+Reads a '-cbucket' dataset and a '.xmat.1D' matrix from 3dDeconvolve,
+   and synthesizes a fit dataset using user-selected sub-bricks and
+   matrix columns.
+
+For complete details, see the `3dSynthesize Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dSynthesize.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> synthesize = afni.Synthesize()
+>>> synthesize.inputs.cbucket = 'functional.nii'
+>>> synthesize.inputs.matrix = 'output.1D'
+>>> synthesize.inputs.select = ['baseline']
+>>> synthesize.cmdline
+'3dSynthesize -cbucket functional.nii -matrix output.1D -select baseline'
+>>> syn = synthesize.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        cbucket: (a file name)
+                Read the dataset output from 3dDeconvolve via the '-cbucket' option.
+                flag: -cbucket %s
+        matrix: (a file name)
+                Read the matrix output from 3dDeconvolve via the '-x1D' option.
+                flag: -matrix %s
+        select: (a list of items which are a unicode string)
+                A list of selected columns from the matrix (and the corresponding
+                coefficient sub-bricks from the cbucket). Valid types include
+                'baseline', 'polort', 'allfunc', 'allstim', 'all', Can also provide
+                'something' where something matches a stim_label from 3dDeconvolve,
+                and 'digits' where digits are the numbers of the select matrix
+                columns by numbers (starting at 0), or number ranges of the form
+                '3..7' and '3-7'.
+                flag: -select %s
+
+        [Optional]
+        TR: (a float)
+                TR to set in the output. The default value of TR is read from the
+                header of the matrix file.
+                flag: -TR %f
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        cenfill: ('zero' or 'nbhr' or 'none')
+                Determines how censored time points from the 3dDeconvolve run will
+                be filled. Valid types are 'zero', 'nbhr' and 'none'.
+                flag: -cenfill %s
+        dry_run: (a boolean)
+                Don't compute the output, just check the inputs.
+                flag: -dry
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output dataset prefix name (default 'syn')
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')

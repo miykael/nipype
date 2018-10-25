@@ -1,0 +1,39 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+algorithms.stats
+================
+
+
+.. _nipype.algorithms.stats.ActivationCount:
+
+
+.. index:: ActivationCount
+
+ActivationCount
+---------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/algorithms/stats.py#L34>`__
+
+Calculate a simple Activation Count Maps
+
+Adapted from: https://github.com/poldracklab/CNP_task_analysis/    blob/61c27f5992db9d8800884f8ffceb73e6957db8af/CNP_2nd_level_ACM.py
+
+Inputs::
+
+        [Mandatory]
+        in_files: (a list of items which are an existing file name)
+                input file, generally a list of z-stat maps
+        threshold: (a float)
+                binarization threshold. E.g. a threshold of 1.65 corresponds to a
+                two-sided Z-test of p<.10
+
+        [Optional]
+
+Outputs::
+
+        acm_neg: (an existing file name)
+                negative activation count map
+        acm_pos: (an existing file name)
+                positive activation count map
+        out_file: (an existing file name)
+                output activation count map

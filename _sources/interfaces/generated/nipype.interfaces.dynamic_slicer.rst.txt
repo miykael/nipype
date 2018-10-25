@@ -1,0 +1,38 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.dynamic_slicer
+=========================
+
+
+.. _nipype.interfaces.dynamic_slicer.SlicerCommandLine:
+
+
+.. index:: SlicerCommandLine
+
+SlicerCommandLine
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dynamic_slicer.py#L20>`__
+
+Wraps command **Slicer3**
+
+Experimental Slicer wrapper. Work in progress.
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        module: (a unicode string)
+                name of the Slicer command line module you want to use
+
+Outputs::
+
+        None

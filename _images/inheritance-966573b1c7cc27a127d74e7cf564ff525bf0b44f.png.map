@@ -1,0 +1,4 @@
+<map id="inheritancebfa1d4c2fe" name="inheritancebfa1d4c2fe">
+<area shape="poly" id="node1" href="nipype.pipeline.engine.base.html#nipype.pipeline.engine.base.EngineBase" target="_top" title="Defines common attributes and functions for workflows and nodes." alt="" coords="212,41,207,30,192,20,169,12,140,7,108,5,77,7,48,12,25,20,10,30,5,41,10,52,25,62,48,70,77,76,108,77,140,76,169,70,192,62,207,52"/>
+<area shape="poly" id="node2" href="#nipype.pipeline.engine.workflows.Workflow" target="_top" title="Controls the setup and execution of a pipeline of processes." alt="" coords="497,41,491,30,474,20,448,12,415,7,378,5,342,7,309,12,282,20,265,30,260,41,265,52,282,62,309,70,342,76,378,77,415,76,448,70,474,62,491,52"/>
+</map>

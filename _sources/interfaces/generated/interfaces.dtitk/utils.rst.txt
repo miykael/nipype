@@ -1,0 +1,720 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.dtitk.utils
+======================
+
+
+.. _nipype.interfaces.dtitk.utils.BinThresh:
+
+
+.. index:: BinThresh
+
+BinThresh
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L286>`__
+
+Wraps command **BinaryThresholdImageFilter**
+
+Binarizes an image
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.BinThresh()
+>>> node.inputs.in_file = 'im1.nii'
+>>> node.inputs.lower_bound = 0
+>>> node.inputs.upper_bound = 100
+>>> node.inputs.inside_value = 1
+>>> node.inputs.outside_value = 0
+>>> node.cmdline
+'BinaryThresholdImageFilter im1.nii im1_thrbin.nii 0 100 1 0'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                Image to threshold/binarize
+                flag: %s, position: 0
+        inside_value: (a float, nipype default value: 1)
+                value for voxels in binarization range
+                flag: %g, position: 4
+        lower_bound: (a float, nipype default value: 0.01)
+                lower bound of binarization range
+                flag: %g, position: 2
+        outside_value: (a float, nipype default value: 0)
+                value for voxelsoutside of binarization range
+                flag: %g, position: 5
+        upper_bound: (a float, nipype default value: 100)
+                upper bound of binarization range
+                flag: %g, position: 3
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        out_file: (a file name)
+                output path
+                flag: %s, position: 1
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.BinThreshTask:
+
+
+.. index:: BinThreshTask
+
+BinThreshTask
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L310>`__
+
+Wraps command **BinaryThresholdImageFilter**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                Image to threshold/binarize
+                flag: %s, position: 0
+        inside_value: (a float, nipype default value: 1)
+                value for voxels in binarization range
+                flag: %g, position: 4
+        lower_bound: (a float, nipype default value: 0.01)
+                lower bound of binarization range
+                flag: %g, position: 2
+        outside_value: (a float, nipype default value: 0)
+                value for voxelsoutside of binarization range
+                flag: %g, position: 5
+        upper_bound: (a float, nipype default value: 100)
+                upper bound of binarization range
+                flag: %g, position: 3
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        out_file: (a file name)
+                output path
+                flag: %s, position: 1
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.SVAdjustVoxSp:
+
+
+.. index:: SVAdjustVoxSp
+
+SVAdjustVoxSp
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L98>`__
+
+Wraps command **SVAdjustVoxelspace**
+
+Adjusts the voxel space of a scalar volume
+
+   Example
+   ~~~~~~~
+
+   >>> from nipype.interfaces import dtitk
+   >>> node = dtitk.SVAdjustVoxSp()
+   >>> node.inputs.in_file = 'im1.nii'
+   >>> node.inputs.target_file = 'im2.nii'
+   >>> node.cmdline
+   'SVAdjustVoxelspace -in im1.nii -out im1_avs.nii -target im2.nii'
+   >>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                scalar volume to modify
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin (superseded by target)
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                target volume to match
+                flag: -target %s
+                mutually_exclusive: voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.SVAdjustVoxSpTask:
+
+
+.. index:: SVAdjustVoxSpTask
+
+SVAdjustVoxSpTask
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L314>`__
+
+Wraps command **SVAdjustVoxelspace**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                scalar volume to modify
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin (superseded by target)
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                target volume to match
+                flag: -target %s
+                mutually_exclusive: voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.SVResample:
+
+
+.. index:: SVResample
+
+SVResample
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L192>`__
+
+Wraps command **SVResample**
+
+Resamples a scalar volume
+
+    Example
+    ~~~~~~~
+
+    >>> from nipype.interfaces import dtitk
+    >>> node = dtitk.SVResample()
+    >>> node.inputs.in_file = 'im1.nii'
+    >>> node.inputs.target_file = 'im2.nii'
+    >>> node.cmdline
+    'SVResample -in im1.nii -out im1_resampled.nii -target im2.nii'
+    >>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                image to resample
+                flag: -in %s
+
+        [Optional]
+        align: ('center' or 'origin')
+                how to align output volume to input volume
+                flag: -align %s
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        array_size: (a tuple of the form: (an integer (int or long), an
+                 integer (int or long), an integer (int or long)))
+                resampled array size
+                flag: -size %d %d %d
+                mutually_exclusive: target_file
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                specs read from the target volume
+                flag: -target %s
+                mutually_exclusive: array_size, voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                resampled voxel size
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.SVResampleTask:
+
+
+.. index:: SVResampleTask
+
+SVResampleTask
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L318>`__
+
+Wraps command **SVResample**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                image to resample
+                flag: -in %s
+
+        [Optional]
+        align: ('center' or 'origin')
+                how to align output volume to input volume
+                flag: -align %s
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        array_size: (a tuple of the form: (an integer (int or long), an
+                 integer (int or long), an integer (int or long)))
+                resampled array size
+                flag: -size %d %d %d
+                mutually_exclusive: target_file
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                specs read from the target volume
+                flag: -target %s
+                mutually_exclusive: array_size, voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                resampled voxel size
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.TVAdjustOriginTask:
+
+
+.. index:: TVAdjustOriginTask
+
+TVAdjustOriginTask
+------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L322>`__
+
+Wraps command **TVAdjustVoxelspace**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                tensor volume to modify
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin (superseded by target)
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                target volume to match
+                flag: -target %s
+                mutually_exclusive: voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.TVAdjustVoxSp:
+
+
+.. index:: TVAdjustVoxSp
+
+TVAdjustVoxSp
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L57>`__
+
+Wraps command **TVAdjustVoxelspace**
+
+ Adjusts the voxel space of a tensor volume
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.TVAdjustVoxSp()
+>>> node.inputs.in_file = 'im1.nii'
+>>> node.inputs.target_file = 'im2.nii'
+>>> node.cmdline
+'TVAdjustVoxelspace -in im1.nii -out im1_avs.nii -target im2.nii'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                tensor volume to modify
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin (superseded by target)
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                target volume to match
+                flag: -target %s
+                mutually_exclusive: voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.TVAdjustVoxSpTask:
+
+
+.. index:: TVAdjustVoxSpTask
+
+TVAdjustVoxSpTask
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L326>`__
+
+Wraps command **TVAdjustVoxelspace**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                tensor volume to modify
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin (superseded by target)
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                target volume to match
+                flag: -target %s
+                mutually_exclusive: voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.TVResample:
+
+
+.. index:: TVResample
+
+TVResample
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L146>`__
+
+Wraps command **TVResample**
+
+Resamples a tensor volume
+
+    Example
+    ~~~~~~~
+
+    >>> from nipype.interfaces import dtitk
+    >>> node = dtitk.TVResample()
+    >>> node.inputs.in_file = 'im1.nii'
+    >>> node.inputs.target_file = 'im2.nii'
+    >>> node.cmdline
+    'TVResample -in im1.nii -out im1_resampled.nii -target im2.nii'
+    >>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                tensor volume to resample
+                flag: -in %s
+
+        [Optional]
+        align: ('center' or 'origin')
+                how to align output volume to input volume
+                flag: -align %s
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        array_size: (a tuple of the form: (an integer (int or long), an
+                 integer (int or long), an integer (int or long)))
+                resampled array size
+                flag: -size %d %d %d
+                mutually_exclusive: target_file
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        interpolation: ('LEI' or 'EI')
+                Log Euclidean Euclidean Interpolation
+                flag: -interp %s
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                specs read from the target volume
+                flag: -target %s
+                mutually_exclusive: array_size, voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                resampled voxel size
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.TVResampleTask:
+
+
+.. index:: TVResampleTask
+
+TVResampleTask
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L330>`__
+
+Wraps command **TVResample**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                tensor volume to resample
+                flag: -in %s
+
+        [Optional]
+        align: ('center' or 'origin')
+                how to align output volume to input volume
+                flag: -align %s
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        array_size: (a tuple of the form: (an integer (int or long), an
+                 integer (int or long), an integer (int or long)))
+                resampled array size
+                flag: -size %d %d %d
+                mutually_exclusive: target_file
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        interpolation: ('LEI' or 'EI')
+                Log Euclidean Euclidean Interpolation
+                flag: -interp %s
+        origin: (a tuple of the form: (a float, a float, a float))
+                xyz origin
+                flag: -origin %g %g %g
+                mutually_exclusive: target_file
+        out_file: (a file name)
+                output path
+                flag: -out %s
+        target_file: (a file name)
+                specs read from the target volume
+                flag: -target %s
+                mutually_exclusive: array_size, voxel_size, origin
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                resampled voxel size
+                flag: -vsize %g %g %g
+                mutually_exclusive: target_file
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.utils.TVtool:
+
+
+.. index:: TVtool
+
+TVtool
+------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L225>`__
+
+Wraps command **TVtool**
+
+Calculates a tensor metric volume from a tensor volume
+
+    Example
+    ~~~~~~~
+
+    >>> from nipype.interfaces import dtitk
+    >>> node = dtitk.TVtool()
+    >>> node.inputs.in_file = 'im1.nii'
+    >>> node.inputs.in_flag = 'fa'
+    >>> node.cmdline
+    'TVtool -in im1.nii -fa -out im1_fa.nii'
+    >>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                scalar volume to resample
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        in_flag: ('fa' or 'tr' or 'ad' or 'rd' or 'pd' or 'rgb')
+                flag: -%s
+        out_file: (a file name)
+                flag: -out %s
+
+Outputs::
+
+        out_file: (a file name)
+
+.. _nipype.interfaces.dtitk.utils.TVtoolTask:
+
+
+.. index:: TVtoolTask
+
+TVtoolTask
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/utils.py#L334>`__
+
+Wraps command **TVtool**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                scalar volume to resample
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        in_flag: ('fa' or 'tr' or 'ad' or 'rd' or 'pd' or 'rgb')
+                flag: -%s
+        out_file: (a file name)
+                flag: -out %s
+
+Outputs::
+
+        out_file: (a file name)

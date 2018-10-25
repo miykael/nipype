@@ -1,0 +1,585 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.ants.utils</a><ul>
+<li><a class="reference internal" href="#affineinitializer">AffineInitializer</a></li>
+<li><a class="reference internal" href="#averageaffinetransform">AverageAffineTransform</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#averageimages">AverageImages</a><ul>
+<li><a class="reference internal" href="#id1">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#composemultitransform">ComposeMultiTransform</a><ul>
+<li><a class="reference internal" href="#id2">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#createjacobiandeterminantimage">CreateJacobianDeterminantImage</a><ul>
+<li><a class="reference internal" href="#id3">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#labelgeometry">LabelGeometry</a><ul>
+<li><a class="reference internal" href="#id4">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multiplyimages">MultiplyImages</a><ul>
+<li><a class="reference internal" href="#id5">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-ants-utils">
+<h1>interfaces.ants.utils<a class="headerlink" href="#interfaces-ants-utils" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-ants-utils-affineinitializer"></span><div class="section" id="affineinitializer">
+<span id="index-0"></span><h2>AffineInitializer<a class="headerlink" href="#affineinitializer" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L292">Link to code</a></p>
+<p>Wraps command <strong>antsAffineInitializer</strong></p>
+<p>Initialize an affine transform (as in antsBrainExtraction.sh)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">AffineInitializer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">init</span> <span class="o">=</span> <span class="n">AffineInitializer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">init</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image</span> <span class="o">=</span> <span class="s1">&#39;fixed1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">init</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">moving_image</span> <span class="o">=</span> <span class="s1">&#39;moving1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">init</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;antsAffineInitializer 3 fixed1.nii moving1.nii transform.mat 15.000000 0.100000 0 10&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+fixed_image: (an existing file name)
+        reference image
+        flag: %s, position: 1
+moving_image: (an existing file name)
+        moving image
+        flag: %s, position: 2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+dimension: (3 or 2, nipype default value: 3)
+        dimension
+        flag: %s, position: 0
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+local_search: (an integer (int or long), nipype default value: 10)
+         determines if a local optimization is run at each search point for
+        the set number of iterations
+        flag: %d, position: 7
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+out_file: (a file name, nipype default value: transform.mat)
+        output transform file
+        flag: %s, position: 3
+principal_axes: (a boolean, nipype default value: False)
+        whether the rotation is searched around an initial principal axis
+        alignment.
+        flag: %d, position: 6
+radian_fraction: (0.0 &lt;= a floating point number &lt;= 1.0, nipype
+         default value: 0.1)
+        search this arc +/- principal axes
+        flag: %f, position: 5
+search_factor: (a float, nipype default value: 15.0)
+        increments (degrees) for affine search
+        flag: %f, position: 4
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">transform</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-utils-averageaffinetransform"></span></div>
+<div class="section" id="averageaffinetransform">
+<span id="index-1"></span><h2>AverageAffineTransform<a class="headerlink" href="#averageaffinetransform" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L38">Link to code</a></p>
+<p>Wraps command <strong>AverageAffineTransform</strong></p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">AverageAffineTransform</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span> <span class="o">=</span> <span class="n">AverageAffineTransform</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;trans.mat&#39;</span><span class="p">,</span> <span class="s1">&#39;func_to_struct.mat&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_affine_transform</span> <span class="o">=</span> <span class="s1">&#39;MYtemplatewarp.mat&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;AverageAffineTransform 3 MYtemplatewarp.mat trans.mat func_to_struct.mat&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+dimension: (3 or 2)
+        image dimension (2 or 3)
+        flag: %d, position: 0
+output_affine_transform: (a file name)
+        Outputfname.txt: the name of the resulting transform.
+        flag: %s, position: 1
+transforms: (a list of items which are an existing file name)
+        transforms to average
+        flag: %s, position: 3
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">affine_transform</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">average</span> <span class="n">transform</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-utils-averageimages"></span></div>
+</div>
+<div class="section" id="averageimages">
+<span id="index-2"></span><h2>AverageImages<a class="headerlink" href="#averageimages" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L99">Link to code</a></p>
+<p>Wraps command <strong>AverageImages</strong></p>
+<div class="section" id="id1">
+<h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">AverageImages</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span> <span class="o">=</span> <span class="n">AverageImages</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_average_image</span> <span class="o">=</span> <span class="s2">&quot;average.nii.gz&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">normalize</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rc1s1.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;rc1s1.nii&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;AverageImages 3 average.nii.gz 1 rc1s1.nii rc1s1.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+dimension: (3 or 2)
+        image dimension (2 or 3)
+        flag: %d, position: 0
+images: (a list of items which are an existing file name)
+        image to apply transformation to (generally a coregistered
+        functional)
+        flag: %s, position: 3
+normalize: (a boolean)
+        Normalize: if true, the 2nd image is divided by its mean. This will
+        select the largest image to average into.
+        flag: %d, position: 2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+output_average_image: (a file name, nipype default value:
+         average.nii)
+        the name of the resulting image.
+        flag: %s, position: 1
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_average_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">average</span> <span class="n">image</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-utils-composemultitransform"></span></div>
+</div>
+<div class="section" id="composemultitransform">
+<span id="index-3"></span><h2>ComposeMultiTransform<a class="headerlink" href="#composemultitransform" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L343">Link to code</a></p>
+<p>Wraps command <strong>ComposeMultiTransform</strong></p>
+<p>Take a set of transformations and convert them to a single transformation matrix/warpfield.</p>
+<div class="section" id="id2">
+<h3>Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">ComposeMultiTransform</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compose_transform</span> <span class="o">=</span> <span class="n">ComposeMultiTransform</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compose_transform</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compose_transform</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;struct_to_template.mat&#39;</span><span class="p">,</span> <span class="s1">&#39;func_to_struct.mat&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compose_transform</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;ComposeMultiTransform 3 struct_to_template_composed.mat struct_to_template.mat func_to_struct.mat&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+transforms: (a list of items which are an existing file name)
+        transforms to average
+        flag: %s, position: 3
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+dimension: (3 or 2, nipype default value: 3)
+        image dimension (2 or 3)
+        flag: %d, position: 0
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+output_transform: (a file name)
+        the name of the resulting transform.
+        flag: %s, position: 1
+reference_image: (a file name)
+        Reference image (only necessary when output is warpfield)
+        flag: %s, position: 2
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_transform</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Composed</span> <span class="n">transform</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-utils-createjacobiandeterminantimage"></span></div>
+</div>
+<div class="section" id="createjacobiandeterminantimage">
+<span id="index-4"></span><h2>CreateJacobianDeterminantImage<a class="headerlink" href="#createjacobiandeterminantimage" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L207">Link to code</a></p>
+<p>Wraps command <strong>CreateJacobianDeterminantImage</strong></p>
+<div class="section" id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">CreateJacobianDeterminantImage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jacobian</span> <span class="o">=</span> <span class="n">CreateJacobianDeterminantImage</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jacobian</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">imageDimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jacobian</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">deformationField</span> <span class="o">=</span> <span class="s1">&#39;ants_Warp.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jacobian</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">outputImage</span> <span class="o">=</span> <span class="s1">&#39;out_name.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jacobian</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;CreateJacobianDeterminantImage 3 ants_Warp.nii.gz out_name.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+deformationField: (an existing file name)
+        deformation transformation file
+        flag: %s, position: 1
+imageDimension: (3 or 2)
+        image dimension (2 or 3)
+        flag: %d, position: 0
+outputImage: (a file name)
+        output filename
+        flag: %s, position: 2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+doLogJacobian: (0 or 1)
+        return the log jacobian
+        flag: %d, position: 3
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+useGeometric: (0 or 1)
+        return the geometric jacobian
+        flag: %d, position: 4
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jacobian_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">jacobian</span> <span class="n">image</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-utils-labelgeometry"></span></div>
+</div>
+<div class="section" id="labelgeometry">
+<span id="index-5"></span><h2>LabelGeometry<a class="headerlink" href="#labelgeometry" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L396">Link to code</a></p>
+<p>Wraps command <strong>LabelGeometryMeasures</strong></p>
+<p>Extracts geometry measures using a label file and an optional image file</p>
+<div class="section" id="id4">
+<h3>Examples<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">LabelGeometry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">label_extract</span> <span class="o">=</span> <span class="n">LabelGeometry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">label_extract</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">label_extract</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">label_image</span> <span class="o">=</span> <span class="s1">&#39;atlas.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">label_extract</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;LabelGeometryMeasures 3 atlas.nii.gz [] atlas.csv&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">label_extract</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">intensity_image</span> <span class="o">=</span> <span class="s1">&#39;ants_Warp.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">label_extract</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;LabelGeometryMeasures 3 atlas.nii.gz ants_Warp.nii.gz atlas.csv&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+intensity_image: (an existing file name, nipype default value: [])
+        Intensity image to extract values from. This is an optional input
+        flag: %s, position: 2
+label_image: (a file name)
+        label image to use for extracting geometry measures
+        flag: %s, position: 1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+dimension: (3 or 2, nipype default value: 3)
+        image dimension (2 or 3)
+        flag: %d, position: 0
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+output_file: (a unicode string)
+        name of output file
+        flag: %s, position: 3
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">CSV</span> <span class="n">file</span> <span class="n">of</span> <span class="n">geometry</span> <span class="n">measures</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-utils-multiplyimages"></span></div>
+</div>
+<div class="section" id="multiplyimages">
+<span id="index-6"></span><h2>MultiplyImages<a class="headerlink" href="#multiplyimages" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L154">Link to code</a></p>
+<p>Wraps command <strong>MultiplyImages</strong></p>
+<div class="section" id="id5">
+<h3>Examples<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">MultiplyImages</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">MultiplyImages</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">first_input</span> <span class="o">=</span> <span class="s1">&#39;moving2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">second_input</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_product_image</span> <span class="o">=</span> <span class="s2">&quot;out.nii&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;MultiplyImages 3 moving2.nii 0.25 out.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+dimension: (3 or 2)
+        image dimension (2 or 3)
+        flag: %d, position: 0
+first_input: (an existing file name)
+        image 1
+        flag: %s, position: 1
+output_product_image: (a file name)
+        Outputfname.nii.gz: the name of the resulting image.
+        flag: %s, position: 3
+second_input: (an existing file name or a float)
+        image 2 or multiplication weight
+        flag: %s, position: 2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_product_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">average</span> <span class="n">image</span> <span class="n">file</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

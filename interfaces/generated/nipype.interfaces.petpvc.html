@@ -1,0 +1,373 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../index.html">
+            <img src="../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../index.html">Home</a> ·
+<a class="navbar" href="../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.petpvc</a><ul>
+<li><a class="reference internal" href="#petpvc">PETPVC</a><ul>
+<li><a class="reference internal" href="#technique-keyword">Technique - keyword</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-petpvc">
+<h1>interfaces.petpvc<a class="headerlink" href="#interfaces-petpvc" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-petpvc-petpvc"></span><div class="section" id="petpvc">
+<span id="index-0"></span><h2>PETPVC<a class="headerlink" href="#petpvc" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/petpvc.py#L66">Link to code</a></p>
+<p>Wraps command <strong>petpvc</strong></p>
+<p>Use PETPVC for partial volume correction of PET images.</p>
+<p>PETPVC is a software from the Nuclear Medicine Department
+of the UCL University Hospital, London, UK.</p>
+<p>Its source code is here: <a class="reference external" href="https://github.com/UCL/PETPVC">https://github.com/UCL/PETPVC</a></p>
+<p>The methods that it implement are explained here:
+K. Erlandsson, I. Buvat, P. H. Pretorius, B. A. Thomas, and B. F. Hutton,
+“A review of partial volume correction techniques for emission tomography
+and their applications in neurology, cardiology and oncology,” Phys. Med.
+Biol., vol. 57, no. 21, p. R119, 2012.</p>
+<p>Its command line help shows this:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-i –input &lt; filename &gt;</dt>
+<dd>= PET image file</dd>
+<dt>-o –output &lt; filename &gt;</dt>
+<dd>= Output file</dd>
+<dt>[ -m –mask &lt; filename &gt; ]</dt>
+<dd>= Mask image file</dd>
+<dt>-p –pvc &lt; keyword &gt;</dt>
+<dd>= Desired PVC method</dd>
+</dl>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-x <var>&lt; X &gt;</var></span></kbd></td>
+<td>= The full-width at half maximum in mm along x-axis</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-y <var>&lt; Y &gt;</var></span></kbd></td>
+<td>= The full-width at half maximum in mm along y-axis</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-z <var>&lt; Z &gt;</var></span></kbd></td>
+<td>= The full-width at half maximum in mm along z-axis</td></tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>[ -d –debug ]</dt>
+<dd>= Prints debug information</dd>
+<dt>[ -n –iter [ Val ] ]</dt>
+<dd><dl class="first last docutils">
+<dt>= Number of iterations</dt>
+<dd>With: Val (Default = 10)</dd>
+</dl>
+</dd>
+<dt>[ -k [ Val ] ]</dt>
+<dd><dl class="first last docutils">
+<dt>= Number of deconvolution iterations</dt>
+<dd>With: Val (Default = 10)</dd>
+</dl>
+</dd>
+<dt>[ -a –alpha [ aval ] ]</dt>
+<dd><dl class="first last docutils">
+<dt>= Alpha value</dt>
+<dd>With: aval (Default = 1.5)</dd>
+</dl>
+</dd>
+<dt>[ -s –stop [ stopval ] ]</dt>
+<dd><dl class="first last docutils">
+<dt>= Stopping criterion</dt>
+<dd>With: stopval (Default = 0.01)</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<div class="section" id="technique-keyword">
+<h3>Technique - keyword<a class="headerlink" href="#technique-keyword" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Geometric transfer matrix - “GTM”</li>
+<li>Labbe approach - “LABBE”</li>
+<li>Richardson-Lucy - “RL”</li>
+<li>Van-Cittert - “VC”</li>
+<li>Region-based voxel-wise correction - “RBV”</li>
+<li>RBV with Labbe - “LABBE+RBV”</li>
+<li>RBV with Van-Cittert - “RBV+VC”</li>
+<li>RBV with Richardson-Lucy - “RBV+RL”</li>
+<li>RBV with Labbe and Van-Cittert - “LABBE+RBV+VC”</li>
+<li>RBV with Labbe and Richardson-Lucy- “LABBE+RBV+RL”</li>
+<li>Multi-target correction - “MTC”</li>
+<li>MTC with Labbe - “LABBE+MTC”</li>
+<li>MTC with Van-Cittert - “MTC+VC”</li>
+<li>MTC with Richardson-Lucy - “MTC+RL”</li>
+<li>MTC with Labbe and Van-Cittert - “LABBE+MTC+VC”</li>
+<li>MTC with Labbe and Richardson-Lucy- “LABBE+MTC+RL”</li>
+<li>Iterative Yang - “IY”</li>
+<li>Iterative Yang with Van-Cittert - “IY+VC”</li>
+<li>Iterative Yang with Richardson-Lucy - “IY+RL”</li>
+<li>Muller Gartner - “MG”</li>
+<li>Muller Gartner with Van-Cittert - “MG+VC”</li>
+<li>Muller Gartner with Richardson-Lucy - “MG+RL”</li>
+</ul>
+</div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">..testing</span> <span class="k">import</span> <span class="n">example_data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#TODO get data for PETPVC</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvc</span> <span class="o">=</span> <span class="n">PETPVC</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span>   <span class="o">=</span> <span class="s1">&#39;pet.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mask_file</span> <span class="o">=</span> <span class="s1">&#39;tissues.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span>  <span class="o">=</span> <span class="s1">&#39;pet_pvc_rbv.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">pvc</span> <span class="o">=</span> <span class="s1">&#39;RBV&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fwhm_x</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fwhm_y</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fwhm_z</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outs</span> <span class="o">=</span> <span class="n">pvc</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1">#doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+fwhm_x: (a float)
+        The full-width at half maximum in mm along x-axis
+        flag: -x %.4f
+fwhm_y: (a float)
+        The full-width at half maximum in mm along y-axis
+        flag: -y %.4f
+fwhm_z: (a float)
+        The full-width at half maximum in mm along z-axis
+        flag: -z %.4f
+in_file: (an existing file name)
+        PET image file
+        flag: -i %s
+mask_file: (an existing file name)
+        Mask image file
+        flag: -m %s
+pvc: (&#39;GTM&#39; or &#39;IY&#39; or &#39;IY+RL&#39; or &#39;IY+VC&#39; or &#39;LABBE&#39; or &#39;LABBE+MTC&#39;
+         or &#39;LABBE+MTC+RL&#39; or &#39;LABBE+MTC+VC&#39; or &#39;LABBE+RBV&#39; or
+         &#39;LABBE+RBV+RL&#39; or &#39;LABBE+RBV+VC&#39; or &#39;MG&#39; or &#39;MG+RL&#39; or &#39;MG+VC&#39; or
+         &#39;MTC&#39; or &#39;MTC+RL&#39; or &#39;MTC+VC&#39; or &#39;RBV&#39; or &#39;RBV+RL&#39; or &#39;RBV+VC&#39; or
+         &#39;RL&#39; or &#39;VC&#39;)
+        Desired PVC method
+        flag: -p %s
+
+[Optional]
+alpha: (a float, nipype default value: 1.5)
+        Alpha value
+        flag: -a %.4f
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+debug: (a boolean, nipype default value: False)
+        Prints debug information
+        flag: -d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+n_deconv: (an integer (int or long), nipype default value: 10)
+        Number of deconvolution iterations
+        flag: -k %d
+n_iter: (an integer (int or long), nipype default value: 10)
+        Number of iterations
+        flag: -n %d
+out_file: (a file name)
+        Output file
+        flag: -o %s
+stop_crit: (a float, nipype default value: 0.01)
+        Stopping criterion
+        flag: -a %.4f
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">file</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{0031-9155-61-22-7975">‘<span>&#64;</span>article{0031-9155-61-22-7975</a>,author={Benjamin A Thomas and Vesna Cuplov and Alexandre Bousse and Adriana Mendes and Kris Thielemans and Brian F Hutton and Kjell Erlandsson},title={PETPVC: a toolbox for performing partial volume correction techniques in positron emission tomography},journal={Physics in Medicine and Biology},volume={61},number={22},pages={7975},url={<a class="reference external" href="http://stacks.iop.org/0031-9155/61/i=22/a=7975">http://stacks.iop.org/0031-9155/61/i=22/a=7975</a>},doi={<a class="reference external" href="http://dx.doi.org/10.1088/0031-9155/61/22/7975">http://dx.doi.org/10.1088/0031-9155/61/22/7975</a>},year={2016},}’, key=‘0031-9155-61-22-7975’)</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

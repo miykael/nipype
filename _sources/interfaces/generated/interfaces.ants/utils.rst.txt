@@ -1,0 +1,408 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.ants.utils
+=====================
+
+
+.. _nipype.interfaces.ants.utils.AffineInitializer:
+
+
+.. index:: AffineInitializer
+
+AffineInitializer
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L292>`__
+
+Wraps command **antsAffineInitializer**
+
+Initialize an affine transform (as in antsBrainExtraction.sh)
+
+>>> from nipype.interfaces.ants import AffineInitializer
+>>> init = AffineInitializer()
+>>> init.inputs.fixed_image = 'fixed1.nii'
+>>> init.inputs.moving_image = 'moving1.nii'
+>>> init.cmdline
+'antsAffineInitializer 3 fixed1.nii moving1.nii transform.mat 15.000000 0.100000 0 10'
+
+Inputs::
+
+        [Mandatory]
+        fixed_image: (an existing file name)
+                reference image
+                flag: %s, position: 1
+        moving_image: (an existing file name)
+                moving image
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        dimension: (3 or 2, nipype default value: 3)
+                dimension
+                flag: %s, position: 0
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        local_search: (an integer (int or long), nipype default value: 10)
+                 determines if a local optimization is run at each search point for
+                the set number of iterations
+                flag: %d, position: 7
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+        out_file: (a file name, nipype default value: transform.mat)
+                output transform file
+                flag: %s, position: 3
+        principal_axes: (a boolean, nipype default value: False)
+                whether the rotation is searched around an initial principal axis
+                alignment.
+                flag: %d, position: 6
+        radian_fraction: (0.0 <= a floating point number <= 1.0, nipype
+                 default value: 0.1)
+                search this arc +/- principal axes
+                flag: %f, position: 5
+        search_factor: (a float, nipype default value: 15.0)
+                increments (degrees) for affine search
+                flag: %f, position: 4
+
+Outputs::
+
+        out_file: (a file name)
+                output transform file
+
+.. _nipype.interfaces.ants.utils.AverageAffineTransform:
+
+
+.. index:: AverageAffineTransform
+
+AverageAffineTransform
+----------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L38>`__
+
+Wraps command **AverageAffineTransform**
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.ants import AverageAffineTransform
+>>> avg = AverageAffineTransform()
+>>> avg.inputs.dimension = 3
+>>> avg.inputs.transforms = ['trans.mat', 'func_to_struct.mat']
+>>> avg.inputs.output_affine_transform = 'MYtemplatewarp.mat'
+>>> avg.cmdline
+'AverageAffineTransform 3 MYtemplatewarp.mat trans.mat func_to_struct.mat'
+
+Inputs::
+
+        [Mandatory]
+        dimension: (3 or 2)
+                image dimension (2 or 3)
+                flag: %d, position: 0
+        output_affine_transform: (a file name)
+                Outputfname.txt: the name of the resulting transform.
+                flag: %s, position: 1
+        transforms: (a list of items which are an existing file name)
+                transforms to average
+                flag: %s, position: 3
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+
+Outputs::
+
+        affine_transform: (an existing file name)
+                average transform file
+
+.. _nipype.interfaces.ants.utils.AverageImages:
+
+
+.. index:: AverageImages
+
+AverageImages
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L99>`__
+
+Wraps command **AverageImages**
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.ants import AverageImages
+>>> avg = AverageImages()
+>>> avg.inputs.dimension = 3
+>>> avg.inputs.output_average_image = "average.nii.gz"
+>>> avg.inputs.normalize = True
+>>> avg.inputs.images = ['rc1s1.nii', 'rc1s1.nii']
+>>> avg.cmdline
+'AverageImages 3 average.nii.gz 1 rc1s1.nii rc1s1.nii'
+
+Inputs::
+
+        [Mandatory]
+        dimension: (3 or 2)
+                image dimension (2 or 3)
+                flag: %d, position: 0
+        images: (a list of items which are an existing file name)
+                image to apply transformation to (generally a coregistered
+                functional)
+                flag: %s, position: 3
+        normalize: (a boolean)
+                Normalize: if true, the 2nd image is divided by its mean. This will
+                select the largest image to average into.
+                flag: %d, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+        output_average_image: (a file name, nipype default value:
+                 average.nii)
+                the name of the resulting image.
+                flag: %s, position: 1
+
+Outputs::
+
+        output_average_image: (an existing file name)
+                average image file
+
+.. _nipype.interfaces.ants.utils.ComposeMultiTransform:
+
+
+.. index:: ComposeMultiTransform
+
+ComposeMultiTransform
+---------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L343>`__
+
+Wraps command **ComposeMultiTransform**
+
+Take a set of transformations and convert them to a single transformation matrix/warpfield.
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.ants import ComposeMultiTransform
+>>> compose_transform = ComposeMultiTransform()
+>>> compose_transform.inputs.dimension = 3
+>>> compose_transform.inputs.transforms = ['struct_to_template.mat', 'func_to_struct.mat']
+>>> compose_transform.cmdline
+'ComposeMultiTransform 3 struct_to_template_composed.mat struct_to_template.mat func_to_struct.mat'
+
+Inputs::
+
+        [Mandatory]
+        transforms: (a list of items which are an existing file name)
+                transforms to average
+                flag: %s, position: 3
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        dimension: (3 or 2, nipype default value: 3)
+                image dimension (2 or 3)
+                flag: %d, position: 0
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+        output_transform: (a file name)
+                the name of the resulting transform.
+                flag: %s, position: 1
+        reference_image: (a file name)
+                Reference image (only necessary when output is warpfield)
+                flag: %s, position: 2
+
+Outputs::
+
+        output_transform: (an existing file name)
+                Composed transform file
+
+.. _nipype.interfaces.ants.utils.CreateJacobianDeterminantImage:
+
+
+.. index:: CreateJacobianDeterminantImage
+
+CreateJacobianDeterminantImage
+------------------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L207>`__
+
+Wraps command **CreateJacobianDeterminantImage**
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.ants import CreateJacobianDeterminantImage
+>>> jacobian = CreateJacobianDeterminantImage()
+>>> jacobian.inputs.imageDimension = 3
+>>> jacobian.inputs.deformationField = 'ants_Warp.nii.gz'
+>>> jacobian.inputs.outputImage = 'out_name.nii.gz'
+>>> jacobian.cmdline
+'CreateJacobianDeterminantImage 3 ants_Warp.nii.gz out_name.nii.gz'
+
+Inputs::
+
+        [Mandatory]
+        deformationField: (an existing file name)
+                deformation transformation file
+                flag: %s, position: 1
+        imageDimension: (3 or 2)
+                image dimension (2 or 3)
+                flag: %d, position: 0
+        outputImage: (a file name)
+                output filename
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        doLogJacobian: (0 or 1)
+                return the log jacobian
+                flag: %d, position: 3
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+        useGeometric: (0 or 1)
+                return the geometric jacobian
+                flag: %d, position: 4
+
+Outputs::
+
+        jacobian_image: (an existing file name)
+                jacobian image
+
+.. _nipype.interfaces.ants.utils.LabelGeometry:
+
+
+.. index:: LabelGeometry
+
+LabelGeometry
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L396>`__
+
+Wraps command **LabelGeometryMeasures**
+
+Extracts geometry measures using a label file and an optional image file
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.ants import LabelGeometry
+>>> label_extract = LabelGeometry()
+>>> label_extract.inputs.dimension = 3
+>>> label_extract.inputs.label_image = 'atlas.nii.gz'
+>>> label_extract.cmdline
+'LabelGeometryMeasures 3 atlas.nii.gz [] atlas.csv'
+
+>>> label_extract.inputs.intensity_image = 'ants_Warp.nii.gz'
+>>> label_extract.cmdline
+'LabelGeometryMeasures 3 atlas.nii.gz ants_Warp.nii.gz atlas.csv'
+
+Inputs::
+
+        [Mandatory]
+        intensity_image: (an existing file name, nipype default value: [])
+                Intensity image to extract values from. This is an optional input
+                flag: %s, position: 2
+        label_image: (a file name)
+                label image to use for extracting geometry measures
+                flag: %s, position: 1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        dimension: (3 or 2, nipype default value: 3)
+                image dimension (2 or 3)
+                flag: %d, position: 0
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+        output_file: (a unicode string)
+                name of output file
+                flag: %s, position: 3
+
+Outputs::
+
+        output_file: (an existing file name)
+                CSV file of geometry measures
+
+.. _nipype.interfaces.ants.utils.MultiplyImages:
+
+
+.. index:: MultiplyImages
+
+MultiplyImages
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/utils.py#L154>`__
+
+Wraps command **MultiplyImages**
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.ants import MultiplyImages
+>>> test = MultiplyImages()
+>>> test.inputs.dimension = 3
+>>> test.inputs.first_input = 'moving2.nii'
+>>> test.inputs.second_input = 0.25
+>>> test.inputs.output_product_image = "out.nii"
+>>> test.cmdline
+'MultiplyImages 3 moving2.nii 0.25 out.nii'
+
+Inputs::
+
+        [Mandatory]
+        dimension: (3 or 2)
+                image dimension (2 or 3)
+                flag: %d, position: 0
+        first_input: (an existing file name)
+                image 1
+                flag: %s, position: 1
+        output_product_image: (a file name)
+                Outputfname.nii.gz: the name of the resulting image.
+                flag: %s, position: 3
+        second_input: (an existing file name or a float)
+                image 2 or multiplication weight
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+
+Outputs::
+
+        output_product_image: (an existing file name)
+                average image file

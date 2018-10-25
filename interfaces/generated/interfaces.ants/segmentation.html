@@ -1,0 +1,1217 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.ants.segmentation</a><ul>
+<li><a class="reference internal" href="#antsjointfusion">AntsJointFusion</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#atropos">Atropos</a><ul>
+<li><a class="reference internal" href="#id1">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#brainextraction">BrainExtraction</a><ul>
+<li><a class="reference internal" href="#id2">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#corticalthickness">CorticalThickness</a><ul>
+<li><a class="reference internal" href="#id3">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#denoiseimage">DenoiseImage</a><ul>
+<li><a class="reference internal" href="#id4">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jointfusion">JointFusion</a><ul>
+<li><a class="reference internal" href="#id5">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#kellykapowski">KellyKapowski</a><ul>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#laplacianthickness">LaplacianThickness</a><ul>
+<li><a class="reference internal" href="#id7">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#n4biasfieldcorrection">N4BiasFieldCorrection</a><ul>
+<li><a class="reference internal" href="#id9">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-ants-segmentation">
+<h1>interfaces.ants.segmentation<a class="headerlink" href="#interfaces-ants-segmentation" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-ants-segmentation-antsjointfusion"></span><div class="section" id="antsjointfusion">
+<span id="index-0"></span><h2>AntsJointFusion<a class="headerlink" href="#antsjointfusion" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L1273">Link to code</a></p>
+<p>Wraps command <strong>antsJointFusion</strong></p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">AntsJointFusion</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span> <span class="o">=</span> <span class="n">AntsJointFusion</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_label_fusion</span> <span class="o">=</span> <span class="s1">&#39;ants_fusion_label_output.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">atlas_image</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;rc1s1.nii&#39;</span><span class="p">,</span><span class="s1">&#39;rc1s2.nii&#39;</span><span class="p">]</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">atlas_segmentation_image</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;segmentation0.nii.gz&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">target_image</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;im1.nii&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&quot;antsJointFusion -a 0.1 -g [&#39;rc1s1.nii&#39;, &#39;rc1s2.nii&#39;] -l segmentation0.nii.gz -b 2.0 -o ants_fusion_label_output.nii -s 3x3x3 -t [&#39;im1.nii&#39;]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">target_image</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;im1.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;im2.nii&#39;</span><span class="p">]</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&quot;antsJointFusion -a 0.1 -g [&#39;rc1s1.nii&#39;, &#39;rc1s2.nii&#39;] -l segmentation0.nii.gz -b 2.0 -o ants_fusion_label_output.nii -s 3x3x3 -t [&#39;im1.nii&#39;, &#39;im2.nii&#39;]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">atlas_image</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;rc1s1.nii&#39;</span><span class="p">,</span><span class="s1">&#39;rc1s2.nii&#39;</span><span class="p">],</span>
+<span class="gp">... </span>                                       <span class="p">[</span><span class="s1">&#39;rc2s1.nii&#39;</span><span class="p">,</span><span class="s1">&#39;rc2s2.nii&#39;</span><span class="p">]</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">atlas_segmentation_image</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;segmentation0.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                   <span class="s1">&#39;segmentation1.nii.gz&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&quot;antsJointFusion -a 0.1 -g [&#39;rc1s1.nii&#39;, &#39;rc1s2.nii&#39;] -g [&#39;rc2s1.nii&#39;, &#39;rc2s2.nii&#39;] -l segmentation0.nii.gz -l segmentation1.nii.gz -b 2.0 -o ants_fusion_label_output.nii -s 3x3x3 -t [&#39;im1.nii&#39;, &#39;im2.nii&#39;]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">patch_radius</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">search_radius</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&quot;antsJointFusion -a 0.5 -g [&#39;rc1s1.nii&#39;, &#39;rc1s2.nii&#39;] -g [&#39;rc2s1.nii&#39;, &#39;rc2s2.nii&#39;] -l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -o ants_fusion_label_output.nii -p 3x2x1 -s 3 -t [&#39;im1.nii&#39;, &#39;im2.nii&#39;]&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">search_radius</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mask.nii&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">exclusion_image</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;roi01.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;roi02.nii&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">exclusion_image_label</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&quot;antsJointFusion -a 0.5 -g [&#39;rc1s1.nii&#39;, &#39;rc1s2.nii&#39;] -g [&#39;rc2s1.nii&#39;, &#39;rc2s2.nii&#39;] -l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -e 1[roi01.nii] -e 2[roi02.nii] -o ants_fusion_label_output.nii -p 3x2x1 -s mask.nii -t [&#39;im1.nii&#39;, &#39;im2.nii&#39;] -v&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_label_fusion</span> <span class="o">=</span> <span class="s1">&#39;ants_fusion_label_output.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_intensity_fusion_name_format</span> <span class="o">=</span> <span class="s1">&#39;ants_joint_fusion_intensity_</span><span class="si">%d</span><span class="s1">.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_label_post_prob_name_format</span> <span class="o">=</span> <span class="s1">&#39;ants_joint_fusion_posterior_</span><span class="si">%d</span><span class="s1">.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_atlas_voting_weight_name_format</span> <span class="o">=</span> <span class="s1">&#39;ants_joint_fusion_voting_weight_</span><span class="si">%d</span><span class="s1">.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">antsjointfusion</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&quot;antsJointFusion -a 0.5 -g [&#39;rc1s1.nii&#39;, &#39;rc1s2.nii&#39;] -g [&#39;rc2s1.nii&#39;, &#39;rc2s2.nii&#39;] -l segmentation0.nii.gz -l segmentation1.nii.gz -b 1.0 -d 3 -e 1[roi01.nii] -e 2[roi02.nii]  -o [ants_fusion_label_output.nii, ants_joint_fusion_intensity_%d.nii.gz, ants_joint_fusion_posterior_%d.nii.gz, ants_joint_fusion_voting_weight_%d.nii.gz] -p 3x2x1 -s mask.nii -t [&#39;im1.nii&#39;, &#39;im2.nii&#39;] -v&quot;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+atlas_image: (a list of items which are a list of items which are an
+         existing file name)
+        The atlas image (or multimodal atlas images) assumed to be aligned
+        to a common image domain.
+        flag: -g %s...
+atlas_segmentation_image: (a list of items which are an existing file
+         name)
+        The atlas segmentation images. For performing label fusion the
+        number of specified segmentations should be identical to the number
+        of atlas image sets.
+        flag: -l %s...
+target_image: (a list of items which are a list of items which are an
+         existing file name)
+        The target image (or multimodal target images) assumed to be aligned
+        to a common image domain.
+        flag: -t %s
+
+[Optional]
+alpha: (a float, nipype default value: 0.1)
+        Regularization term added to matrix Mx for calculating the inverse.
+        Default = 0.1
+        flag: -a %s
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+beta: (a float, nipype default value: 2.0)
+        Exponent for mapping intensity difference to the joint error.
+        Default = 2.0
+        flag: -b %s
+constrain_nonnegative: (a boolean, nipype default value: False)
+        Constrain solution to non-negative weights.
+        flag: -c
+dimension: (3 or 2 or 4)
+        This option forces the image to be treated as a specified-
+        dimensional image. If not specified, the program tries to infer the
+        dimensionality from the input image.
+        flag: -d %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+exclusion_image: (a list of items which are an existing file name)
+        Specify an exclusion region for the given label.
+exclusion_image_label: (a list of items which are a unicode string)
+        Specify a label for the exclusion region.
+        flag: -e %s
+        requires: exclusion_image
+mask_image: (an existing file name)
+        If a mask image is specified, fusion is only performed in the mask
+        region.
+        flag: -x %s
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+out_atlas_voting_weight_name_format: (a unicode string)
+        Optional atlas voting weight image file name format.
+        requires: out_label_fusion, out_intensity_fusion_name_format,
+         out_label_post_prob_name_format
+out_intensity_fusion_name_format: (a unicode string)
+        Optional intensity fusion image file name format. (e.g.
+        &quot;antsJointFusionIntensity_%d.nii.gz&quot;)
+out_label_fusion: (a file name)
+        The output label fusion image.
+        flag: %s
+out_label_post_prob_name_format: (a unicode string)
+        Optional label posterior probability image file name format.
+        requires: out_label_fusion, out_intensity_fusion_name_format
+patch_metric: (&#39;PC&#39; or &#39;MSQ&#39;)
+        Metric to be used in determining the most similar neighborhood
+        patch. Options include Pearson&#39;s correlation (PC) and mean squares
+        (MSQ). Default = PC (Pearson correlation).
+        flag: -m %s
+patch_radius: (a list of items which are a value of class &#39;int&#39;)
+        Patch radius for similarity measures.Default: 2x2x2
+        flag: -p %s
+retain_atlas_voting_images: (a boolean, nipype default value: False)
+        Retain atlas voting images. Default = false
+        flag: -f
+retain_label_posterior_images: (a boolean, nipype default value:
+         False)
+        Retain label posterior probability images. Requires atlas
+        segmentations to be specified. Default = false
+        flag: -r
+        requires: atlas_segmentation_image
+search_radius: (a list of from 1 to 3 items which are any value,
+         nipype default value: [3, 3, 3])
+        Search radius for similarity measures. Default = 3x3x3. One can also
+        specify an image where the value at the voxel specifies the
+        isotropic search radius at that voxel.
+        flag: -s %s
+verbose: (a boolean)
+        Verbose output.
+        flag: -v
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_atlas_voting_weight_name_format</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+<span class="n">out_intensity_fusion_name_format</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+<span class="n">out_label_fusion</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">out_label_post_prob_name_format</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-segmentation-atropos"></span></div>
+</div>
+<div class="section" id="atropos">
+<span id="index-1"></span><h2>Atropos<a class="headerlink" href="#atropos" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L67">Link to code</a></p>
+<p>Wraps command <strong>Atropos</strong></p>
+<p>A finite mixture modeling (FMM) segmentation approach with possibilities for
+specifying prior constraints. These prior constraints include the specification
+of a prior label image, prior probability images (one for each class), and/or an
+MRF prior to enforce spatial smoothing of the labels. Similar algorithms include
+FAST and SPM.</p>
+<div class="section" id="id1">
+<h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">Atropos</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span> <span class="o">=</span> <span class="n">Atropos</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">intensity_images</span> <span class="o">=</span> <span class="s1">&#39;structural.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mask_image</span> <span class="o">=</span> <span class="s1">&#39;mask.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">initialization</span> <span class="o">=</span> <span class="s1">&#39;PriorProbabilityImages&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">prior_probability_images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rc1s1.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;rc1s2.nii&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number_of_tissue_classes</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">prior_weighting</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">prior_probability_threshold</span> <span class="o">=</span> <span class="mf">0.0000001</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">likelihood_model</span> <span class="o">=</span> <span class="s1">&#39;Gaussian&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mrf_smoothing_factor</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mrf_radius</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">icm_use_synchronous_update</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">maximum_number_of_icm_terations</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">n_iterations</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">convergence_threshold</span> <span class="o">=</span> <span class="mf">0.000001</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">posterior_formulation</span> <span class="o">=</span> <span class="s1">&#39;Socrates&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">use_mixture_model_proportions</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">save_posteriors</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;Atropos --image-dimensionality 3 --icm [1,1] --initialization PriorProbabilityImages[2,priors/priorProbImages%02d.nii,0.8,1e-07] --intensity-image structural.nii --likelihood-model Gaussian --mask-image mask.nii --mrf [0.2,1x1x1] --convergence [5,1e-06] --output [structural_labeled.nii,POSTERIOR_%02d.nii.gz] --posterior-formulation Socrates[1] --use-random-seed 1&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+initialization: (&#39;Random&#39; or &#39;Otsu&#39; or &#39;KMeans&#39; or
+         &#39;PriorProbabilityImages&#39; or &#39;PriorLabelImage&#39;)
+        flag: %s
+        requires: number_of_tissue_classes
+intensity_images: (a list of items which are an existing file name)
+        flag: --intensity-image %s...
+mask_image: (an existing file name)
+        flag: --mask-image %s
+number_of_tissue_classes: (an integer (int or long))
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+convergence_threshold: (a float)
+        requires: n_iterations
+dimension: (3 or 2 or 4, nipype default value: 3)
+        image dimension (2, 3, or 4)
+        flag: --image-dimensionality %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+icm_use_synchronous_update: (a boolean)
+        flag: %s
+likelihood_model: (a unicode string)
+        flag: --likelihood-model %s
+maximum_number_of_icm_terations: (an integer (int or long))
+        requires: icm_use_synchronous_update
+mrf_radius: (a list of items which are an integer (int or long))
+        requires: mrf_smoothing_factor
+mrf_smoothing_factor: (a float)
+        flag: %s
+n_iterations: (an integer (int or long))
+        flag: %s
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+out_classified_image_name: (a file name)
+        flag: %s
+output_posteriors_name_template: (a unicode string, nipype default
+         value: POSTERIOR_%02d.nii.gz)
+posterior_formulation: (a unicode string)
+        flag: %s
+prior_probability_images: (a list of items which are an existing file
+         name)
+prior_probability_threshold: (a float)
+        requires: prior_weighting
+prior_weighting: (a float)
+save_posteriors: (a boolean)
+use_mixture_model_proportions: (a boolean)
+        requires: posterior_formulation
+use_random_seed: (a boolean, nipype default value: True)
+        use random seed value over constant
+        flag: --use-random-seed %d
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">classified_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">posteriors</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-segmentation-brainextraction"></span></div>
+</div>
+<div class="section" id="brainextraction">
+<span id="index-2"></span><h2>BrainExtraction<a class="headerlink" href="#brainextraction" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L782">Link to code</a></p>
+<p>Wraps command <strong>antsBrainExtraction.sh</strong></p>
+<div class="section" id="id2">
+<h3>Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants.segmentation</span> <span class="k">import</span> <span class="n">BrainExtraction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brainextraction</span> <span class="o">=</span> <span class="n">BrainExtraction</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brainextraction</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brainextraction</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">anatomical_image</span> <span class="o">=</span><span class="s1">&#39;T1.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brainextraction</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">brain_template</span> <span class="o">=</span> <span class="s1">&#39;study_template.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brainextraction</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">brain_probability_mask</span> <span class="o">=</span><span class="s1">&#39;ProbabilityMaskOfStudyTemplate.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">brainextraction</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;antsBrainExtraction.sh -a T1.nii.gz -m ProbabilityMaskOfStudyTemplate.nii.gz -e study_template.nii.gz -d 3 -s nii.gz -o highres001_&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+anatomical_image: (an existing file name)
+        Structural image, typically T1. If more than one anatomical image is
+        specified, subsequently specified images are used during the
+        segmentation process. However, only the first image is used in the
+        registration of priors. Our suggestion would be to specify the T1 as
+        the first image. Anatomical template created using e.g. LPBA40 data
+        set with buildtemplateparallel.sh in ANTs.
+        flag: -a %s
+brain_probability_mask: (an existing file name)
+        Brain probability mask created using e.g. LPBA40 data set which have
+        brain masks defined, and warped to anatomical template and averaged
+        resulting in a probability image.
+        flag: -m %s
+brain_template: (an existing file name)
+        Anatomical template created using e.g. LPBA40 data set with
+        buildtemplateparallel.sh in ANTs.
+        flag: -e %s
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+debug: (a boolean)
+        If &gt; 0, runs a faster version of the script. Only for testing.
+        Implies -u 0. Requires single thread computation for complete
+        reproducibility.
+        flag: -z 1
+dimension: (3 or 2, nipype default value: 3)
+        image dimension (2 or 3)
+        flag: -d %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+extraction_registration_mask: (an existing file name)
+        Mask (defined in the template space) used during registration for
+        brain extraction. To limit the metric computation to a specific
+        region.
+        flag: -f %s
+image_suffix: (a unicode string, nipype default value: nii.gz)
+        any of standard ITK formats, nii.gz is default
+        flag: -s %s
+keep_temporary_files: (an integer (int or long))
+        Keep brain extraction/segmentation warps, etc (default = 0).
+        flag: -k %d
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+out_prefix: (a unicode string, nipype default value: highres001_)
+        Prefix that is prepended to all output files (default =
+        highress001_)
+        flag: -o %s
+use_floatingpoint_precision: (0 or 1)
+        Use floating point precision in registrations (default = 0)
+        flag: -q %d
+use_random_seeding: (0 or 1)
+        Use random number generated from system clock in Atropos (default =
+        1)
+        flag: -u %d
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BrainExtractionBrain</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">brain</span> <span class="n">extraction</span> <span class="n">image</span>
+<span class="n">BrainExtractionCSF</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">segmentation</span> <span class="n">mask</span> <span class="k">with</span> <span class="n">only</span> <span class="n">CSF</span>
+<span class="n">BrainExtractionGM</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">segmentation</span> <span class="n">mask</span> <span class="k">with</span> <span class="n">only</span> <span class="n">grey</span> <span class="n">matter</span>
+<span class="n">BrainExtractionInitialAffine</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionInitialAffineFixed</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionInitialAffineMoving</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionLaplacian</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionMask</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">brain</span> <span class="n">extraction</span> <span class="n">mask</span>
+<span class="n">BrainExtractionPrior0GenericAffine</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionPrior1InverseWarp</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionPrior1Warp</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionPriorWarped</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionSegmentation</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">segmentation</span> <span class="n">mask</span> <span class="k">with</span> <span class="n">CSF</span><span class="p">,</span> <span class="n">GM</span><span class="p">,</span> <span class="ow">and</span> <span class="n">WM</span>
+<span class="n">BrainExtractionTemplateLaplacian</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionTmp</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">BrainExtractionWM</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">segmenration</span> <span class="n">mask</span> <span class="k">with</span> <span class="n">only</span> <span class="n">white</span> <span class="n">matter</span>
+<span class="n">N4Corrected0</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">N4</span> <span class="n">bias</span> <span class="n">field</span> <span class="n">corrected</span> <span class="n">image</span>
+<span class="n">N4Truncated0</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-segmentation-corticalthickness"></span></div>
+</div>
+<div class="section" id="corticalthickness">
+<span id="index-3"></span><h2>CorticalThickness<a class="headerlink" href="#corticalthickness" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L582">Link to code</a></p>
+<p>Wraps command <strong>antsCorticalThickness.sh</strong></p>
+<div class="section" id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants.segmentation</span> <span class="k">import</span> <span class="n">CorticalThickness</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corticalthickness</span> <span class="o">=</span> <span class="n">CorticalThickness</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corticalthickness</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corticalthickness</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">anatomical_image</span> <span class="o">=</span><span class="s1">&#39;T1.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corticalthickness</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">brain_template</span> <span class="o">=</span> <span class="s1">&#39;study_template.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corticalthickness</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">brain_probability_mask</span> <span class="o">=</span><span class="s1">&#39;ProbabilityMaskOfStudyTemplate.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corticalthickness</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">segmentation_priors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BrainSegmentationPrior01.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                <span class="s1">&#39;BrainSegmentationPrior02.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                <span class="s1">&#39;BrainSegmentationPrior03.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                                <span class="s1">&#39;BrainSegmentationPrior04.nii.gz&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corticalthickness</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">t1_registration_template</span> <span class="o">=</span> <span class="s1">&#39;brain_study_template.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corticalthickness</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;antsCorticalThickness.sh -a T1.nii.gz -m ProbabilityMaskOfStudyTemplate.nii.gz -e study_template.nii.gz -d 3 -s nii.gz -o antsCT_ -p nipype_priors/BrainSegmentationPrior%02d.nii.gz -t brain_study_template.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+anatomical_image: (an existing file name)
+        Structural *intensity* image, typically T1. If more than one
+        anatomical image is specified, subsequently specified images are
+        used during the segmentation process. However, only the first image
+        is used in the registration of priors. Our suggestion would be to
+        specify the T1 as the first image.
+        flag: -a %s
+brain_probability_mask: (an existing file name)
+        brain probability mask in template space
+        flag: -m %s
+brain_template: (an existing file name)
+        Anatomical *intensity* template (possibly created using a population
+        data set with buildtemplateparallel.sh in ANTs). This template is
+        *not* skull-stripped.
+        flag: -e %s
+segmentation_priors: (a list of items which are an existing file
+         name)
+        flag: -p %s
+t1_registration_template: (an existing file name)
+        Anatomical *intensity* template (assumed to be skull-stripped). A
+        common case would be where this would be the same template as
+        specified in the -e option which is not skull stripped.
+        flag: -t %s
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+b_spline_smoothing: (a boolean)
+        Use B-spline SyN for registrations and B-spline exponential mapping
+        in DiReCT.
+        flag: -v
+cortical_label_image: (an existing file name)
+        Cortical ROI labels to use as a prior for ATITH.
+debug: (a boolean)
+        If &gt; 0, runs a faster version of the script. Only for testing.
+        Implies -u 0. Requires single thread computation for complete
+        reproducibility.
+        flag: -z 1
+dimension: (3 or 2, nipype default value: 3)
+        image dimension (2 or 3)
+        flag: -d %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+extraction_registration_mask: (an existing file name)
+        Mask (defined in the template space) used during registration for
+        brain extraction.
+        flag: -f %s
+image_suffix: (a unicode string, nipype default value: nii.gz)
+        any of standard ITK formats, nii.gz is default
+        flag: -s %s
+keep_temporary_files: (an integer (int or long))
+        Keep brain extraction/segmentation warps, etc (default = 0).
+        flag: -k %d
+label_propagation: (a unicode string)
+        Incorporate a distance prior one the posterior formulation. Should
+        be of the form &#39;label[lambda,boundaryProbability]&#39; where label is a
+        value of 1,2,3,... denoting label ID. The label probability for
+        anything outside the current label = boundaryProbability * exp(
+        -lambda * distanceFromBoundary ) Intuitively, smaller lambda values
+        will increase the spatial capture range of the distance prior. To
+        apply to all label values, simply omit specifying the label, i.e. -l
+        [lambda,boundaryProbability].
+        flag: -l %s
+max_iterations: (an integer (int or long))
+        ANTS registration max iterations (default = 100x100x70x20)
+        flag: -i %d
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+out_prefix: (a unicode string, nipype default value: antsCT_)
+        Prefix that is prepended to all output files (default = antsCT_)
+        flag: -o %s
+posterior_formulation: (a unicode string)
+        Atropos posterior formulation and whether or not to use mixture
+        model proportions. e.g &#39;Socrates[1]&#39; (default) or &#39;Aristotle[1]&#39;.
+        Choose the latter if you want use the distance priors (see also the
+        -l option for label propagation control).
+        flag: -b %s
+prior_segmentation_weight: (a float)
+        Atropos spatial prior *probability* weight for the segmentation
+        flag: -w %f
+quick_registration: (a boolean)
+        If = 1, use antsRegistrationSyNQuick.sh as the basis for
+        registration during brain extraction, brain segmentation, and
+        (optional) normalization to a template. Otherwise use
+        antsRegistrationSyN.sh (default = 0).
+        flag: -q 1
+segmentation_iterations: (an integer (int or long))
+        N4 -&gt; Atropos -&gt; N4 iterations during segmentation (default = 3)
+        flag: -n %d
+use_floatingpoint_precision: (0 or 1)
+        Use floating point precision in registrations (default = 0)
+        flag: -j %d
+use_random_seeding: (0 or 1)
+        Use random number generated from system clock in Atropos (default =
+        1)
+        flag: -u %d
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BrainExtractionMask</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">brain</span> <span class="n">extraction</span> <span class="n">mask</span>
+<span class="n">BrainSegmentation</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">brain</span> <span class="n">segmentaion</span> <span class="n">image</span>
+<span class="n">BrainSegmentationN4</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">N4</span> <span class="n">corrected</span> <span class="n">image</span>
+<span class="n">BrainSegmentationPosteriors</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span>
+         <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Posterior</span> <span class="n">probability</span> <span class="n">images</span>
+<span class="n">BrainVolumes</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Brain</span> <span class="n">volumes</span> <span class="k">as</span> <span class="n">text</span>
+<span class="n">CorticalThickness</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">cortical</span> <span class="n">thickness</span> <span class="n">file</span>
+<span class="n">CorticalThicknessNormedToTemplate</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Normalized</span> <span class="n">cortical</span> <span class="n">thickness</span>
+<span class="n">SubjectToTemplate0GenericAffine</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Template</span> <span class="n">to</span> <span class="n">subject</span> <span class="n">inverse</span> <span class="n">affine</span>
+<span class="n">SubjectToTemplate1Warp</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Template</span> <span class="n">to</span> <span class="n">subject</span> <span class="n">inverse</span> <span class="n">warp</span>
+<span class="n">SubjectToTemplateLogJacobian</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Template</span> <span class="n">to</span> <span class="n">subject</span> <span class="n">log</span> <span class="n">jacobian</span>
+<span class="n">TemplateToSubject0Warp</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Template</span> <span class="n">to</span> <span class="n">subject</span> <span class="n">warp</span>
+<span class="n">TemplateToSubject1GenericAffine</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Template</span> <span class="n">to</span> <span class="n">subject</span> <span class="n">affine</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-segmentation-denoiseimage"></span></div>
+</div>
+<div class="section" id="denoiseimage">
+<span id="index-4"></span><h2>DenoiseImage<a class="headerlink" href="#denoiseimage" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L1104">Link to code</a></p>
+<p>Wraps command <strong>DenoiseImage</strong></p>
+<div class="section" id="id4">
+<h3>Examples<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">DenoiseImage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise</span> <span class="o">=</span> <span class="n">DenoiseImage</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_image</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;DenoiseImage -d 3 -i im1.nii -n Gaussian -o im1_noise_corrected.nii -s 1&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_2</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">denoise</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_2</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_image</span> <span class="o">=</span> <span class="s1">&#39;output_corrected_image.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_2</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">noise_model</span> <span class="o">=</span> <span class="s1">&#39;Rician&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_2</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">shrink_factor</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_2</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;DenoiseImage -d 3 -i im1.nii -n Rician -o output_corrected_image.nii.gz -s 2&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_3</span> <span class="o">=</span> <span class="n">DenoiseImage</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_3</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_image</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_3</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">save_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">denoise_3</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;DenoiseImage -i im1.nii -n Gaussian -o [ im1_noise_corrected.nii, im1_noise.nii ] -s 1&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+input_image: (an existing file name)
+        A scalar image is expected as input for noise correction.
+        flag: -i %s
+save_noise: (a boolean, nipype default value: False)
+        True if the estimated noise should be saved to file.
+        mutually_exclusive: noise_image
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+dimension: (2 or 3 or 4)
+        This option forces the image to be treated as a specified-
+        dimensional image. If not specified, the program tries to infer the
+        dimensionality from the input image.
+        flag: -d %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+noise_image: (a file name)
+        Filename for the estimated noise.
+noise_model: (&#39;Gaussian&#39; or &#39;Rician&#39;, nipype default value: Gaussian)
+        Employ a Rician or Gaussian noise model.
+        flag: -n %s
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+output_image: (a file name)
+        The output consists of the noise corrected version of the input
+        image.
+        flag: -o %s
+shrink_factor: (an integer (int or long), nipype default value: 1)
+        Running noise correction on large images can be time consuming. To
+        lessen computation time, the input image can be resampled. The
+        shrink factor, specified as a single integer, describes this
+        resampling. Shrink factor = 1 is the default.
+        flag: -s %s
+verbose: (a boolean)
+        Verbose output.
+        flag: -v
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">noise_image</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">output_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-segmentation-jointfusion"></span></div>
+</div>
+<div class="section" id="jointfusion">
+<span id="index-5"></span><h2>JointFusion<a class="headerlink" href="#jointfusion" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L985">Link to code</a></p>
+<p>Wraps command <strong>jointfusion</strong></p>
+<div class="section" id="id5">
+<h3>Examples<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">JointFusion</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span> <span class="o">=</span> <span class="n">JointFusion</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">modalities</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;Joint[0.1,2]&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_label_image</span> <span class="o">=</span><span class="s1">&#39;fusion_labelimage_output.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">warped_intensity_images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;im1.nii&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                     <span class="s1">&#39;im2.nii&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                     <span class="s1">&#39;im3.nii&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">warped_label_images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;segmentation0.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                 <span class="s1">&#39;segmentation1.nii.gz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                 <span class="s1">&#39;segmentation1.nii.gz&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">target_image</span> <span class="o">=</span> <span class="s1">&#39;T1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;jointfusion 3 1 -m Joint[0.1,2] -tg T1.nii -g im1.nii -g im2.nii -g im3.nii -l segmentation0.nii.gz -l segmentation1.nii.gz -l segmentation1.nii.gz fusion_labelimage_output.nii&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;Joint&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">patch_radius</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">search_radius</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">at</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;jointfusion 3 1 -m Joint[0.5,1] -rp 3x2x1 -rs 1x2x3 -tg T1.nii -g im1.nii -g im2.nii -g im3.nii -l segmentation0.nii.gz -l segmentation1.nii.gz -l segmentation1.nii.gz fusion_labelimage_output.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+dimension: (3 or 2 or 4, nipype default value: 3)
+        image dimension (2, 3, or 4)
+        flag: %d, position: 0
+modalities: (an integer (int or long))
+        Number of modalities or features
+        flag: %d, position: 1
+output_label_image: (a file name)
+        Output fusion label map image
+        flag: %s, position: -1
+target_image: (a list of items which are an existing file name)
+        Target image(s)
+        flag: -tg %s...
+warped_intensity_images: (a list of items which are an existing file
+         name)
+        Warped atlas images
+        flag: -g %s...
+warped_label_images: (a list of items which are an existing file
+         name)
+        Warped atlas segmentations
+        flag: -l %s...
+
+[Optional]
+alpha: (a float, nipype default value: 0.0)
+        Regularization term added to matrix Mx for inverse
+        requires: method
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+atlas_group_id: (a list of items which are a value of class &#39;int&#39;)
+        Assign a group ID for each atlas
+        flag: -gp %d...
+atlas_group_weights: (a list of items which are a value of class
+         &#39;int&#39;)
+        Assign the voting weights to each atlas group
+        flag: -gpw %d...
+beta: (an integer (int or long), nipype default value: 0)
+        Exponent for mapping intensity difference to joint error
+        requires: method
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+exclusion_region: (an existing file name)
+        Specify an exclusion region for the given label.
+        flag: -x %s
+method: (a unicode string, nipype default value: )
+        Select voting method. Options: Joint (Joint Label Fusion). May be
+        followed by optional parameters in brackets, e.g., -m Joint[0.1,2]
+        flag: -m %s
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+patch_radius: (a list of items which are a value of class &#39;int&#39;)
+        Patch radius for similarity measures, scalar or vector. Default:
+        2x2x2
+        flag: -rp %s
+search_radius: (a list of items which are a value of class &#39;int&#39;)
+        Local search radius. Default: 3x3x3
+        flag: -rs %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_label_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-segmentation-kellykapowski"></span></div>
+</div>
+<div class="section" id="kellykapowski">
+<span id="index-6"></span><h2>KellyKapowski<a class="headerlink" href="#kellykapowski" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L1545">Link to code</a></p>
+<p>Wraps command <strong>KellyKapowski</strong></p>
+<p>Nipype Interface to ANTs’ KellyKapowski, also known as DiReCT.</p>
+<p>DiReCT is a registration based estimate of cortical thickness. It was published
+in S. R. Das, B. B. Avants, M. Grossman, and J. C. Gee, Registration based
+cortical thickness measurement, Neuroimage 2009, 45:867–879.</p>
+<div class="section" id="id6">
+<h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants.segmentation</span> <span class="k">import</span> <span class="n">KellyKapowski</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kk</span> <span class="o">=</span> <span class="n">KellyKapowski</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kk</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kk</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">segmentation_image</span> <span class="o">=</span> <span class="s2">&quot;segmentation0.nii.gz&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kk</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">convergence</span> <span class="o">=</span> <span class="s2">&quot;[45,0.0,10]&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kk</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">thickness_prior_estimate</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kk</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;KellyKapowski --convergence &quot;[45,0.0,10]&quot; --output &quot;[segmentation0_cortical_thickness.nii.gz,segmentation0_warped_white_matter.nii.gz]&quot; --image-dimensionality 3 --gradient-step 0.025000 --maximum-number-of-invert-displacement-field-iterations 20 --number-of-integration-points 10 --segmentation-image &quot;[segmentation0.nii.gz,2,3]&quot; --smoothing-variance 1.000000 --smoothing-velocity-field-parameter 1.500000 --thickness-prior-estimate 10.000000&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+segmentation_image: (an existing file name)
+        A segmentation image must be supplied labeling the gray and white
+        matters. Default values = 2 and 3, respectively.
+        flag: --segmentation-image &quot;%s&quot;
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+convergence: (a unicode string, nipype default value: )
+        Convergence is determined by fitting a line to the normalized energy
+        profile of the last N iterations (where N is specified by the window
+        size) and determining the slope which is then compared with the
+        convergence threshold.
+        flag: --convergence &quot;%s&quot;
+cortical_thickness: (a file name)
+        Filename for the cortical thickness.
+        flag: --output &quot;%s&quot;
+dimension: (3 or 2, nipype default value: 3)
+        image dimension (2 or 3)
+        flag: --image-dimensionality %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+gradient_step: (a float, nipype default value: 0.025)
+        Gradient step size for the optimization.
+        flag: --gradient-step %f
+gray_matter_label: (an integer (int or long), nipype default value:
+         2)
+        The label value for the gray matter label in the segmentation_image.
+gray_matter_prob_image: (an existing file name)
+        In addition to the segmentation image, a gray matter probability
+        image can be used. If no such image is supplied, one is created
+        using the segmentation image and a variance of 1.0 mm.
+        flag: --gray-matter-probability-image &quot;%s&quot;
+max_invert_displacement_field_iters: (an integer (int or long),
+         nipype default value: 20)
+        Maximum number of iterations for estimating the invertdisplacement
+        field.
+        flag: --maximum-number-of-invert-displacement-field-iterations %d
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+number_integration_points: (an integer (int or long), nipype default
+         value: 10)
+        Number of compositions of the diffeomorphism per iteration.
+        flag: --number-of-integration-points %d
+smoothing_variance: (a float, nipype default value: 1.0)
+        Defines the Gaussian smoothing of the hit and total images.
+        flag: --smoothing-variance %f
+smoothing_velocity_field: (a float, nipype default value: 1.5)
+        Defines the Gaussian smoothing of the velocity field (default =
+        1.5). If the b-spline smoothing option is chosen, then this defines
+        the isotropic mesh spacing for the smoothing spline (default = 15).
+        flag: --smoothing-velocity-field-parameter %f
+thickness_prior_estimate: (a float, nipype default value: 10)
+        Provides a prior constraint on the final thickness measurement in
+        mm.
+        flag: --thickness-prior-estimate %f
+thickness_prior_image: (an existing file name)
+        An image containing spatially varying prior thickness values.
+        flag: --thickness-prior-image &quot;%s&quot;
+use_bspline_smoothing: (a boolean)
+        Sets the option for B-spline smoothing of the velocity field.
+        flag: --use-bspline-smoothing 1
+warped_white_matter: (a file name)
+        Filename for the warped white matter file.
+white_matter_label: (an integer (int or long), nipype default value:
+         3)
+        The label value for the white matter label in the
+        segmentation_image.
+white_matter_prob_image: (an existing file name)
+        In addition to the segmentation image, a white matter probability
+        image can be used. If no such image is supplied, one is created
+        using the segmentation image and a variance of 1.0 mm.
+        flag: --white-matter-probability-image &quot;%s&quot;
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cortical_thickness</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">A</span> <span class="n">thickness</span> <span class="nb">map</span> <span class="n">defined</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">segmented</span> <span class="n">gray</span> <span class="n">matter</span><span class="o">.</span>
+<span class="n">warped_white_matter</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">A</span> <span class="n">warped</span> <span class="n">white</span> <span class="n">matter</span> <span class="n">image</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;book{Das2009867">‘<span>&#64;</span>book{Das2009867</a>,author={Sandhitsu R. Das and Brian B. Avants and Murray Grossman and James C. Gee},title={Registration based cortical thickness measurement.},journal={NeuroImage},volume={45},number={37},pages={867–879},year={2009},issn={1053-8119},url={<a class="reference external" href="http://www.sciencedirect.com/science/article/pii/S1053811908012780">http://www.sciencedirect.com/science/article/pii/S1053811908012780</a>},doi={<a class="reference external" href="http://dx.doi.org/10.1016/j.neuroimage.2008.12.016">http://dx.doi.org/10.1016/j.neuroimage.2008.12.016</a>}}’, key=’Das2009867’)</p>
+<span class="target" id="nipype-interfaces-ants-segmentation-laplacianthickness"></span></div>
+</div>
+<div class="section" id="laplacianthickness">
+<span id="index-7"></span><h2>LaplacianThickness<a class="headerlink" href="#laplacianthickness" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L223">Link to code</a></p>
+<p>Wraps command <strong>LaplacianThickness</strong></p>
+<p>Calculates the cortical thickness from an anatomical image</p>
+<div class="section" id="id7">
+<h3>Examples<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">LaplacianThickness</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cort_thick</span> <span class="o">=</span> <span class="n">LaplacianThickness</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cort_thick</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_wm</span> <span class="o">=</span> <span class="s1">&#39;white_matter.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cort_thick</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_gm</span> <span class="o">=</span> <span class="s1">&#39;gray_matter.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cort_thick</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;LaplacianThickness white_matter.nii.gz gray_matter.nii.gz white_matter_thickness.nii.gz&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cort_thick</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_image</span> <span class="o">=</span> <span class="s1">&#39;output_thickness.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cort_thick</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;LaplacianThickness white_matter.nii.gz gray_matter.nii.gz output_thickness.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+input_gm: (a file name)
+        gray matter segmentation image
+        flag: %s, position: 2
+input_wm: (a file name)
+        white matter segmentation image
+        flag: %s, position: 1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+dT: (a float)
+        flag: dT=%d, position: 6
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+opt_tolerance: (a float)
+        flag: optional-laplacian-tolerance=%d, position: 8
+output_image: (a file name)
+        name of output file
+        flag: %s, position: 3
+prior_thickness: (a float)
+        flag: priorthickval=%d, position: 5
+smooth_param: (a float)
+        flag: smoothparam=%d, position: 4
+sulcus_prior: (a boolean)
+        flag: use-sulcus-prior, position: 7
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Cortical</span> <span class="n">thickness</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-ants-segmentation-n4biasfieldcorrection"></span></div>
+</div>
+<div class="section" id="n4biasfieldcorrection">
+<span id="index-8"></span><h2>N4BiasFieldCorrection<a class="headerlink" href="#n4biasfieldcorrection" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/segmentation.py#L298">Link to code</a></p>
+<p>Wraps command <strong>N4BiasFieldCorrection</strong></p>
+<p>N4 is a variant of the popular N3 (nonparameteric nonuniform normalization)
+retrospective bias correction algorithm. Based on the assumption that the
+corruption of the low frequency bias field can be modeled as a convolution of
+the intensity histogram by a Gaussian, the basic algorithmic protocol is to
+iterate between deconvolving the intensity histogram by a Gaussian, remapping
+the intensities, and then spatially smoothing this result by a B-spline modeling
+of the bias field itself. The modifications from and improvements obtained over
+the original N3 algorithm are described in <a class="reference internal" href="#tustison2010" id="id8">[Tustison2010]</a>.</p>
+<table class="docutils citation" frame="void" id="tustison2010" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[Tustison2010]</a></td><td>N. Tustison et al.,
+N4ITK: Improved N3 Bias Correction, IEEE Transactions on Medical Imaging,
+29(6):1310-1320, June 2010.</td></tr>
+</tbody>
+</table>
+<div class="section" id="id9">
+<h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="k">import</span> <span class="n">N4BiasFieldCorrection</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span> <span class="o">=</span> <span class="n">N4BiasFieldCorrection</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_image</span> <span class="o">=</span> <span class="s1">&#39;structural.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bspline_fitting_distance</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">shrink_factor</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">n_iterations</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;N4BiasFieldCorrection --bspline-fitting [ 300 ] -d 3 --input-image structural.nii --convergence [ 50x50x30x20 ] --output structural_corrected.nii --shrink-factor 3&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n4_2</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">n4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4_2</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">convergence_threshold</span> <span class="o">=</span> <span class="mf">1e-6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4_2</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;N4BiasFieldCorrection --bspline-fitting [ 300 ] -d 3 --input-image structural.nii --convergence [ 50x50x30x20, 1e-06 ] --output structural_corrected.nii --shrink-factor 3&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n4_3</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">n4_2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4_3</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bspline_order</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4_3</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;N4BiasFieldCorrection --bspline-fitting [ 300, 5 ] -d 3 --input-image structural.nii --convergence [ 50x50x30x20, 1e-06 ] --output structural_corrected.nii --shrink-factor 3&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n4_4</span> <span class="o">=</span> <span class="n">N4BiasFieldCorrection</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4_4</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_image</span> <span class="o">=</span> <span class="s1">&#39;structural.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4_4</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">save_bias</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4_4</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n4_4</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;N4BiasFieldCorrection -d 3 --input-image structural.nii --output [ structural_corrected.nii, structural_bias.nii ]&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+copy_header: (a boolean, nipype default value: False)
+        copy headers of the original image into the output (corrected) file
+input_image: (a file name)
+        input for bias correction. Negative values or values close to zero
+        should be processed prior to correction
+        flag: --input-image %s
+save_bias: (a boolean, nipype default value: False)
+        True if the estimated bias should be saved to file.
+        mutually_exclusive: bias_image
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+bias_image: (a file name)
+        Filename for the estimated bias.
+bspline_fitting_distance: (a float)
+        flag: --bspline-fitting %s
+bspline_order: (an integer (int or long))
+        requires: bspline_fitting_distance
+convergence_threshold: (a float)
+        requires: n_iterations
+dimension: (3 or 2 or 4, nipype default value: 3)
+        image dimension (2, 3 or 4)
+        flag: -d %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+mask_image: (a file name)
+        image to specify region to perform final bias correction in
+        flag: --mask-image %s
+n_iterations: (a list of items which are an integer (int or long))
+        flag: --convergence %s
+num_threads: (an integer (int or long), nipype default value: 1)
+        Number of ITK threads to use
+output_image: (a unicode string)
+        output file name
+        flag: --output %s
+shrink_factor: (an integer (int or long))
+        flag: --shrink-factor %d
+weight_image: (a file name)
+        image for relative weighting (e.g. probability map of the white
+        matter) of voxels during the B-spline fitting.
+        flag: --weight-image %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bias_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Estimated</span> <span class="n">bias</span>
+<span class="n">output_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Warped</span> <span class="n">image</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

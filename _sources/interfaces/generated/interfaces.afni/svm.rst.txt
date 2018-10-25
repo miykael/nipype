@@ -1,0 +1,190 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.afni.svm
+===================
+
+
+.. _nipype.interfaces.afni.svm.SVMTest:
+
+
+.. index:: SVMTest
+
+SVMTest
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/svm.py#L148>`__
+
+Wraps command **3dsvm**
+
+Temporally predictive modeling with the support vector machine
+SVM Test Only
+For complete details, see the `3dsvm Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dsvm.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni as afni
+>>> svmTest = afni.SVMTest()
+>>> svmTest.inputs.in_file= 'run2+orig'
+>>> svmTest.inputs.model= 'run1+orig_model'
+>>> svmTest.inputs.testlabels= 'run2_categories.1D'
+>>> svmTest.inputs.out_file= 'pred2_model1'
+>>> res = svmTest.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                A 3D or 3D+t AFNI brik dataset to be used for testing.
+                flag: -testvol %s
+        model: (a unicode string)
+                modname is the basename for the brik containing the SVM model
+                flag: -model %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        classout: (a boolean)
+                Flag to specify that pname files should be integer-valued,
+                corresponding to class category decisions.
+                flag: -classout
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        multiclass: (a boolean)
+                Specifies multiclass algorithm for classification
+                flag: -multiclass %s
+        nodetrend: (a boolean)
+                Flag to specify that pname files should not be linearly detrended
+                flag: -nodetrend
+        nopredcensord: (a boolean)
+                Flag to prevent writing predicted values for censored time-points
+                flag: -nopredcensord
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        options: (a unicode string)
+                additional options for SVM-light
+                flag: %s
+        out_file: (a file name)
+                filename for .1D prediction file(s).
+                flag: -predictions %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        testlabels: (an existing file name)
+                *true* class category .1D labels for the test dataset. It is used to
+                calculate the prediction accuracy performance
+                flag: -testlabels %s
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.svm.SVMTrain:
+
+
+.. index:: SVMTrain
+
+SVMTrain
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/svm.py#L80>`__
+
+Wraps command **3dsvm**
+
+Temporally predictive modeling with the support vector machine
+SVM Train Only
+For complete details, see the `3dsvm Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dsvm.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni as afni
+>>> svmTrain = afni.SVMTrain()
+>>> svmTrain.inputs.in_file = 'run1+orig'
+>>> svmTrain.inputs.trainlabels = 'run1_categories.1D'
+>>> svmTrain.inputs.ttype = 'regression'
+>>> svmTrain.inputs.mask = 'mask.nii'
+>>> svmTrain.inputs.model = 'model_run1'
+>>> svmTrain.inputs.alphas = 'alphas_run1'
+>>> res = svmTrain.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                A 3D+t AFNI brik dataset to be used for training.
+                flag: -trainvol %s
+        ttype: (a unicode string)
+                tname: classification or regression
+                flag: -type %s
+
+        [Optional]
+        alphas: (a file name)
+                output alphas file name
+                flag: -alpha %s
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        censor: (an existing file name)
+                .1D censor file that allows the user to ignore certain samples in
+                the training data.
+                flag: -censor %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        kernel: (a unicode string)
+                string specifying type of kernel function:linear, polynomial, rbf,
+                sigmoid
+                flag: -kernel %s
+        mask: (an existing file name)
+                byte-format brik file used to mask voxels in the analysis
+                flag: -mask %s, position: -1
+        max_iterations: (an integer (int or long))
+                Specify the maximum number of iterations for the optimization.
+                flag: -max_iterations %d
+        model: (a file name)
+                basename for the brik containing the SVM model
+                flag: -model %s
+        nomodelmask: (a boolean)
+                Flag to enable the omission of a mask file
+                flag: -nomodelmask
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        options: (a unicode string)
+                additional options for SVM-light
+                flag: %s
+        out_file: (a file name)
+                output sum of weighted linear support vectors file name
+                flag: -bucket %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        trainlabels: (an existing file name)
+                .1D labels corresponding to the stimulus paradigm for the training
+                data.
+                flag: -trainlabels %s
+        w_out: (a boolean)
+                output sum of weighted linear support vectors
+                flag: -wout
+
+Outputs::
+
+        alphas: (a file name)
+                output alphas file name
+        model: (a file name)
+                brik containing the SVM model file name
+        out_file: (a file name)
+                sum of weighted linear support vectors file name
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')

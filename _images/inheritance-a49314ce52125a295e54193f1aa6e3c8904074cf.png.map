@@ -1,0 +1,4 @@
+<map id="inheritance582f9fe300" name="inheritance582f9fe300">
+<area shape="poly" id="node1" href="#nipype.caching.memory.Memory" target="_top" title="Memory context to provide caching for interfaces" alt="" coords="212,281,207,270,193,260,170,252,142,247,111,245,79,247,51,252,28,260,14,270,9,281,14,292,28,302,51,310,79,316,111,317,142,316,170,310,193,302,207,292"/>
+<area shape="poly" id="node2" href="#nipype.caching.memory.PipeFunc" target="_top" title="Callable interface to nipype.interface objects" alt="" coords="216,41,211,30,196,20,173,12,143,7,111,5,78,7,49,12,25,20,10,30,5,41,10,52,25,62,49,70,78,76,111,77,143,76,173,70,196,62,211,52"/>
+</map>

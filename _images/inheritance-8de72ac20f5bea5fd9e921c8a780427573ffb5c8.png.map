@@ -1,0 +1,6 @@
+<map id="inheritance69a9fd3824" name="inheritance69a9fd3824">
+<area shape="poly" id="node1" href="nipype.pipeline.engine.base.html#nipype.pipeline.engine.base.EngineBase" target="_top" title="Defines common attributes and functions for workflows and nodes." alt="" coords="185,78,181,68,168,60,148,53,123,48,95,47,67,48,42,53,22,60,9,68,5,78,9,88,22,97,42,104,67,108,95,110,123,108,148,104,168,97,181,88"/>
+<area shape="poly" id="node3" href="#nipype.pipeline.engine.nodes.Node" target="_top" title="Wraps interface objects for use in pipeline" alt="" coords="359,78,356,68,346,60,332,53,313,48,293,47,273,48,254,53,240,60,231,68,227,78,231,88,240,97,254,104,273,108,293,110,313,108,332,104,346,97,356,88"/>
+<area shape="poly" id="node2" href="#nipype.pipeline.engine.nodes.JoinNode" target="_top" title="Wraps interface objects that join inputs into a list." alt="" coords="569,36,565,26,553,18,535,11,512,6,486,5,461,6,438,11,419,18,408,26,404,36,408,46,419,55,438,62,461,66,486,68,512,66,535,62,553,55,565,46"/>
+<area shape="poly" id="node4" href="#nipype.pipeline.engine.nodes.MapNode" target="_top" title="Wraps interface objects that need to be iterated on a list of inputs." alt="" coords="571,120,567,111,555,102,536,95,512,90,486,89,460,90,436,95,417,102,405,111,401,120,405,130,417,139,436,146,460,150,486,152,512,150,536,146,555,139,567,130"/>
+</map>

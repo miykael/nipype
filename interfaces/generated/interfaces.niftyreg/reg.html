@@ -1,0 +1,537 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.niftyreg.reg</a><ul>
+<li><a class="reference internal" href="#regaladin">RegAladin</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#regf3d">RegF3D</a><ul>
+<li><a class="reference internal" href="#id2">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-niftyreg-reg">
+<h1>interfaces.niftyreg.reg<a class="headerlink" href="#interfaces-niftyreg-reg" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-niftyreg-reg-regaladin"></span><div class="section" id="regaladin">
+<span id="index-0"></span><h2>RegAladin<a class="headerlink" href="#regaladin" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyreg/reg.py#L125">Link to code</a></p>
+<p>Wraps command <strong>reg_aladin</strong></p>
+<p>Interface for executable reg_aladin from NiftyReg platform.</p>
+<p>Block Matching algorithm for symmetric global registration.
+Based on Modat et al., “Global image registration using
+asymmetric block-matching approach”
+J. Med. Img. 1(2) 024003, 2014, doi: 10.1117/1.JMI.1.2.024003</p>
+<p><a class="reference external" href="https://cmiclab.cs.ucl.ac.uk/mmodat/niftyreg">Source code</a></p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyreg</span><span class="o">.</span><span class="n">RegAladin</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">ref_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">flo_file</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">rmask_file</span> <span class="o">=</span> <span class="s1">&#39;mask.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">omp_core_val</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;reg_aladin -aff im2_aff.txt -flo im2.nii -omp 4 -ref im1.nii -res im2_res.nii.gz -rmask mask.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+flo_file: (an existing file name)
+        The input floating/source image
+        flag: -flo %s
+ref_file: (an existing file name)
+        The input reference/target image
+        flag: -ref %s
+
+[Optional]
+aff_direct_flag: (a boolean)
+        Directly optimise the affine parameters
+        flag: -affDirect
+aff_file: (a file name)
+        The output affine matrix file
+        flag: -aff %s
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+cog_flag: (a boolean)
+        Use the masks centre of mass to initialise the transformation
+        flag: -cog
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+flo_low_val: (a float)
+        Lower threshold value on floating image
+        flag: -floLowThr %f
+flo_up_val: (a float)
+        Upper threshold value on floating image
+        flag: -floUpThr %f
+fmask_file: (an existing file name)
+        The input floating mask
+        flag: -fmask %s
+gpuid_val: (an integer (int or long))
+        Device to use id
+        flag: -gpuid %i
+i_val: (a long integer &gt;= 0)
+        Percent of inlier blocks
+        flag: -pi %d
+in_aff_file: (an existing file name)
+        The input affine transformation
+        flag: -inaff %s
+ln_val: (a long integer &gt;= 0)
+        Number of resolution levels to create
+        flag: -ln %d
+lp_val: (a long integer &gt;= 0)
+        Number of resolution levels to perform
+        flag: -lp %d
+maxit_val: (a long integer &gt;= 0)
+        Maximum number of iterations
+        flag: -maxit %d
+nac_flag: (a boolean)
+        Use nifti header to initialise transformation
+        flag: -nac
+nosym_flag: (a boolean)
+        Turn off symmetric registration
+        flag: -noSym
+omp_core_val: (an integer (int or long), nipype default value: 1)
+        Number of openmp thread to use
+        flag: -omp %i
+platform_val: (an integer (int or long))
+        Platform index
+        flag: -platf %i
+ref_low_val: (a float)
+        Lower threshold value on reference image
+        flag: -refLowThr %f
+ref_up_val: (a float)
+        Upper threshold value on reference image
+        flag: -refUpThr %f
+res_file: (a file name)
+        The affine transformed floating image
+        flag: -res %s
+rig_only_flag: (a boolean)
+        Do only a rigid registration
+        flag: -rigOnly
+rmask_file: (an existing file name)
+        The input reference mask
+        flag: -rmask %s
+smoo_f_val: (a float)
+        Amount of smoothing to apply to floating image
+        flag: -smooF %f
+smoo_r_val: (a float)
+        Amount of smoothing to apply to reference image
+        flag: -smooR %f
+v_val: (a long integer &gt;= 0)
+        Percent of blocks that are active
+        flag: -pv %d
+verbosity_off_flag: (a boolean)
+        Turn off verbose output
+        flag: -voff
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">aff_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">affine</span> <span class="n">file</span>
+<span class="n">avg_output</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">string</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">the</span> <span class="nb">format</span> <span class="k">for</span> <span class="n">reg_average</span>
+<span class="n">res_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">transformed</span> <span class="n">image</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyreg-reg-regf3d"></span></div>
+</div>
+<div class="section" id="regf3d">
+<span id="index-1"></span><h2>RegF3D<a class="headerlink" href="#regf3d" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyreg/reg.py#L349">Link to code</a></p>
+<p>Wraps command <strong>reg_f3d</strong></p>
+<p>Interface for executable reg_f3d from NiftyReg platform.</p>
+<p>Fast Free-Form Deformation (F3D) algorithm for non-rigid registration.
+Initially based on Modat et al., “Fast Free-Form Deformation using
+graphics processing units”, CMPB, 2010</p>
+<p><a class="reference external" href="https://cmiclab.cs.ucl.ac.uk/mmodat/niftyreg">Source code</a></p>
+<div class="section" id="id2">
+<h3>Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyreg</span><span class="o">.</span><span class="n">RegF3D</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">ref_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">flo_file</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">rmask_file</span> <span class="o">=</span> <span class="s1">&#39;mask.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">omp_core_val</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;reg_f3d -cpp im2_cpp.nii.gz -flo im2.nii -omp 4 -ref im1.nii -res im2_res.nii.gz -rmask mask.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+flo_file: (an existing file name)
+        The input floating/source image
+        flag: -flo %s
+ref_file: (an existing file name)
+        The input reference/target image
+        flag: -ref %s
+
+[Optional]
+aff_file: (an existing file name)
+        The input affine transformation file
+        flag: -aff %s
+amc_flag: (a boolean)
+        Use additive NMI
+        flag: -amc
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+be_val: (a float)
+        Bending energy value
+        flag: -be %f
+cpp_file: (a file name)
+        The output CPP file
+        flag: -cpp %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+fbn2_val: (a tuple of the form: (a long integer &gt;= 0, a long integer
+         &gt;= 0))
+        Number of bins in the histogram for reference image for given time
+        point
+        flag: -fbn %d %d
+fbn_val: (a long integer &gt;= 0)
+        Number of bins in the histogram for reference image
+        flag: --fbn %d
+flo_smooth_val: (a float)
+        Smoothing kernel width for floating image
+        flag: -smooF %f
+flwth2_thr_val: (a tuple of the form: (a long integer &gt;= 0, a float))
+        Lower threshold for floating image at the specified time point
+        flag: -fLwTh %d %f
+flwth_thr_val: (a float)
+        Lower threshold for floating image
+        flag: --fLwTh %f
+fmask_file: (an existing file name)
+        Floating image mask
+        flag: -fmask %s
+fupth2_thr_val: (a tuple of the form: (a long integer &gt;= 0, a float))
+        Upper threshold for floating image at the specified time point
+        flag: -fUpTh %d %f
+fupth_thr_val: (a float)
+        Upper threshold for floating image
+        flag: --fUpTh %f
+incpp_file: (an existing file name)
+        The input cpp transformation file
+        flag: -incpp %s
+jl_val: (a float)
+        Log of jacobian of deformation penalty value
+        flag: -jl %f
+kld2_flag: (a long integer &gt;= 0)
+        Use KL divergence as the similarity measure for a given time point
+        flag: -kld %d
+kld_flag: (a boolean)
+        Use KL divergence as the similarity measure
+        flag: --kld
+le_val: (a float)
+        Linear elasticity penalty term
+        flag: -le %f
+ln_val: (a long integer &gt;= 0)
+        Number of resolution levels to create
+        flag: -ln %d
+lncc2_val: (a tuple of the form: (a long integer &gt;= 0, a float))
+        SD of the Gaussian for computing LNCC for a given time point
+        flag: -lncc %d %f
+lncc_val: (a float)
+        SD of the Gaussian for computing LNCC
+        flag: --lncc %f
+lp_val: (a long integer &gt;= 0)
+        Number of resolution levels to perform
+        flag: -lp %d
+maxit_val: (a long integer &gt;= 0)
+        Maximum number of iterations per level
+        flag: -maxit %d
+nmi_flag: (a boolean)
+        use NMI even when other options are specified
+        flag: --nmi
+no_app_jl_flag: (a boolean)
+        Do not approximate the log of jacobian penalty at control points
+        only
+        flag: -noAppJL
+noconj_flag: (a boolean)
+        Use simple GD optimization
+        flag: -noConj
+nopy_flag: (a boolean)
+        Do not use the multiresolution approach
+        flag: -nopy
+nox_flag: (a boolean)
+        Don&#39;t optimise in x direction
+        flag: -nox
+noy_flag: (a boolean)
+        Don&#39;t optimise in y direction
+        flag: -noy
+noz_flag: (a boolean)
+        Don&#39;t optimise in z direction
+        flag: -noz
+omp_core_val: (an integer (int or long), nipype default value: 1)
+        Number of openmp thread to use
+        flag: -omp %i
+pad_val: (a float)
+        Padding value
+        flag: -pad %f
+pert_val: (a long integer &gt;= 0)
+        Add perturbation steps after each optimization step
+        flag: -pert %d
+rbn2_val: (a tuple of the form: (a long integer &gt;= 0, a long integer
+         &gt;= 0))
+        Number of bins in the histogram for reference image for given time
+        point
+        flag: -rbn %d %d
+rbn_val: (a long integer &gt;= 0)
+        Number of bins in the histogram for reference image
+        flag: --rbn %d
+ref_smooth_val: (a float)
+        Smoothing kernel width for reference image
+        flag: -smooR %f
+res_file: (a file name)
+        The output resampled image
+        flag: -res %s
+rlwth2_thr_val: (a tuple of the form: (a long integer &gt;= 0, a float))
+        Lower threshold for reference image at the specified time point
+        flag: -rLwTh %d %f
+rlwth_thr_val: (a float)
+        Lower threshold for reference image
+        flag: --rLwTh %f
+rmask_file: (an existing file name)
+        Reference image mask
+        flag: -rmask %s
+rupth2_thr_val: (a tuple of the form: (a long integer &gt;= 0, a float))
+        Upper threshold for reference image at the specified time point
+        flag: -rUpTh %d %f
+rupth_thr_val: (a float)
+        Upper threshold for reference image
+        flag: --rUpTh %f
+smooth_grad_val: (a float)
+        Kernel width for smoothing the metric gradient
+        flag: -smoothGrad %f
+ssd2_flag: (a long integer &gt;= 0)
+        Use SSD as the similarity measure for a given time point
+        flag: -ssd %d
+ssd_flag: (a boolean)
+        Use SSD as the similarity measure
+        flag: --ssd
+sx_val: (a float)
+        Final grid spacing along the x axes
+        flag: -sx %f
+sy_val: (a float)
+        Final grid spacing along the y axes
+        flag: -sy %f
+sz_val: (a float)
+        Final grid spacing along the z axes
+        flag: -sz %f
+vel_flag: (a boolean)
+        Use velocity field integration
+        flag: -vel
+verbosity_off_flag: (a boolean)
+        Turn off verbose output
+        flag: -voff
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">avg_output</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">string</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">the</span> <span class="nb">format</span> <span class="k">for</span> <span class="n">reg_average</span>
+<span class="n">cpp_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">CPP</span> <span class="n">file</span>
+<span class="n">invcpp_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">inverse</span> <span class="n">CPP</span> <span class="n">file</span>
+<span class="n">invres_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">inverse</span> <span class="n">res</span> <span class="n">file</span>
+<span class="n">res_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">resampled</span> <span class="n">image</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

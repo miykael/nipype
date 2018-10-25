@@ -1,0 +1,157 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.c3
+=============
+
+
+.. _nipype.interfaces.c3.C3d:
+
+
+.. index:: C3d
+
+C3d
+---
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/c3.py#L126>`__
+
+Wraps command **c3d**
+
+Convert3d is a command-line tool for converting 3D (or 4D) images between
+common file formats. The tool also includes a growing list of commands for
+image manipulation, such as thresholding and resampling. The tool can also
+be used to obtain information about image files. More information on
+Convert3d can be found at:
+https://sourceforge.net/p/c3d/git/ci/master/tree/doc/c3d.md
+
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces.c3 import C3d
+>>> c3 = C3d()
+>>> c3.inputs.in_file = "T1.nii"
+>>> c3.inputs.pix_type = "short"
+>>> c3.inputs.out_file = "T1.img"
+>>> c3.cmdline
+'c3d T1.nii -type short -o T1.img'
+>>> c3.inputs.is_4d = True
+>>> c3.inputs.in_file = "epi.nii"
+>>> c3.inputs.out_file = "epi.img"
+>>> c3.cmdline
+'c4d epi.nii -type short -o epi.img'
+
+Inputs::
+
+        [Mandatory]
+        in_file: (a list of items which are a file name)
+                Input file (wildcard and multiple are supported).
+                flag: %s, position: 1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        interp: ('Linear' or 'NearestNeighbor' or 'Cubic' or 'Sinc' or
+                 'Gaussian')
+                Specifies the interpolation used with -resample and other commands.
+                Default is Linear.
+                flag: -interpolation %s
+        is_4d: (a boolean, nipype default value: False)
+                Changes command to support 4D file operations (default is false).
+        multicomp_split: (a boolean, nipype default value: False)
+                Enable reading of multi-component images.
+                flag: -mcr, position: 0
+        out_file: (a file name)
+                Output file of last image on the stack.
+                flag: -o %s, position: -1
+                mutually_exclusive: out_files
+        out_files: (a list of items which are a file name)
+                Write all images on the convert3d stack as multiple files. Supports
+                both list of output files or a pattern for the output filenames
+                (using %d substituion).
+                flag: -oo %s, position: -1
+                mutually_exclusive: out_file
+        pix_type: ('float' or 'char' or 'uchar' or 'short' or 'ushort' or
+                 'int' or 'uint' or 'double')
+                Specifies the pixel type for the output image. By default, images
+                are written in floating point (float) format
+                flag: -type %s
+        resample: (a unicode string)
+                Resamples the image, keeping the bounding box the same, but changing
+                the number of voxels in the image. The dimensions can be specified
+                as a percentage, for example to double the number of voxels in each
+                direction. The -interpolation flag affects how sampling is
+                performed.
+                flag: -resample %s
+        scale: (an integer (int or long) or a float)
+                Multiplies the intensity of each voxel in the last image on the
+                stack by the given factor.
+                flag: -scale %s
+        shift: (an integer (int or long) or a float)
+                Adds the given constant to every voxel.
+                flag: -shift %s
+        smooth: (a unicode string)
+                Applies Gaussian smoothing to the image. The parameter vector
+                specifies the standard deviation of the Gaussian kernel.
+                flag: -smooth %s
+
+Outputs::
+
+        out_files: (a list of items which are a file name)
+
+.. _nipype.interfaces.c3.C3dAffineTool:
+
+
+.. index:: C3dAffineTool
+
+C3dAffineTool
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/c3.py#L37>`__
+
+Wraps command **c3d_affine_tool**
+
+Converts fsl-style Affine registration into ANTS compatible itk format
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces.c3 import C3dAffineTool
+>>> c3 = C3dAffineTool()
+>>> c3.inputs.source_file = 'cmatrix.mat'
+>>> c3.inputs.itk_transform = 'affine.txt'
+>>> c3.inputs.fsl2ras = True
+>>> c3.cmdline
+'c3d_affine_tool -src cmatrix.mat -fsl2ras -oitk affine.txt'
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fsl2ras: (a boolean)
+                flag: -fsl2ras, position: 4
+        itk_transform: (a boolean or a file name)
+                Export ITK transform.
+                flag: -oitk %s, position: 5
+        reference_file: (an existing file name)
+                flag: -ref %s, position: 1
+        source_file: (an existing file name)
+                flag: -src %s, position: 2
+        transform_file: (an existing file name)
+                flag: %s, position: 3
+
+Outputs::
+
+        itk_transform: (an existing file name)

@@ -1,0 +1,4231 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.afni.preprocess
+==========================
+
+
+.. _nipype.interfaces.afni.preprocess.AlignEpiAnatPy:
+
+
+.. index:: AlignEpiAnatPy
+
+AlignEpiAnatPy
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L118>`__
+
+Wraps command **align_epi_anat.py**
+
+Align EPI to anatomical datasets or vice versa
+This Python script computes the alignment between two datasets, typically
+an EPI and an anatomical structural dataset, and applies the resulting
+transformation to one or the other to bring them into alignment.
+
+This script computes the transforms needed to align EPI and
+anatomical datasets using a cost function designed for this purpose. The
+script combines multiple transformations, thereby minimizing the amount of
+interpolation applied to the data.
+
+Basic Usage:
+  align_epi_anat.py -anat anat+orig -epi epi+orig -epi_base 5
+
+The user must provide EPI and anatomical datasets and specify the EPI
+sub-brick to use as a base in the alignment.
+
+Internally, the script always aligns the anatomical to the EPI dataset,
+and the resulting transformation is saved to a 1D file.
+As a user option, the inverse of this transformation may be applied to the
+EPI dataset in order to align it to the anatomical data instead.
+
+This program generates several kinds of output in the form of datasets
+and transformation matrices which can be applied to other datasets if
+needed. Time-series volume registration, oblique data transformations and
+Talairach (standard template) transformations will be combined as needed
+and requested (with options to turn on and off each of the steps) in
+order to create the aligned datasets.
+
+For complete details, see the `align_epi_anat.py' Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/align_epi_anat.py.html>`_
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces import afni
+>>> al_ea = afni.AlignEpiAnatPy()
+>>> al_ea.inputs.anat = "structural.nii"
+>>> al_ea.inputs.in_file = "functional.nii"
+>>> al_ea.inputs.epi_base = 0
+>>> al_ea.inputs.epi_strip = '3dAutomask'
+>>> al_ea.inputs.volreg = 'off'
+>>> al_ea.inputs.tshift = 'off'
+>>> al_ea.inputs.save_skullstrip = True
+>>> al_ea.cmdline # doctest: +ELLIPSIS
+'python2 ...align_epi_anat.py -anat structural.nii -epi_base 0 -epi_strip 3dAutomask -epi functional.nii -save_skullstrip -suffix _al -tshift off -volreg off'
+>>> res = allineate.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        anat: (an existing file name)
+                name of structural dataset
+                flag: -anat %s
+        epi_base: (a long integer >= 0 or 'mean' or 'median' or 'max')
+                the epi base used in alignmentshould be one of
+                (0/mean/median/max/subbrick#)
+                flag: -epi_base %s
+        in_file: (an existing file name)
+                EPI dataset to align
+                flag: -epi %s
+
+        [Optional]
+        anat2epi: (a boolean)
+                align anatomical to EPI dataset (default)
+                flag: -anat2epi
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        epi2anat: (a boolean)
+                align EPI to anatomical dataset
+                flag: -epi2anat
+        epi_strip: ('3dSkullStrip' or '3dAutomask' or 'None')
+                method to mask brain in EPI datashould be one
+                of[3dSkullStrip]/3dAutomask/None)
+                flag: -epi_strip %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        py27_path: (an existing file name or 'python2', nipype default value:
+                 python2)
+        save_skullstrip: (a boolean)
+                save skull-stripped (not aligned)
+                flag: -save_skullstrip
+        suffix: (a unicode string, nipype default value: _al)
+                append suffix to the original anat/epi dataset to usein the
+                resulting dataset names (default is "_al")
+                flag: -suffix %s
+        tshift: ('on' or 'off', nipype default value: on)
+                do time shifting of EPI dataset before alignmentshould be 'on' or
+                'off', defaults to 'on'
+                flag: -tshift %s
+        volreg: ('on' or 'off', nipype default value: on)
+                do volume registration on EPI dataset before alignmentshould be 'on'
+                or 'off', defaults to 'on'
+                flag: -volreg %s
+
+Outputs::
+
+        anat_al_mat: (a file name)
+                matrix to align anatomy to the EPI
+        anat_al_orig: (a file name)
+                A version of the anatomy that is aligned to the EPI
+        epi_al_mat: (a file name)
+                matrix to align EPI to anatomy
+        epi_al_orig: (a file name)
+                A version of the EPI dataset aligned to the anatomy
+        epi_al_tlrc_mat: (a file name)
+                matrix to volume register and align epito anatomy and put into
+                standard space
+        epi_reg_al_mat: (a file name)
+                matrix to volume register and align epi to anatomy
+        epi_tlrc_al: (a file name)
+                A version of the EPI dataset aligned to a standard template
+        epi_vr_al_mat: (a file name)
+                matrix to volume register EPI
+        epi_vr_motion: (a file name)
+                motion parameters from EPI time-seriesregistration (tsh included in
+                name if slicetiming correction is also included).
+        skullstrip: (a file name)
+                skull-stripped (not aligned) volume
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Allineate:
+
+
+.. index:: Allineate
+
+Allineate
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L456>`__
+
+Wraps command **3dAllineate**
+
+Program to align one dataset (the 'source') to a base dataset
+
+For complete details, see the `3dAllineate Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dAllineate.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> allineate = afni.Allineate()
+>>> allineate.inputs.in_file = 'functional.nii'
+>>> allineate.inputs.out_file = 'functional_allineate.nii'
+>>> allineate.inputs.in_matrix = 'cmatrix.mat'
+>>> allineate.cmdline
+'3dAllineate -source functional.nii -prefix functional_allineate.nii -1Dmatrix_apply cmatrix.mat'
+>>> res = allineate.run()  # doctest: +SKIP
+
+>>> allineate = afni.Allineate()
+>>> allineate.inputs.in_file = 'functional.nii'
+>>> allineate.inputs.reference = 'structural.nii'
+>>> allineate.inputs.allcostx = 'out.allcostX.txt'
+>>> allineate.cmdline
+'3dAllineate -source functional.nii -base structural.nii -allcostx |& tee out.allcostX.txt'
+>>> res = allineate.run()  # doctest: +SKIP
+
+>>> allineate = afni.Allineate()
+>>> allineate.inputs.in_file = 'functional.nii'
+>>> allineate.inputs.reference = 'structural.nii'
+>>> allineate.inputs.nwarp_fixmot = ['X', 'Y']
+>>> allineate.cmdline
+'3dAllineate -source functional.nii -nwarp_fixmotX -nwarp_fixmotY -prefix functional_allineate -base structural.nii'
+>>> res = allineate.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dAllineate
+                flag: -source %s
+
+        [Optional]
+        allcostx: (a file name)
+                Compute and print ALL available cost functionals for the un-warped
+                inputsAND THEN QUIT. If you use this option none of the other
+                expected outputs will be produced
+                flag: -allcostx |& tee %s, position: -1
+                mutually_exclusive: out_file, out_matrix, out_param_file,
+                 out_weight_file
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        autobox: (a boolean)
+                Expand the -automask function to enclose a rectangular box that
+                holds the irregular mask.
+                flag: -autobox
+        automask: (an integer (int or long))
+                Compute a mask function, set a value for dilation or 0.
+                flag: -automask+%d
+        autoweight: (a unicode string)
+                Compute a weight function using the 3dAutomask algorithm plus some
+                blurring of the base image.
+                flag: -autoweight%s
+        center_of_mass: (a unicode string)
+                Use the center-of-mass calculation to bracket the shifts.
+                flag: -cmass%s
+        check: (a list of items which are 'leastsq' or 'ls' or 'mutualinfo'
+                 or 'mi' or 'corratio_mul' or 'crM' or 'norm_mutualinfo' or 'nmi' or
+                 'hellinger' or 'hel' or 'corratio_add' or 'crA' or 'corratio_uns'
+                 or 'crU')
+                After cost functional optimization is done, start at the final
+                parameters and RE-optimize using this new cost functions. If the
+                results are too different, a warning message will be printed.
+                However, the final parameters from the original optimization will be
+                used to create the output dataset.
+                flag: -check %s
+        convergence: (a float)
+                Convergence test in millimeters (default 0.05mm).
+                flag: -conv %f
+        cost: ('leastsq' or 'ls' or 'mutualinfo' or 'mi' or 'corratio_mul' or
+                 'crM' or 'norm_mutualinfo' or 'nmi' or 'hellinger' or 'hel' or
+                 'corratio_add' or 'crA' or 'corratio_uns' or 'crU')
+                Defines the 'cost' function that defines the matching between the
+                source and the base
+                flag: -cost %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        epi: (a boolean)
+                Treat the source dataset as being composed of warped EPI slices, and
+                the base as comprising anatomically 'true' images. Only phase-
+                encoding direction image shearing and scaling will be allowed with
+                this option.
+                flag: -EPI
+        final_interpolation: ('nearestneighbour' or 'linear' or 'cubic' or
+                 'quintic' or 'wsinc5')
+                Defines interpolation method used to create the output dataset
+                flag: -final %s
+        fine_blur: (a float)
+                Set the blurring radius to use in the fine resolution pass to 'x'
+                mm. A small amount (1-2 mm?) of blurring at the fine step may help
+                with convergence, if there is some problem, especially if the base
+                volume is very noisy. [Default == 0 mm = no blurring at the final
+                alignment pass]
+                flag: -fineblur %f
+        in_matrix: (a file name)
+                matrix to align input file
+                flag: -1Dmatrix_apply %s, position: -3
+                mutually_exclusive: out_matrix
+        in_param_file: (an existing file name)
+                Read warp parameters from file and apply them to the source dataset,
+                and produce a new dataset
+                flag: -1Dparam_apply %s
+                mutually_exclusive: out_param_file
+        interpolation: ('nearestneighbour' or 'linear' or 'cubic' or
+                 'quintic')
+                Defines interpolation method to use during matching
+                flag: -interp %s
+        master: (an existing file name)
+                Write the output dataset on the same grid as this file.
+                flag: -master %s
+        maxrot: (a float)
+                Maximum allowed rotation in degrees.
+                flag: -maxrot %f
+        maxscl: (a float)
+                Maximum allowed scaling factor.
+                flag: -maxscl %f
+        maxshf: (a float)
+                Maximum allowed shift in mm.
+                flag: -maxshf %f
+        maxshr: (a float)
+                Maximum allowed shearing factor.
+                flag: -maxshr %f
+        newgrid: (a float)
+                Write the output dataset using isotropic grid spacing in mm.
+                flag: -newgrid %f
+        nmatch: (an integer (int or long))
+                Use at most n scattered points to match the datasets.
+                flag: -nmatch %d
+        no_pad: (a boolean)
+                Do not use zero-padding on the base image.
+                flag: -nopad
+        nomask: (a boolean)
+                Don't compute the autoweight/mask; if -weight is not also used, then
+                every voxel will be counted equally.
+                flag: -nomask
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        nwarp: ('bilinear' or 'cubic' or 'quintic' or 'heptic' or 'nonic' or
+                 'poly3' or 'poly5' or 'poly7' or 'poly9')
+                Experimental nonlinear warping: bilinear or legendre poly.
+                flag: -nwarp %s
+        nwarp_fixdep: (a list of items which are 'X' or 'Y' or 'Z' or 'I' or
+                 'J' or 'K')
+                To fix non-linear warp dependency along directions.
+                flag: -nwarp_fixdep%s...
+        nwarp_fixmot: (a list of items which are 'X' or 'Y' or 'Z' or 'I' or
+                 'J' or 'K')
+                To fix motion along directions.
+                flag: -nwarp_fixmot%s...
+        one_pass: (a boolean)
+                Use only the refining pass -- do not try a coarse resolution pass
+                first. Useful if you know that only small amounts of image alignment
+                are needed.
+                flag: -onepass
+        out_file: (a file name)
+                output file from 3dAllineate
+                flag: -prefix %s
+                mutually_exclusive: allcostx
+        out_matrix: (a file name)
+                Save the transformation matrix for each volume.
+                flag: -1Dmatrix_save %s
+                mutually_exclusive: in_matrix, allcostx
+        out_param_file: (a file name)
+                Save the warp parameters in ASCII (.1D) format.
+                flag: -1Dparam_save %s
+                mutually_exclusive: in_param_file, allcostx
+        out_weight_file: (a file name)
+                Write the weight volume to disk as a dataset
+                flag: -wtprefix %s
+                mutually_exclusive: allcostx
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        overwrite: (a boolean)
+                overwrite output file if it already exists
+                flag: -overwrite
+        quiet: (a boolean)
+                Don't print out verbose progress reports.
+                flag: -quiet
+        reference: (an existing file name)
+                file to be used as reference, the first volume will be used if not
+                given the reference will be the first volume of in_file.
+                flag: -base %s
+        replacebase: (a boolean)
+                If the source has more than one volume, then after the first volume
+                is aligned to the base.
+                flag: -replacebase
+        replacemeth: ('leastsq' or 'ls' or 'mutualinfo' or 'mi' or
+                 'corratio_mul' or 'crM' or 'norm_mutualinfo' or 'nmi' or
+                 'hellinger' or 'hel' or 'corratio_add' or 'crA' or 'corratio_uns'
+                 or 'crU')
+                After first volume is aligned, switch method for later volumes. For
+                use with '-replacebase'.
+                flag: -replacemeth %s
+        source_automask: (an integer (int or long))
+                Automatically mask the source dataset with dilation or 0.
+                flag: -source_automask+%d
+        source_mask: (an existing file name)
+                mask the input dataset
+                flag: -source_mask %s
+        two_best: (an integer (int or long))
+                In the coarse pass, use the best 'bb' set of initialpoints to search
+                for the starting point for the finepass. If bb==0, then no search is
+                made for the beststarting point, and the identity transformation
+                isused as the starting point. [Default=5; min=0 max=11]
+                flag: -twobest %d
+        two_blur: (a float)
+                Set the blurring radius for the first pass in mm.
+                flag: -twoblur %f
+        two_first: (a boolean)
+                Use -twopass on the first image to be registered, and then on all
+                subsequent images from the source dataset, use results from the
+                first image's coarse pass to start the fine pass.
+                flag: -twofirst
+        two_pass: (a boolean)
+                Use a two pass alignment strategy for all volumes, searching for a
+                large rotation+shift and then refining the alignment.
+                flag: -twopass
+        usetemp: (a boolean)
+                temporary file use
+                flag: -usetemp
+        verbose: (a boolean)
+                Print out verbose progress reports.
+                flag: -verb
+        warp_type: ('shift_only' or 'shift_rotate' or 'shift_rotate_scale' or
+                 'affine_general')
+                Set the warp type.
+                flag: -warp %s
+        warpfreeze: (a boolean)
+                Freeze the non-rigid body parameters after first volume.
+                flag: -warpfreeze
+        weight: (an existing file name or a float)
+                Set the weighting for each voxel in the base dataset; larger weights
+                mean that voxel count more in the cost function. If an image file is
+                given, the volume must be defined on the same grid as the base
+                dataset
+                flag: -weight %s
+        weight_file: (an existing file name)
+                Set the weighting for each voxel in the base dataset; larger weights
+                mean that voxel count more in the cost function. Must be defined on
+                the same grid as the base dataset
+                flag: -weight %s
+        zclip: (a boolean)
+                Replace negative values in the input datasets (source & base) with
+                zero.
+                flag: -zclip
+
+Outputs::
+
+        allcostx: (a file name)
+                Compute and print ALL available cost functionals for the un-warped
+                inputs
+        out_file: (an existing file name)
+                output image file name
+        out_matrix: (an existing file name)
+                matrix to align input file
+        out_param_file: (an existing file name)
+                warp parameters
+        out_weight_file: (an existing file name)
+                weight volume
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.AutoTLRC:
+
+
+.. index:: AutoTLRC
+
+AutoTLRC
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L715>`__
+
+Wraps command **@auto_tlrc**
+
+A minmal wrapper for the AutoTLRC script
+The only option currently supported is no_ss.
+For complete details, see the `3dQwarp Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/@auto_tlrc.html>`_
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces import afni
+>>> autoTLRC = afni.AutoTLRC()
+>>> autoTLRC.inputs.in_file = 'structural.nii'
+>>> autoTLRC.inputs.no_ss = True
+>>> autoTLRC.inputs.base = "TT_N27+tlrc"
+>>> autoTLRC.cmdline
+'@auto_tlrc -base TT_N27+tlrc -input structural.nii -no_ss'
+>>> res = autoTLRC.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        base: (a unicode string)
+                 Reference anatomical volume Usually this volume is in some standard
+                space like TLRC or MNI space and with afni dataset view of (+tlrc).
+                Preferably, this reference volume should have had the skull removed
+                but that is not mandatory. AFNI's distribution contains several
+                templates. For a longer list, use "whereami
+                -show_templates"TT_N27+tlrc --> Single subject, skull stripped
+                volume. This volume is also known as N27_SurfVol_NoSkull+tlrc
+                elsewhere in AFNI and SUMA land. (www.loni.ucla.edu,
+                www.bic.mni.mcgill.ca) This template has a full set of FreeSurfer
+                (surfer.nmr.mgh.harvard.edu) surface models that can be used in
+                SUMA. For details, see Talairach-related link:
+                https://afni.nimh.nih.gov/afni/sumaTT_icbm452+tlrc --> Average
+                volume of 452 normal brains. Skull Stripped.
+                (www.loni.ucla.edu)TT_avg152T1+tlrc --> Average volume of 152 normal
+                brains. Skull Stripped.(www.bic.mni.mcgill.ca)TT_EPI+tlrc --> EPI
+                template from spm2, masked as TT_avg152T1 TT_avg152 and TT_EPI
+                volume sources are from SPM's distribution.
+                (www.fil.ion.ucl.ac.uk/spm/)If you do not specify a path for the
+                template, the scriptwill attempt to locate the template AFNI's
+                binaries directory.NOTE: These datasets have been slightly modified
+                from their original size to match the standard TLRC dimensions (Jean
+                Talairach and Pierre Tournoux Co-Planar Stereotaxic Atlas of the
+                Human Brain Thieme Medical Publishers, New York, 1988). That was
+                done for internal consistency in AFNI. You may use the original form
+                of these volumes if you choose but your TLRC coordinates will not be
+                consistent with AFNI's TLRC database (San Antonio Talairach Daemon
+                database), for example.
+                flag: -base %s
+        in_file: (an existing file name)
+                Original anatomical volume (+orig).The skull is removed by this
+                scriptunless instructed otherwise (-no_ss).
+                flag: -input %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        no_ss: (a boolean)
+                Do not strip skull of input data set(because skull has already been
+                removedor because template still has the skull)NOTE: The -no_ss
+                option is not all that optional. Here is a table of when you should
+                and should not use -no_ss Template Template WITH skull WITHOUT skull
+                Dset. WITH skull -no_ss xxx WITHOUT skull No Cigar -no_ss Template
+                means: Your template of choice Dset. means: Your anatomical dataset
+                -no_ss means: Skull stripping should not be attempted on Dset xxx
+                means: Don't put anything, the script will strip Dset No Cigar
+                means: Don't try that combination, it makes no sense.
+                flag: -no_ss
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.AutoTcorrelate:
+
+
+.. index:: AutoTcorrelate
+
+AutoTcorrelate
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L553>`__
+
+Wraps command **3dAutoTcorrelate**
+
+Computes the correlation coefficient between the time series of each
+pair of voxels in the input dataset, and stores the output into a
+new anatomical bucket dataset [scaled to shorts to save memory space].
+
+For complete details, see the `3dAutoTcorrelate Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dAutoTcorrelate.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> corr = afni.AutoTcorrelate()
+>>> corr.inputs.in_file = 'functional.nii'
+>>> corr.inputs.polort = -1
+>>> corr.inputs.eta2 = True
+>>> corr.inputs.mask = 'mask.nii'
+>>> corr.inputs.mask_only_targets = True
+>>> corr.cmdline  # doctest: +ELLIPSIS
+'3dAutoTcorrelate -eta2 -mask mask.nii -mask_only_targets -prefix functional_similarity_matrix.1D -polort -1 functional.nii'
+>>> res = corr.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                timeseries x space (volume or surface) file
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        eta2: (a boolean)
+                eta^2 similarity
+                flag: -eta2
+        mask: (an existing file name)
+                mask of voxels
+                flag: -mask %s
+        mask_only_targets: (a boolean)
+                use mask only on targets voxels
+                flag: -mask_only_targets
+                mutually_exclusive: mask_source
+        mask_source: (an existing file name)
+                mask for source voxels
+                flag: -mask_source %s
+                mutually_exclusive: mask_only_targets
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        polort: (an integer (int or long))
+                Remove polynomical trend of order m or -1 for no detrending
+                flag: -polort %d
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Automask:
+
+
+.. index:: Automask
+
+Automask
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L618>`__
+
+Wraps command **3dAutomask**
+
+Create a brain-only mask of the image using AFNI 3dAutomask command
+
+For complete details, see the `3dAutomask Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dAutomask.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> automask = afni.Automask()
+>>> automask.inputs.in_file = 'functional.nii'
+>>> automask.inputs.dilate = 1
+>>> automask.inputs.outputtype = 'NIFTI'
+>>> automask.cmdline  # doctest: +ELLIPSIS
+'3dAutomask -apply_prefix functional_masked.nii -dilate 1 -prefix functional_mask.nii functional.nii'
+>>> res = automask.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dAutomask
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        brain_file: (a file name)
+                output file from 3dAutomask
+                flag: -apply_prefix %s
+        clfrac: (a float)
+                sets the clip level fraction (must be 0.1-0.9). A small value will
+                tend to make the mask larger [default = 0.5].
+                flag: -clfrac %s
+        dilate: (an integer (int or long))
+                dilate the mask outwards
+                flag: -dilate %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        erode: (an integer (int or long))
+                erode the mask inwards
+                flag: -erode %s
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        brain_file: (an existing file name)
+                brain file (skull stripped)
+        out_file: (an existing file name)
+                mask file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Bandpass:
+
+
+.. index:: Bandpass
+
+Bandpass
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L815>`__
+
+Wraps command **3dBandpass**
+
+Program to lowpass and/or highpass each voxel time series in a
+dataset, offering more/different options than Fourier
+
+For complete details, see the `3dBandpass Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dBandpass.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> from nipype.testing import  example_data
+>>> bandpass = afni.Bandpass()
+>>> bandpass.inputs.in_file = 'functional.nii'
+>>> bandpass.inputs.highpass = 0.005
+>>> bandpass.inputs.lowpass = 0.1
+>>> bandpass.cmdline
+'3dBandpass -prefix functional_bp 0.005000 0.100000 functional.nii'
+>>> res = bandpass.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        highpass: (a float)
+                highpass
+                flag: %f, position: -3
+        in_file: (an existing file name)
+                input file to 3dBandpass
+                flag: %s, position: -1
+        lowpass: (a float)
+                lowpass
+                flag: %f, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        automask: (a boolean)
+                Create a mask from the input dataset.
+                flag: -automask
+        blur: (a float)
+                Blur (inside the mask only) with a filter width (FWHM) of 'fff'
+                millimeters.
+                flag: -blur %f
+        despike: (a boolean)
+                Despike each time series before other processing. Hopefully, you
+                don't actually need to do this, which is why it is optional.
+                flag: -despike
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        localPV: (a float)
+                Replace each vector by the local Principal Vector (AKA first
+                singular vector) from a neighborhood of radius 'rrr' millimeters.
+                Note that the PV time series is L2 normalized. This option is mostly
+                for Bob Cox to have fun with.
+                flag: -localPV %f
+        mask: (an existing file name)
+                mask file
+                flag: -mask %s, position: 2
+        nfft: (an integer (int or long))
+                Set the FFT length [must be a legal value].
+                flag: -nfft %d
+        no_detrend: (a boolean)
+                Skip the quadratic detrending of the input that occurs before the
+                FFT-based bandpassing. You would only want to do this if the dataset
+                had been detrended already in some other program.
+                flag: -nodetrend
+        normalize: (a boolean)
+                Make all output time series have L2 norm = 1 (i.e., sum of squares =
+                1).
+                flag: -norm
+        notrans: (a boolean)
+                Don't check for initial positive transients in the data. The test is
+                a little slow, so skipping it is OK, if you KNOW the data time
+                series are transient-free.
+                flag: -notrans
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        orthogonalize_dset: (an existing file name)
+                Orthogonalize each voxel to the corresponding voxel time series in
+                dataset 'fset', which must have the same spatial and temporal grid
+                structure as the main input dataset. At present, only one '-dsort'
+                option is allowed.
+                flag: -dsort %s
+        orthogonalize_file: (a list of items which are an existing file name)
+                Also orthogonalize input to columns in f.1D. Multiple '-ort' options
+                are allowed.
+                flag: -ort %s
+        out_file: (a file name)
+                output file from 3dBandpass
+                flag: -prefix %s, position: 1
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        tr: (a float)
+                Set time step (TR) in sec [default=from dataset header].
+                flag: -dt %f
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.BlurInMask:
+
+
+.. index:: BlurInMask
+
+BlurInMask
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L879>`__
+
+Wraps command **3dBlurInMask**
+
+Blurs a dataset spatially inside a mask.  That's all.  Experimental.
+
+For complete details, see the `3dBlurInMask Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dBlurInMask.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> bim = afni.BlurInMask()
+>>> bim.inputs.in_file = 'functional.nii'
+>>> bim.inputs.mask = 'mask.nii'
+>>> bim.inputs.fwhm = 5.0
+>>> bim.cmdline  # doctest: +ELLIPSIS
+'3dBlurInMask -input functional.nii -FWHM 5.000000 -mask mask.nii -prefix functional_blur'
+>>> res = bim.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        fwhm: (a float)
+                fwhm kernel size
+                flag: -FWHM %f
+        in_file: (an existing file name)
+                input file to 3dSkullStrip
+                flag: -input %s, position: 1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        automask: (a boolean)
+                Create an automask from the input dataset.
+                flag: -automask
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        float_out: (a boolean)
+                Save dataset as floats, no matter what the input data type is.
+                flag: -float
+        mask: (a file name)
+                Mask dataset, if desired. Blurring will occur only within the mask.
+                Voxels NOT in the mask will be set to zero in the output.
+                flag: -mask %s
+        multimask: (a file name)
+                Multi-mask dataset -- each distinct nonzero value in dataset will be
+                treated as a separate mask for blurring purposes.
+                flag: -Mmask %s
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        options: (a unicode string)
+                options
+                flag: %s, position: 2
+        out_file: (a file name)
+                output to the file
+                flag: -prefix %s, position: -1
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        preserve: (a boolean)
+                Normally, voxels not in the mask will be set to zero in the output.
+                If you want the original values in the dataset to be preserved in
+                the output, use this option.
+                flag: -preserve
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.BlurToFWHM:
+
+
+.. index:: BlurToFWHM
+
+BlurToFWHM
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L929>`__
+
+Wraps command **3dBlurToFWHM**
+
+Blurs a 'master' dataset until it reaches a specified FWHM smoothness
+(approximately).
+
+For complete details, see the `3dBlurToFWHM Documentation
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dBlurToFWHM.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> blur = afni.preprocess.BlurToFWHM()
+>>> blur.inputs.in_file = 'epi.nii'
+>>> blur.inputs.fwhm = 2.5
+>>> blur.cmdline  # doctest: +ELLIPSIS
+'3dBlurToFWHM -FWHM 2.500000 -input epi.nii -prefix epi_afni'
+>>> res = blur.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                The dataset that will be smoothed
+                flag: -input %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        automask: (a boolean)
+                Create an automask from the input dataset.
+                flag: -automask
+        blurmaster: (an existing file name)
+                The dataset whose smoothness controls the process.
+                flag: -blurmaster %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fwhm: (a float)
+                Blur until the 3D FWHM reaches this value (in mm)
+                flag: -FWHM %f
+        fwhmxy: (a float)
+                Blur until the 2D (x,y)-plane FWHM reaches this value (in mm)
+                flag: -FWHMxy %f
+        mask: (an existing file name)
+                Mask dataset, if desired. Voxels NOT in mask will be set to zero in
+                output.
+                flag: -mask %s
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.ClipLevel:
+
+
+.. index:: ClipLevel
+
+ClipLevel
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L981>`__
+
+Wraps command **3dClipLevel**
+
+Estimates the value at which to clip the anatomical dataset so
+   that background regions are set to zero.
+
+For complete details, see the `3dClipLevel Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dClipLevel.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.afni import preprocess
+>>> cliplevel = preprocess.ClipLevel()
+>>> cliplevel.inputs.in_file = 'anatomical.nii'
+>>> cliplevel.cmdline
+'3dClipLevel anatomical.nii'
+>>> res = cliplevel.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dClipLevel
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        doall: (a boolean)
+                Apply the algorithm to each sub-brick separately.
+                flag: -doall, position: 3
+                mutually_exclusive: g, r, a, d
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        grad: (a file name)
+                Also compute a 'gradual' clip level as a function of voxel position,
+                and output that to a dataset.
+                flag: -grad %s, position: 3
+                mutually_exclusive: d, o, a, l, l
+        mfrac: (a float)
+                Use the number ff instead of 0.50 in the algorithm
+                flag: -mfrac %s, position: 2
+
+Outputs::
+
+        clip_val: (a float)
+                output
+
+.. _nipype.interfaces.afni.preprocess.DegreeCentrality:
+
+
+.. index:: DegreeCentrality
+
+DegreeCentrality
+----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1060>`__
+
+Wraps command **3dDegreeCentrality**
+
+Performs degree centrality on a dataset using a given maskfile
+via 3dDegreeCentrality
+
+For complete details, see the `3dDegreeCentrality Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dDegreeCentrality.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> degree = afni.DegreeCentrality()
+>>> degree.inputs.in_file = 'functional.nii'
+>>> degree.inputs.mask = 'mask.nii'
+>>> degree.inputs.sparsity = 1 # keep the top one percent of connections
+>>> degree.inputs.out_file = 'out.nii'
+>>> degree.cmdline
+'3dDegreeCentrality -mask mask.nii -prefix out.nii -sparsity 1.000000 functional.nii'
+>>> res = degree.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dDegreeCentrality
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        autoclip: (a boolean)
+                Clip off low-intensity regions in the dataset
+                flag: -autoclip
+        automask: (a boolean)
+                Mask the dataset to target brain-only voxels
+                flag: -automask
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        mask: (an existing file name)
+                mask file to mask input data
+                flag: -mask %s
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        oned_file: (a unicode string)
+                output filepath to text dump of correlation matrix
+                flag: -out1D %s
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        polort: (an integer (int or long))
+                flag: -polort %d
+        sparsity: (a float)
+                only take the top percent of connections
+                flag: -sparsity %f
+        thresh: (a float)
+                threshold to exclude connections where corr <= thresh
+                flag: -thresh %f
+
+Outputs::
+
+        oned_file: (a file name)
+                The text output of the similarity matrix computed after thresholding
+                with one-dimensional and ijk voxel indices, correlations, image
+                extents, and affine matrix.
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Despike:
+
+
+.. index:: Despike
+
+Despike
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1114>`__
+
+Wraps command **3dDespike**
+
+Removes 'spikes' from the 3D+time input dataset
+
+For complete details, see the `3dDespike Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dDespike.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> despike = afni.Despike()
+>>> despike.inputs.in_file = 'functional.nii'
+>>> despike.cmdline
+'3dDespike -prefix functional_despike functional.nii'
+>>> res = despike.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dDespike
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Detrend:
+
+
+.. index:: Detrend
+
+Detrend
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1152>`__
+
+Wraps command **3dDetrend**
+
+This program removes components from voxel time series using
+linear least squares
+
+For complete details, see the `3dDetrend Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dDetrend.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> detrend = afni.Detrend()
+>>> detrend.inputs.in_file = 'functional.nii'
+>>> detrend.inputs.args = '-polort 2'
+>>> detrend.inputs.outputtype = 'AFNI'
+>>> detrend.cmdline
+'3dDetrend -polort 2 -prefix functional_detrend functional.nii'
+>>> res = detrend.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dDetrend
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.ECM:
+
+
+.. index:: ECM
+
+ECM
+---
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1222>`__
+
+Wraps command **3dECM**
+
+Performs degree centrality on a dataset using a given maskfile
+via the 3dECM command
+
+For complete details, see the `3dECM Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dECM.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> ecm = afni.ECM()
+>>> ecm.inputs.in_file = 'functional.nii'
+>>> ecm.inputs.mask = 'mask.nii'
+>>> ecm.inputs.sparsity = 0.1 # keep top 0.1% of connections
+>>> ecm.inputs.out_file = 'out.nii'
+>>> ecm.cmdline
+'3dECM -mask mask.nii -prefix out.nii -sparsity 0.100000 functional.nii'
+>>> res = ecm.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dECM
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        autoclip: (a boolean)
+                Clip off low-intensity regions in the dataset
+                flag: -autoclip
+        automask: (a boolean)
+                Mask the dataset to target brain-only voxels
+                flag: -automask
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        eps: (a float)
+                sets the stopping criterion for the power iteration; l2|v_old -
+                v_new| < eps*|v_old|; default = 0.001
+                flag: -eps %f
+        fecm: (a boolean)
+                Fast centrality method; substantial speed increase but cannot
+                accomodate thresholding; automatically selected if -thresh or
+                -sparsity are not set
+                flag: -fecm
+        full: (a boolean)
+                Full power method; enables thresholding; automatically selected if
+                -thresh or -sparsity are set
+                flag: -full
+        mask: (an existing file name)
+                mask file to mask input data
+                flag: -mask %s
+        max_iter: (an integer (int or long))
+                sets the maximum number of iterations to use in the power iteration;
+                default = 1000
+                flag: -max_iter %d
+        memory: (a float)
+                Limit memory consumption on system by setting the amount of GB to
+                limit the algorithm to; default = 2GB
+                flag: -memory %f
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        polort: (an integer (int or long))
+                flag: -polort %d
+        scale: (a float)
+                scale correlation coefficients in similarity matrix to after
+                shifting, x >= 0.0; default = 1.0 for -full, 0.5 for -fecm
+                flag: -scale %f
+        shift: (a float)
+                shift correlation coefficients in similarity matrix to enforce non-
+                negativity, s >= 0.0; default = 0.0 for -full, 1.0 for -fecm
+                flag: -shift %f
+        sparsity: (a float)
+                only take the top percent of connections
+                flag: -sparsity %f
+        thresh: (a float)
+                threshold to exclude connections where corr <= thresh
+                flag: -thresh %f
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Fim:
+
+
+.. index:: Fim
+
+Fim
+---
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1278>`__
+
+Wraps command **3dfim+**
+
+Program to calculate the cross-correlation of an ideal reference
+waveform with the measured FMRI time series for each voxel.
+
+For complete details, see the `3dfim+ Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dfim+.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> fim = afni.Fim()
+>>> fim.inputs.in_file = 'functional.nii'
+>>> fim.inputs.ideal_file= 'seed.1D'
+>>> fim.inputs.out_file = 'functional_corr.nii'
+>>> fim.inputs.out = 'Correlation'
+>>> fim.inputs.fim_thr = 0.0009
+>>> fim.cmdline
+'3dfim+ -input functional.nii -ideal_file seed.1D -fim_thr 0.000900 -out Correlation -bucket functional_corr.nii'
+>>> res = fim.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        ideal_file: (an existing file name)
+                ideal time series file name
+                flag: -ideal_file %s, position: 2
+        in_file: (an existing file name)
+                input file to 3dfim+
+                flag: -input %s, position: 1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fim_thr: (a float)
+                fim internal mask threshold value
+                flag: -fim_thr %f, position: 3
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out: (a unicode string)
+                Flag to output the specified parameter
+                flag: -out %s, position: 4
+        out_file: (a file name)
+                output image file name
+                flag: -bucket %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Fourier:
+
+
+.. index:: Fourier
+
+Fourier
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1329>`__
+
+Wraps command **3dFourier**
+
+Program to lowpass and/or highpass each voxel time series in a
+dataset, via the FFT
+
+For complete details, see the `3dFourier Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dFourier.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> fourier = afni.Fourier()
+>>> fourier.inputs.in_file = 'functional.nii'
+>>> fourier.inputs.retrend = True
+>>> fourier.inputs.highpass = 0.005
+>>> fourier.inputs.lowpass = 0.1
+>>> fourier.cmdline
+'3dFourier -highpass 0.005000 -lowpass 0.100000 -prefix functional_fourier -retrend functional.nii'
+>>> res = fourier.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        highpass: (a float)
+                highpass
+                flag: -highpass %f
+        in_file: (an existing file name)
+                input file to 3dFourier
+                flag: %s, position: -1
+        lowpass: (a float)
+                lowpass
+                flag: -lowpass %f
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        retrend: (a boolean)
+                Any mean and linear trend are removed before filtering. This will
+                restore the trend after filtering.
+                flag: -retrend
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Hist:
+
+
+.. index:: Hist
+
+Hist
+----
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1395>`__
+
+Wraps command **3dHist**
+
+Computes average of all voxels in the input dataset
+which satisfy the criterion in the options list
+
+For complete details, see the `3dHist Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dHist.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> hist = afni.Hist()
+>>> hist.inputs.in_file = 'functional.nii'
+>>> hist.cmdline
+'3dHist -input functional.nii -prefix functional_hist'
+>>> res = hist.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dHist
+                flag: -input %s, position: 1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        bin_width: (a float)
+                bin width
+                flag: -binwidth %f
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        mask: (an existing file name)
+                matrix to align input file
+                flag: -mask %s
+        max_value: (a float)
+                maximum intensity value
+                flag: -max %f
+        min_value: (a float)
+                minimum intensity value
+                flag: -min %f
+        nbin: (an integer (int or long))
+                number of bins
+                flag: -nbin %d
+        out_file: (a file name)
+                Write histogram to niml file with this prefix
+                flag: -prefix %s
+        out_show: (a file name)
+                output image file name
+                flag: > %s, position: -1
+        showhist: (a boolean, nipype default value: False)
+                write a text visual histogram
+                flag: -showhist
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+        out_show: (a file name)
+                output visual histogram
+
+.. _nipype.interfaces.afni.preprocess.LFCD:
+
+
+.. index:: LFCD
+
+LFCD
+----
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1456>`__
+
+Wraps command **3dLFCD**
+
+Performs degree centrality on a dataset using a given maskfile
+via the 3dLFCD command
+
+For complete details, see the `3dLFCD Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dLFCD.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> lfcd = afni.LFCD()
+>>> lfcd.inputs.in_file = 'functional.nii'
+>>> lfcd.inputs.mask = 'mask.nii'
+>>> lfcd.inputs.thresh = 0.8 # keep all connections with corr >= 0.8
+>>> lfcd.inputs.out_file = 'out.nii'
+>>> lfcd.cmdline
+'3dLFCD -mask mask.nii -prefix out.nii -thresh 0.800000 functional.nii'
+>>> res = lfcd.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dLFCD
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        autoclip: (a boolean)
+                Clip off low-intensity regions in the dataset
+                flag: -autoclip
+        automask: (a boolean)
+                Mask the dataset to target brain-only voxels
+                flag: -automask
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        mask: (an existing file name)
+                mask file to mask input data
+                flag: -mask %s
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        polort: (an integer (int or long))
+                flag: -polort %d
+        thresh: (a float)
+                threshold to exclude connections where corr <= thresh
+                flag: -thresh %f
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Maskave:
+
+
+.. index:: Maskave
+
+Maskave
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1506>`__
+
+Wraps command **3dmaskave**
+
+Computes average of all voxels in the input dataset
+which satisfy the criterion in the options list
+
+For complete details, see the `3dmaskave Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dmaskave.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> maskave = afni.Maskave()
+>>> maskave.inputs.in_file = 'functional.nii'
+>>> maskave.inputs.mask= 'seed_mask.nii'
+>>> maskave.inputs.quiet= True
+>>> maskave.cmdline  # doctest: +ELLIPSIS
+'3dmaskave -mask seed_mask.nii -quiet functional.nii > functional_maskave.1D'
+>>> res = maskave.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dmaskave
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        mask: (an existing file name)
+                matrix to align input file
+                flag: -mask %s, position: 1
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: > %s, position: -1
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        quiet: (a boolean)
+                matrix to align input file
+                flag: -quiet, position: 2
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Means:
+
+
+.. index:: Means
+
+Means
+-----
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1563>`__
+
+Wraps command **3dMean**
+
+Takes the voxel-by-voxel mean of all input datasets using 3dMean
+
+For complete details, see the `3dMean Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dMean.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> means = afni.Means()
+>>> means.inputs.in_file_a = 'im1.nii'
+>>> means.inputs.in_file_b = 'im2.nii'
+>>> means.inputs.out_file =  'output.nii'
+>>> means.cmdline
+'3dMean -prefix output.nii im1.nii im2.nii'
+>>> res = means.run()  # doctest: +SKIP
+
+>>> from nipype.interfaces import afni
+>>> means = afni.Means()
+>>> means.inputs.in_file_a = 'im1.nii'
+>>> means.inputs.out_file =  'output.nii'
+>>> means.inputs.datum = 'short'
+>>> means.cmdline
+'3dMean -datum short -prefix output.nii im1.nii'
+>>> res = means.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file_a: (an existing file name)
+                input file to 3dMean
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        count: (a boolean)
+                compute count of non-zero voxels
+                flag: -count
+        datum: (a unicode string)
+                Sets the data type of the output dataset
+                flag: -datum %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        in_file_b: (an existing file name)
+                another input file to 3dMean
+                flag: %s, position: -1
+        mask_inter: (a boolean)
+                create intersection mask
+                flag: -mask_inter
+        mask_union: (a boolean)
+                create union mask
+                flag: -mask_union
+        non_zero: (a boolean)
+                use only non-zero values
+                flag: -non_zero
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        scale: (a unicode string)
+                scaling of output
+                flag: -%sscale
+        sqr: (a boolean)
+                mean square instead of value
+                flag: -sqr
+        std_dev: (a boolean)
+                calculate std dev
+                flag: -stdev
+        summ: (a boolean)
+                take sum, (not average)
+                flag: -sum
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.OutlierCount:
+
+
+.. index:: OutlierCount
+
+OutlierCount
+------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1669>`__
+
+Wraps command **3dToutcount**
+
+Calculates number of 'outliers' at each time point of a
+a 3D+time dataset.
+
+For complete details, see the `3dToutcount Documentation
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dToutcount.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> toutcount = afni.OutlierCount()
+>>> toutcount.inputs.in_file = 'functional.nii'
+>>> toutcount.cmdline  # doctest: +ELLIPSIS
+'3dToutcount -qthr 0.00100 functional.nii'
+>>> res = toutcount.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input dataset
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        autoclip: (a boolean, nipype default value: False)
+                clip off small voxels
+                flag: -autoclip
+                mutually_exclusive: mask
+        automask: (a boolean, nipype default value: False)
+                clip off small voxels
+                flag: -automask
+                mutually_exclusive: mask
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fraction: (a boolean, nipype default value: False)
+                write out the fraction of masked voxels which are outliers at each
+                timepoint
+                flag: -fraction
+        interval: (a boolean, nipype default value: False)
+                write out the median + 3.5 MAD of outlier count with each timepoint
+                flag: -range
+        legendre: (a boolean, nipype default value: False)
+                use Legendre polynomials
+                flag: -legendre
+        mask: (an existing file name)
+                only count voxels within the given mask
+                flag: -mask %s
+                mutually_exclusive: autoclip, automask
+        out_file: (a file name)
+                capture standard output
+        outliers_file: (a file name)
+                output image file name
+                flag: -save %s
+        polort: (an integer (int or long))
+                detrend each voxel timeseries with polynomials
+                flag: -polort %d
+        qthr: (0.0 <= a floating point number <= 1.0, nipype default value:
+                 0.001)
+                indicate a value for q to compute alpha
+                flag: -qthr %.5f
+        save_outliers: (a boolean, nipype default value: False)
+                enables out_file option
+
+Outputs::
+
+        out_file: (a file name)
+                capture standard output
+        out_outliers: (an existing file name)
+                output image file name
+
+.. _nipype.interfaces.afni.preprocess.QualityIndex:
+
+
+.. index:: QualityIndex
+
+QualityIndex
+------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1779>`__
+
+Wraps command **3dTqual**
+
+Computes a `quality index' for each sub-brick in a 3D+time dataset.
+The output is a 1D time series with the index for each sub-brick.
+The results are written to stdout.
+
+For complete details, see the `3dTqual Documentation
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dTqual.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> tqual = afni.QualityIndex()
+>>> tqual.inputs.in_file = 'functional.nii'
+>>> tqual.cmdline  # doctest: +ELLIPSIS
+'3dTqual functional.nii > functional_tqual'
+>>> res = tqual.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input dataset
+                flag: %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        autoclip: (a boolean, nipype default value: False)
+                clip off small voxels
+                flag: -autoclip
+                mutually_exclusive: mask
+        automask: (a boolean, nipype default value: False)
+                clip off small voxels
+                flag: -automask
+                mutually_exclusive: mask
+        clip: (a float)
+                clip off values below
+                flag: -clip %f
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        interval: (a boolean, nipype default value: False)
+                write out the median + 3.5 MAD of outlier count with each timepoint
+                flag: -range
+        mask: (an existing file name)
+                compute correlation only across masked voxels
+                flag: -mask %s
+                mutually_exclusive: autoclip, automask
+        out_file: (a file name)
+                capture standard output
+                flag: > %s, position: -1
+        quadrant: (a boolean, nipype default value: False)
+                Similar to -spearman, but using 1 minus the quadrant correlation
+                coefficient as the quality index.
+                flag: -quadrant
+        spearman: (a boolean, nipype default value: False)
+                Quality index is 1 minus the Spearman (rank) correlation coefficient
+                of each sub-brick with the median sub-brick. (default).
+                flag: -spearman
+
+Outputs::
+
+        out_file: (a file name)
+                file containing the captured standard output
+
+.. _nipype.interfaces.afni.preprocess.Qwarp:
+
+
+.. index:: Qwarp
+
+Qwarp
+-----
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L3488>`__
+
+Wraps command **3dQwarp**
+
+A version of 3dQwarp
+Allineate your images prior to passing them to this workflow.
+
+For complete details, see the `3dQwarp Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dQwarp.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> qwarp = afni.Qwarp()
+>>> qwarp.inputs.in_file = 'sub-01_dir-LR_epi.nii.gz'
+>>> qwarp.inputs.nopadWARP = True
+>>> qwarp.inputs.base_file = 'sub-01_dir-RL_epi.nii.gz'
+>>> qwarp.inputs.plusminus = True
+>>> qwarp.cmdline
+'3dQwarp -base sub-01_dir-RL_epi.nii.gz -source sub-01_dir-LR_epi.nii.gz -nopadWARP -prefix sub-01_dir-LR_epi_QW -plusminus'
+>>> res = qwarp.run()  # doctest: +SKIP
+
+>>> from nipype.interfaces import afni
+>>> qwarp = afni.Qwarp()
+>>> qwarp.inputs.in_file = 'structural.nii'
+>>> qwarp.inputs.base_file = 'mni.nii'
+>>> qwarp.inputs.resample = True
+>>> qwarp.cmdline
+'3dQwarp -base mni.nii -source structural.nii -prefix structural_QW -resample'
+>>> res = qwarp.run()  # doctest: +SKIP
+
+>>> from nipype.interfaces import afni
+>>> qwarp = afni.Qwarp()
+>>> qwarp.inputs.in_file = 'structural.nii'
+>>> qwarp.inputs.base_file = 'epi.nii'
+>>> qwarp.inputs.out_file = 'anatSSQ.nii.gz'
+>>> qwarp.inputs.resample = True
+>>> qwarp.inputs.lpc = True
+>>> qwarp.inputs.verb = True
+>>> qwarp.inputs.iwarp = True
+>>> qwarp.inputs.blur = [0,3]
+>>> qwarp.cmdline
+'3dQwarp -base epi.nii -blur 0.0 3.0 -source structural.nii -iwarp -prefix anatSSQ.nii.gz -resample -verb -lpc'
+>>> res = qwarp.run()  # doctest: +SKIP
+
+>>> from nipype.interfaces import afni
+>>> qwarp = afni.Qwarp()
+>>> qwarp.inputs.in_file = 'structural.nii'
+>>> qwarp.inputs.base_file = 'mni.nii'
+>>> qwarp.inputs.duplo = True
+>>> qwarp.inputs.blur = [0,3]
+>>> qwarp.cmdline
+'3dQwarp -base mni.nii -blur 0.0 3.0 -duplo -source structural.nii -prefix structural_QW'
+>>> res = qwarp.run()  # doctest: +SKIP
+
+>>> from nipype.interfaces import afni
+>>> qwarp = afni.Qwarp()
+>>> qwarp.inputs.in_file = 'structural.nii'
+>>> qwarp.inputs.base_file = 'mni.nii'
+>>> qwarp.inputs.duplo = True
+>>> qwarp.inputs.minpatch = 25
+>>> qwarp.inputs.blur = [0,3]
+>>> qwarp.inputs.out_file = 'Q25'
+>>> qwarp.cmdline
+'3dQwarp -base mni.nii -blur 0.0 3.0 -duplo -source structural.nii -minpatch 25 -prefix Q25'
+>>> res = qwarp.run()  # doctest: +SKIP
+>>> qwarp2 = afni.Qwarp()
+>>> qwarp2.inputs.in_file = 'structural.nii'
+>>> qwarp2.inputs.base_file = 'mni.nii'
+>>> qwarp2.inputs.blur = [0,2]
+>>> qwarp2.inputs.out_file = 'Q11'
+>>> qwarp2.inputs.inilev = 7
+>>> qwarp2.inputs.iniwarp = ['Q25_warp+tlrc.HEAD']
+>>> qwarp2.cmdline
+'3dQwarp -base mni.nii -blur 0.0 2.0 -source structural.nii -inilev 7 -iniwarp Q25_warp+tlrc.HEAD -prefix Q11'
+>>> res2 = qwarp2.run()  # doctest: +SKIP
+>>> res2 = qwarp2.run()  # doctest: +SKIP
+>>> qwarp3 = afni.Qwarp()
+>>> qwarp3.inputs.in_file = 'structural.nii'
+>>> qwarp3.inputs.base_file = 'mni.nii'
+>>> qwarp3.inputs.allineate = True
+>>> qwarp3.inputs.allineate_opts = '-cose lpa -verb'
+>>> qwarp3.cmdline
+"3dQwarp -allineate -allineate_opts '-cose lpa -verb' -base mni.nii -source structural.nii -prefix structural_QW"
+>>> res3 = qwarp3.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        base_file: (an existing file name)
+                Base image (opposite phase encoding direction than source image).
+                flag: -base %s
+        in_file: (an existing file name)
+                Source image (opposite phase encoding direction than base image).
+                flag: -source %s
+
+        [Optional]
+        Qfinal: (a boolean)
+                At the finest patch size (the final level), use Hermitequintic
+                polynomials for the warp instead of cubic polynomials.* In a 3D
+                'patch', there are 2x2x2x3=24 cubic polynomial basisfunction
+                parameters over which to optimize (2 polynomialsdependent on each of
+                the x,y,z directions, and 3 differentdirections of displacement).*
+                There are 3x3x3x3=81 quintic polynomial parameters per patch.* With
+                -Qfinal, the final level will have more detail inthe allowed warps,
+                at the cost of yet more CPU time.* However, no patch below 7x7x7 in
+                size will be done with quinticpolynomials.* This option is also not
+                usually needed, and is experimental.
+                flag: -Qfinal
+        Qonly: (a boolean)
+                Use Hermite quintic polynomials at all levels.* Very slow (about 4
+                times longer). Also experimental.* Will produce a (discrete
+                representation of a) C2 warp.
+                flag: -Qonly
+        allineate: (a boolean)
+                This option will make 3dQwarp run 3dAllineate first, to align the
+                source dataset to the base with an affine transformation. It will
+                then use that alignment as a starting point for the nonlinear
+                warping.
+                flag: -allineate
+        allineate_opts: (a unicode string)
+                add extra options to the 3dAllineate command to be run by 3dQwarp.
+                flag: -allineate_opts %s
+                requires: allineate
+        allsave: (a boolean)
+                This option lets you save the output warps from each levelof the
+                refinement process. Mostly used for experimenting.* Cannot be used
+                with -nopadWARP, -duplo, or -plusminus.* Will only save all the
+                outputs if the program terminatesnormally -- if it crashes, or
+                freezes, then all thesewarps are lost.
+                flag: -allsave
+                mutually_exclusive: nopadWARP, duplo, plusminus
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        ballopt: (a boolean)
+                Normally, the incremental warp parameters are optimized insidea
+                rectangular 'box' (24 dimensional for cubic patches, 81 forquintic
+                patches), whose limits define the amount of distortionallowed at
+                each step. Using '-ballopt' switches these limitsto be applied to a
+                'ball' (interior of a hypersphere), whichcan allow for larger
+                incremental displacements. Use thisoption if you think things need
+                to be able to move farther.
+                flag: -ballopt
+                mutually_exclusive: workhard, boxopt
+        baxopt: (a boolean)
+                Use the 'box' optimization limits instead of the 'ball'[this is the
+                default at present].* Note that if '-workhard' is used, then ball
+                and box optimizationare alternated in the different iterations at
+                each level, sothese two options have no effect in that case.
+                flag: -boxopt
+                mutually_exclusive: workhard, ballopt
+        blur: (a list of from 1 to 2 items which are a float)
+                Gaussian blur the input images by 'bb' (FWHM) voxels beforedoing the
+                alignment (the output dataset will not be blurred).The default is
+                2.345 (for no good reason).* Optionally, you can provide 2 values
+                for 'bb', and thenthe first one is applied to the base volume, the
+                secondto the source volume.-->>* e.g., '-blur 0 3' to skip blurring
+                the base image(if the base is a blurry template, for example).* A
+                negative blur radius means to use 3D median filtering,rather than
+                Gaussian blurring. This type of filtering willbetter preserve edges,
+                which can be important in alignment.* If the base is a template
+                volume that is already blurry,you probably don't want to blur it
+                again, but blurringthe source volume a little is probably a good
+                idea, tohelp the program avoid trying to match tiny features.* Note
+                that -duplo will blur the volumes some extraamount for the initial
+                small-scale warping, to makethat phase of the program converge more
+                rapidly.
+                flag: -blur %s
+        duplo: (a boolean)
+                Start off with 1/2 scale versions of the volumes,for getting a
+                speedy coarse first alignment.* Then scales back up to register the
+                full volumes.The goal is greater speed, and it seems to help
+                thispositively piggish program to be more expeditious.* However,
+                accuracy is somewhat lower with '-duplo',for reasons that currenly
+                elude Zhark; for this reason,the Emperor does not usually use
+                '-duplo'.
+                flag: -duplo
+                mutually_exclusive: gridlist, maxlev, inilev, iniwarp, plusminus,
+                 allsave
+        emask: (an existing file name)
+                Here, 'ee' is a dataset to specify a mask of voxelsto EXCLUDE from
+                the analysis -- all voxels in 'ee'that are NONZERO will not be used
+                in the alignment.* The base image always automasked -- the emask
+                isextra, to indicate voxels you definitely DON'T wantincluded in the
+                matching process, even if they areinside the brain.
+                flag: -emask %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        expad: (an integer (int or long))
+                This option instructs the program to pad the warp by an extra'EE'
+                voxels (and then 3dQwarp starts optimizing it).* This option is
+                seldom needed, but can be useful if youmight later catenate the
+                nonlinear warp -- via 3dNwarpCat --with an affine transformation
+                that contains a large shift.Under that circumstance, the nonlinear
+                warp might be shiftedpartially outside its original grid, so
+                expanding that gridcan avoid this problem.* Note that this option
+                perforce turns off '-nopadWARP'.
+                flag: -expad %d
+                mutually_exclusive: nopadWARP
+        gridlist: (an existing file name)
+                This option provides an alternate way to specify the patchgrid sizes
+                used in the warp optimization process. 'gl' isa 1D file with a list
+                of patches to use -- in most cases,you will want to use it in the
+                following form:-gridlist '1D: 0 151 101 75 51'* Here, a 0 patch size
+                means the global domain. Patch sizesotherwise should be odd integers
+                >= 5.* If you use the '0' patch size again after the first
+                position,you will actually get an iteration at the size of
+                thedefault patch level 1, where the patch sizes are 75% ofthe volume
+                dimension. There is no way to force the programto literally repeat
+                the sui generis step of lev=0.* You cannot use -gridlist with -duplo
+                or -plusminus!
+                flag: -gridlist %s
+                mutually_exclusive: duplo, plusminus
+        hel: (a boolean)
+                Hellinger distance: a matching function for the adventurousThis
+                option has NOT be extensively tested for usefullnessand should be
+                considered experimental at this infundibulum.
+                flag: -hel
+                mutually_exclusive: nmi, mi, lpc, lpa, pear
+        inilev: (an integer (int or long))
+                The initial refinement 'level' at which to start.* Usually used with
+                -iniwarp; CANNOT be used with -duplo.* The combination of -inilev
+                and -iniwarp lets you take theresults of a previous 3dQwarp run and
+                refine them further:Note that the source dataset in the second run
+                is the SAME asin the first run. If you don't see why this is
+                necessary,then you probably need to seek help from an AFNI guru.
+                flag: -inilev %d
+                mutually_exclusive: duplo
+        iniwarp: (a list of items which are an existing file name)
+                A dataset with an initial nonlinear warp to use.* If this option is
+                not used, the initial warp is the identity.* You can specify a
+                catenation of warps (in quotes) here, as inprogram 3dNwarpApply.* As
+                a special case, if you just input an affine matrix in a .1Dfile,
+                that will work also -- it is treated as giving the initialwarp via
+                the string "IDENT(base_dataset) matrix_file.aff12.1D".* You CANNOT
+                use this option with -duplo !!* -iniwarp is usually used with
+                -inilev to re-start 3dQwarp froma previous stopping point.
+                flag: -iniwarp %s
+                mutually_exclusive: duplo
+        iwarp: (a boolean)
+                Do compute and save the _WARPINV file.
+                flag: -iwarp
+                mutually_exclusive: plusminus
+        lpa: (a boolean)
+                Local Pearson maximizationThis option has not be extensively tested
+                flag: -lpa
+                mutually_exclusive: nmi, mi, lpc, hel, pear
+        lpc: (a boolean)
+                Local Pearson minimization (i.e., EPI-T1 registration)This option
+                has not be extensively testedIf you use '-lpc', then '-maxlev 0' is
+                automatically set.If you want to go to more refined levels, you can
+                set '-maxlev'This should be set up to have lpc as the second to last
+                argumentand maxlev as the second to last argument, as needed by
+                AFNIUsing maxlev > 1 is not recommended for EPI-T1 alignment.
+                flag: -lpc, position: -2
+                mutually_exclusive: nmi, mi, hel, lpa, pear
+        maxlev: (an integer (int or long))
+                The initial refinement 'level' at which to start.* Usually used with
+                -iniwarp; CANNOT be used with -duplo.* The combination of -inilev
+                and -iniwarp lets you take theresults of a previous 3dQwarp run and
+                refine them further:Note that the source dataset in the second run
+                is the SAME asin the first run. If you don't see why this is
+                necessary,then you probably need to seek help from an AFNI guru.
+                flag: -maxlev %d, position: -1
+                mutually_exclusive: duplo
+        mi: (a boolean)
+                Mutual Information: a matching function for the adventurousThis
+                option has NOT be extensively tested for usefullnessand should be
+                considered experimental at this infundibulum.
+                flag: -mi
+                mutually_exclusive: mi, hel, lpc, lpa, pear
+        minpatch: (an integer (int or long))
+                * The value of mm should be an odd integer.* The default value of mm
+                is 25.* For more accurate results than mm=25, try 19 or 13.* The
+                smallest allowed patch size is 5.* You may want stop at a larger
+                patch size (say 7 or 9) and usethe -Qfinal option to run that final
+                level with quintic warps,which might run faster and provide the same
+                degree of warp detail.* Trying to make two different brain volumes
+                match in fine detailis usually a waste of time, especially in
+                humans. There is toomuch variability in anatomy to match gyrus to
+                gyrus accurately.For this reason, the default minimum patch size is
+                25 voxels.Using a smaller '-minpatch' might try to force the warp
+                tomatch features that do not match, and the result can be
+                uselessimage distortions -- another reason to LOOK AT THE RESULTS.
+                flag: -minpatch %d
+        nmi: (a boolean)
+                Normalized Mutual Information: a matching function for the
+                adventurousThis option has NOT be extensively tested for
+                usefullnessand should be considered experimental at this
+                infundibulum.
+                flag: -nmi
+                mutually_exclusive: nmi, hel, lpc, lpa, pear
+        noXdis: (a boolean)
+                Warp will not displace in x directoin
+                flag: -noXdis
+        noYdis: (a boolean)
+                Warp will not displace in y directoin
+                flag: -noYdis
+        noZdis: (a boolean)
+                Warp will not displace in z directoin
+                flag: -noZdis
+        noneg: (a boolean)
+                Replace negative values in either input volume with 0.* If there ARE
+                negative input values, and you do NOT use -noneg,then strict Pearson
+                correlation will be used, since the 'clipped'method only is
+                implemented for non-negative volumes.* '-noneg' is not the default,
+                since there might be situations whereyou want to align datasets with
+                positive and negative values mixed.* But, in many cases, the
+                negative values in a dataset are just theresult of interpolation
+                artifacts (or other peculiarities), and sothey should be ignored.
+                That is what '-noneg' is for.
+                flag: -noneg
+        nopad: (a boolean)
+                Do NOT use zero-padding on the 3D base and source images.[Default ==
+                zero-pad, if needed]* The underlying model for deformations goes to
+                zero at theedge of the volume being warped. However, if there
+                issignificant data near an edge of the volume, then it won'tget
+                displaced much, and so the results might not be good.* Zero padding
+                is designed as a way to work around this potentialproblem. You
+                should NOT need the '-nopad' option for anyreason that Zhark can
+                think of, but it is here to be symmetricalwith 3dAllineate.* Note
+                that the output (warped from source) dataset will be on thebase
+                dataset grid whether or not zero-padding is allowed. However,unless
+                you use the following option, allowing zero-padding (i.e.,the
+                default operation) will make the output WARP dataset(s) beon a
+                larger grid (also see '-expad' below).
+                flag: -nopad
+        nopadWARP: (a boolean)
+                If for some reason you require the warp volume tomatch the base
+                volume, then use this option to have the outputWARP dataset(s)
+                truncated.
+                flag: -nopadWARP
+                mutually_exclusive: allsave, expad
+        nopenalty: (a boolean)
+                Replace negative values in either input volume with 0.* If there ARE
+                negative input values, and you do NOT use -noneg,then strict Pearson
+                correlation will be used, since the 'clipped'method only is
+                implemented for non-negative volumes.* '-noneg' is not the default,
+                since there might be situations whereyou want to align datasets with
+                positive and negative values mixed.* But, in many cases, the
+                negative values in a dataset are just theresult of interpolation
+                artifacts (or other peculiarities), and sothey should be ignored.
+                That is what '-noneg' is for.
+                flag: -nopenalty
+        nowarp: (a boolean)
+                Do not save the _WARP file.
+                flag: -nowarp
+        noweight: (a boolean)
+                If you want a binary weight (the old default), use this option.That
+                is, each voxel in the base volume automask will beweighted the same
+                in the computation of the cost functional.
+                flag: -noweight
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                out_file pppSets the prefix for the output datasets.* The source
+                dataset is warped to match the baseand gets prefix 'ppp'. (Except if
+                '-plusminus' is used.)* The final interpolation to this output
+                dataset isdone using the 'wsinc5' method. See the output of
+                3dAllineate -HELP(in the "Modifying '-final wsinc5'" section) forthe
+                lengthy technical details.* The 3D warp used is saved in a dataset
+                withprefix 'ppp_WARP' -- this dataset can be usedwith 3dNwarpApply
+                and 3dNwarpCat, for example.* To be clear, this is the warp from
+                source dataset coordinates to base dataset coordinates, where the
+                values at each base grid point are the xyz displacments needed to
+                move that grid point's xyz values to the corresponding xyz values in
+                the source dataset: base( (x,y,z) + WARP(x,y,z) ) matches
+                source(x,y,z) Another way to think of this warp is that it 'pulls'
+                values back from source space to base space.* 3dNwarpApply would use
+                'ppp_WARP' to transform datasetsaligned with the source dataset to
+                be aligned with thebase dataset.** If you do NOT want this warp
+                saved, use the option '-nowarp'.-->> (However, this warp is usually
+                the most valuable possible output!)* If you want to calculate and
+                save the inverse 3D warp,use the option '-iwarp'. This inverse warp
+                will then besaved in a dataset with prefix 'ppp_WARPINV'.* This
+                inverse warp could be used to transform data from basespace to
+                source space, if you need to do such an operation.* You can easily
+                compute the inverse later, say by a command like 3dNwarpCat -prefix
+                Z_WARPINV 'INV(Z_WARP+tlrc)'or the inverse can be computed as needed
+                in 3dNwarpApply, like 3dNwarpApply -nwarp 'INV(Z_WARP+tlrc)' -source
+                Dataset.nii ...
+                flag: -prefix %s
+        out_weight_file: (a file name)
+                Write the weight volume to disk as a dataset
+                flag: -wtprefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        overwrite: (a boolean)
+                Overwrite outputs
+                flag: -overwrite
+        pblur: (a list of from 1 to 2 items which are a float)
+                Use progressive blurring; that is, for larger patch sizes,the amount
+                of blurring is larger. The general idea is toavoid trying to match
+                finer details when the patch sizeand incremental warps are coarse.
+                When '-blur' is usedas well, it sets a minimum amount of blurring
+                that willbe used. [06 Aug 2014 -- '-pblur' may become the default
+                someday].* You can optionally give the fraction of the patch size
+                thatis used for the progressive blur by providing a value between0
+                and 0.25 after '-pblur'. If you provide TWO values, thethe first
+                fraction is used for progressively blurring thebase image and the
+                second for the source image. The defaultparameters when just
+                '-pblur' is given is the same as givingthe options as '-pblur 0.09
+                0.09'.* '-pblur' is useful when trying to match 2 volumes with
+                highamounts of detail; e.g, warping one subject's brain image
+                tomatch another's, or trying to warp to match a detailed template.*
+                Note that using negative values with '-blur' means that
+                theprogressive blurring will be done with median filters, ratherthan
+                Gaussian linear blurring.-->>*** The combination of the -allineate
+                and -pblur options will makethe results of using 3dQwarp to align to
+                a template somewhatless sensitive to initial head position and
+                scaling.
+                flag: -pblur %s
+        pear: (a boolean)
+                Use strict Pearson correlation for matching.* Not usually
+                recommended, since the 'clipped Pearson' methodused by default will
+                reduce the impact of outlier values.
+                flag: -pear
+        penfac: (a float)
+                Use this value to weight the penalty.The default value is 1.Larger
+                values mean thepenalty counts more, reducing grid
+                distortions,insha'Allah; '-nopenalty' is the same as '-penfac 0'.
+                -->>* [23 Sep 2013] -- Zhark increased the default value of the
+                penalty by a factor of 5, and also made it get progressively larger
+                with each level of refinement. Thus, warping results will vary from
+                earlier instances of 3dQwarp. * The progressive increase in the
+                penalty at higher levels means that the 'cost function' can actually
+                look like the alignment is getting worse when the levels change. *
+                IF you wish to turn off this progression, for whatever reason (e.g.,
+                to keep compatibility with older results), use the option
+                '-penold'.To be completely compatible with the older 3dQwarp, you'll
+                also have to use '-penfac 0.2'.
+                flag: -penfac %f
+        plusminus: (a boolean)
+                Normally, the warp displacements dis(x) are defined to matchbase(x)
+                to source(x+dis(x)). With this option, the matchis between
+                base(x-dis(x)) and source(x+dis(x)) -- the twoimages 'meet in the
+                middle'.* One goal is to mimic the warping done to MRI EPI data
+                byfield inhomogeneities, when registering between a 'blip up'and a
+                'blip down' down volume, which will have oppositedistortions.*
+                Define Wp(x) = x+dis(x) and Wm(x) = x-dis(x). Then sincebase(Wm(x))
+                matches source(Wp(x)), by substituting INV(Wm(x))wherever we see x,
+                we have base(x) matches source(Wp(INV(Wm(x))));that is, the warp
+                V(x) that one would get from the 'usual' wayof running 3dQwarp is
+                V(x) = Wp(INV(Wm(x))).* Conversely, we can calculate Wp(x) in terms
+                of V(x) as follows:If V(x) = x + dv(x), define Vh(x) = x +
+                dv(x)/2;then Wp(x) = V(INV(Vh(x)))* With the above formulas, it is
+                possible to compute Wp(x) fromV(x) and vice-versa, using program
+                3dNwarpCalc. The requisitecommands are left as an exercise for the
+                aspiring AFNI Jedi Master.* You can use the semi-secret '-pmBASE'
+                option to get the V(x)warp and the source dataset warped to base
+                space, in addition tothe Wp(x) '_PLUS' and Wm(x) '_MINUS'
+                warps.-->>* Alas: -plusminus does not work with -duplo or -allineate
+                :-(* However, you can use -iniwarp with -plusminus :-)-->>* The
+                outputs have _PLUS (from the source dataset) and _MINUS(from the
+                base dataset) in their filenames, in addition tothe prefix. The
+                -iwarp option, if present, will be ignored.
+                flag: -plusminus
+                mutually_exclusive: duplo, allsave, iwarp
+        quiet: (a boolean)
+                Cut out most of the fun fun fun progress messages :-(
+                flag: -quiet
+                mutually_exclusive: verb
+        resample: (a boolean)
+                This option simply resamples the source dataset to match thebase
+                dataset grid. You can use this if the two datasetsoverlap well (as
+                seen in the AFNI GUI), but are not on thesame 3D grid.* If they
+                don't overlap well, allineate them first* The reampling here is done
+                with the'wsinc5' method, which has very little blurring artifact.*
+                If the base and source datasets ARE on the same 3D grid,then the
+                -resample option will be ignored.* You CAN use -resample with these
+                3dQwarp options:-plusminus -inilev -iniwarp -duplo
+                flag: -resample
+        verb: (a boolean)
+                more detailed description of the process
+                flag: -verb
+                mutually_exclusive: quiet
+        wball: (a list of from 5 to 5 items which are an integer (int or
+                 long))
+                -wball x y z r fEnhance automatic weight from '-useweight' by a
+                factorof 1+f*Gaussian(FWHM=r) centered in the base image atDICOM
+                coordinates (x,y,z) and with radius 'r'. Thegoal of this option is
+                to try and make the alignmentbetter in a specific part of the
+                brain.* Example: -wball 0 14 6 30 40to emphasize the thalamic area
+                (in MNI/Talairach space).* The 'r' parameter must be positive!* The
+                'f' parameter must be between 1 and 100 (inclusive).* '-wball' does
+                nothing if you input your own weightwith the '-weight' option.*
+                '-wball' does change the binary weight created bythe '-noweight'
+                option.* You can only use '-wball' once in a run of 3dQwarp.*** The
+                effect of '-wball' is not dramatic. The exampleabove makes the
+                average brain image across a collectionof subjects a little sharper
+                in the thalamic area, whichmight have some small value. If you care
+                enough aboutalignment to use '-wball', then you should examine
+                theresults from 3dQwarp for each subject, to see if thealignments
+                are good enough for your purposes.
+                flag: -wball %s
+        weight: (an existing file name)
+                Instead of computing the weight from the base dataset,directly input
+                the weight volume from dataset 'www'.* Useful if you know what over
+                parts of the base image youwant to emphasize or de-emphasize the
+                matching functional.
+                flag: -weight %s
+        wmask: (a tuple of the form: (an existing file name, a float))
+                -wmask ws fSimilar to '-wball', but here, you provide a dataset
+                'ws'that indicates where to increase the weight.* The 'ws' dataset
+                must be on the same 3D grid as the base dataset.* 'ws' is treated as
+                a mask -- it only matters where itis nonzero -- otherwise, the
+                values inside are not used.* After 'ws' comes the factor 'f' by
+                which to increase theautomatically computed weight. Where 'ws' is
+                nonzero,the weighting will be multiplied by (1+f).* As with
+                '-wball', the factor 'f' should be between 1 and 100.* You cannot
+                use '-wball' and '-wmask' together!
+                flag: -wpass %s %f
+        workhard: (a boolean)
+                Iterate more times, which can help when the volumes arehard to align
+                at all, or when you hope to get a more precisealignment.* Slows the
+                program down (possibly a lot), of course.* When you combine
+                '-workhard' with '-duplo', only thefull size volumes get the extra
+                iterations.* For finer control over which refinement levels work
+                hard,you can use this option in the form (for example)
+                -workhard:4:7which implies the extra iterations will be done at
+                levels4, 5, 6, and 7, but not otherwise.* You can also use
+                '-superhard' to iterate even more, butthis extra option will REALLY
+                slow things down.-->>* Under most circumstances, you should not need
+                to use either-workhard or -superhard.-->>* The fastest way to
+                register to a template image is via the-duplo option, and without
+                the -workhard or -superhard options.-->>* If you use this option in
+                the form '-Workhard' (first letterin upper case), then the second
+                iteration at each level isdone with quintic polynomial warps.
+                flag: -workhard
+                mutually_exclusive: boxopt, ballopt
+
+Outputs::
+
+        base_warp: (a file name)
+                Displacement in mm for the base image.If plus minus is used, this is
+                the field suceptibility correctionwarp (in 'mm') for base image.
+                This is only output if plusminusor iwarp options are passed
+        source_warp: (a file name)
+                Displacement in mm for the source image.If plusminus is used this is
+                the field suceptibility correctionwarp (in 'mm') for source image.
+        warped_base: (a file name)
+                Undistorted base file.
+        warped_source: (a file name)
+                Warped source file. If plusminus is used, this is the
+                undistortedsource file.
+        weights: (a file name)
+                Auto-computed weight volume.
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.QwarpPlusMinus:
+
+
+.. index:: QwarpPlusMinus
+
+QwarpPlusMinus
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L3662>`__
+
+Wraps command **3dQwarp**
+
+A version of 3dQwarp for performing field susceptibility correction
+using two images with opposing phase encoding directions.
+
+For complete details, see the `3dQwarp Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dQwarp.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> qwarp = afni.QwarpPlusMinus()
+>>> qwarp.inputs.in_file = 'sub-01_dir-LR_epi.nii.gz'
+>>> qwarp.inputs.nopadWARP = True
+>>> qwarp.inputs.base_file = 'sub-01_dir-RL_epi.nii.gz'
+>>> qwarp.cmdline
+'3dQwarp -prefix Qwarp.nii.gz -plusminus -base sub-01_dir-RL_epi.nii.gz     -source sub-01_dir-LR_epi.nii.gz -nopadWARP'
+>>> res = warp.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        base_file: (an existing file name)
+                Base image (opposite phase encoding direction than source image).
+                flag: -base %s
+        in_file: (an existing file name)
+                Source image (opposite phase encoding direction than base image).
+                flag: -source %s
+
+        [Optional]
+        Qfinal: (a boolean)
+                At the finest patch size (the final level), use Hermitequintic
+                polynomials for the warp instead of cubic polynomials.* In a 3D
+                'patch', there are 2x2x2x3=24 cubic polynomial basisfunction
+                parameters over which to optimize (2 polynomialsdependent on each of
+                the x,y,z directions, and 3 differentdirections of displacement).*
+                There are 3x3x3x3=81 quintic polynomial parameters per patch.* With
+                -Qfinal, the final level will have more detail inthe allowed warps,
+                at the cost of yet more CPU time.* However, no patch below 7x7x7 in
+                size will be done with quinticpolynomials.* This option is also not
+                usually needed, and is experimental.
+                flag: -Qfinal
+        Qonly: (a boolean)
+                Use Hermite quintic polynomials at all levels.* Very slow (about 4
+                times longer). Also experimental.* Will produce a (discrete
+                representation of a) C2 warp.
+                flag: -Qonly
+        allineate: (a boolean)
+                This option will make 3dQwarp run 3dAllineate first, to align the
+                source dataset to the base with an affine transformation. It will
+                then use that alignment as a starting point for the nonlinear
+                warping.
+                flag: -allineate
+        allineate_opts: (a unicode string)
+                add extra options to the 3dAllineate command to be run by 3dQwarp.
+                flag: -allineate_opts %s
+                requires: allineate
+        allsave: (a boolean)
+                This option lets you save the output warps from each levelof the
+                refinement process. Mostly used for experimenting.* Cannot be used
+                with -nopadWARP, -duplo, or -plusminus.* Will only save all the
+                outputs if the program terminatesnormally -- if it crashes, or
+                freezes, then all thesewarps are lost.
+                flag: -allsave
+                mutually_exclusive: nopadWARP, duplo, plusminus
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        ballopt: (a boolean)
+                Normally, the incremental warp parameters are optimized insidea
+                rectangular 'box' (24 dimensional for cubic patches, 81 forquintic
+                patches), whose limits define the amount of distortionallowed at
+                each step. Using '-ballopt' switches these limitsto be applied to a
+                'ball' (interior of a hypersphere), whichcan allow for larger
+                incremental displacements. Use thisoption if you think things need
+                to be able to move farther.
+                flag: -ballopt
+                mutually_exclusive: workhard, boxopt
+        baxopt: (a boolean)
+                Use the 'box' optimization limits instead of the 'ball'[this is the
+                default at present].* Note that if '-workhard' is used, then ball
+                and box optimizationare alternated in the different iterations at
+                each level, sothese two options have no effect in that case.
+                flag: -boxopt
+                mutually_exclusive: workhard, ballopt
+        blur: (a list of from 1 to 2 items which are a float)
+                Gaussian blur the input images by 'bb' (FWHM) voxels beforedoing the
+                alignment (the output dataset will not be blurred).The default is
+                2.345 (for no good reason).* Optionally, you can provide 2 values
+                for 'bb', and thenthe first one is applied to the base volume, the
+                secondto the source volume.-->>* e.g., '-blur 0 3' to skip blurring
+                the base image(if the base is a blurry template, for example).* A
+                negative blur radius means to use 3D median filtering,rather than
+                Gaussian blurring. This type of filtering willbetter preserve edges,
+                which can be important in alignment.* If the base is a template
+                volume that is already blurry,you probably don't want to blur it
+                again, but blurringthe source volume a little is probably a good
+                idea, tohelp the program avoid trying to match tiny features.* Note
+                that -duplo will blur the volumes some extraamount for the initial
+                small-scale warping, to makethat phase of the program converge more
+                rapidly.
+                flag: -blur %s
+        duplo: (a boolean)
+                Start off with 1/2 scale versions of the volumes,for getting a
+                speedy coarse first alignment.* Then scales back up to register the
+                full volumes.The goal is greater speed, and it seems to help
+                thispositively piggish program to be more expeditious.* However,
+                accuracy is somewhat lower with '-duplo',for reasons that currenly
+                elude Zhark; for this reason,the Emperor does not usually use
+                '-duplo'.
+                flag: -duplo
+                mutually_exclusive: gridlist, maxlev, inilev, iniwarp, plusminus,
+                 allsave
+        emask: (an existing file name)
+                Here, 'ee' is a dataset to specify a mask of voxelsto EXCLUDE from
+                the analysis -- all voxels in 'ee'that are NONZERO will not be used
+                in the alignment.* The base image always automasked -- the emask
+                isextra, to indicate voxels you definitely DON'T wantincluded in the
+                matching process, even if they areinside the brain.
+                flag: -emask %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        expad: (an integer (int or long))
+                This option instructs the program to pad the warp by an extra'EE'
+                voxels (and then 3dQwarp starts optimizing it).* This option is
+                seldom needed, but can be useful if youmight later catenate the
+                nonlinear warp -- via 3dNwarpCat --with an affine transformation
+                that contains a large shift.Under that circumstance, the nonlinear
+                warp might be shiftedpartially outside its original grid, so
+                expanding that gridcan avoid this problem.* Note that this option
+                perforce turns off '-nopadWARP'.
+                flag: -expad %d
+                mutually_exclusive: nopadWARP
+        gridlist: (an existing file name)
+                This option provides an alternate way to specify the patchgrid sizes
+                used in the warp optimization process. 'gl' isa 1D file with a list
+                of patches to use -- in most cases,you will want to use it in the
+                following form:-gridlist '1D: 0 151 101 75 51'* Here, a 0 patch size
+                means the global domain. Patch sizesotherwise should be odd integers
+                >= 5.* If you use the '0' patch size again after the first
+                position,you will actually get an iteration at the size of
+                thedefault patch level 1, where the patch sizes are 75% ofthe volume
+                dimension. There is no way to force the programto literally repeat
+                the sui generis step of lev=0.* You cannot use -gridlist with -duplo
+                or -plusminus!
+                flag: -gridlist %s
+                mutually_exclusive: duplo, plusminus
+        hel: (a boolean)
+                Hellinger distance: a matching function for the adventurousThis
+                option has NOT be extensively tested for usefullnessand should be
+                considered experimental at this infundibulum.
+                flag: -hel
+                mutually_exclusive: nmi, mi, lpc, lpa, pear
+        inilev: (an integer (int or long))
+                The initial refinement 'level' at which to start.* Usually used with
+                -iniwarp; CANNOT be used with -duplo.* The combination of -inilev
+                and -iniwarp lets you take theresults of a previous 3dQwarp run and
+                refine them further:Note that the source dataset in the second run
+                is the SAME asin the first run. If you don't see why this is
+                necessary,then you probably need to seek help from an AFNI guru.
+                flag: -inilev %d
+                mutually_exclusive: duplo
+        iniwarp: (a list of items which are an existing file name)
+                A dataset with an initial nonlinear warp to use.* If this option is
+                not used, the initial warp is the identity.* You can specify a
+                catenation of warps (in quotes) here, as inprogram 3dNwarpApply.* As
+                a special case, if you just input an affine matrix in a .1Dfile,
+                that will work also -- it is treated as giving the initialwarp via
+                the string "IDENT(base_dataset) matrix_file.aff12.1D".* You CANNOT
+                use this option with -duplo !!* -iniwarp is usually used with
+                -inilev to re-start 3dQwarp froma previous stopping point.
+                flag: -iniwarp %s
+                mutually_exclusive: duplo
+        iwarp: (a boolean)
+                Do compute and save the _WARPINV file.
+                flag: -iwarp
+                mutually_exclusive: plusminus
+        lpa: (a boolean)
+                Local Pearson maximizationThis option has not be extensively tested
+                flag: -lpa
+                mutually_exclusive: nmi, mi, lpc, hel, pear
+        lpc: (a boolean)
+                Local Pearson minimization (i.e., EPI-T1 registration)This option
+                has not be extensively testedIf you use '-lpc', then '-maxlev 0' is
+                automatically set.If you want to go to more refined levels, you can
+                set '-maxlev'This should be set up to have lpc as the second to last
+                argumentand maxlev as the second to last argument, as needed by
+                AFNIUsing maxlev > 1 is not recommended for EPI-T1 alignment.
+                flag: -lpc, position: -2
+                mutually_exclusive: nmi, mi, hel, lpa, pear
+        maxlev: (an integer (int or long))
+                The initial refinement 'level' at which to start.* Usually used with
+                -iniwarp; CANNOT be used with -duplo.* The combination of -inilev
+                and -iniwarp lets you take theresults of a previous 3dQwarp run and
+                refine them further:Note that the source dataset in the second run
+                is the SAME asin the first run. If you don't see why this is
+                necessary,then you probably need to seek help from an AFNI guru.
+                flag: -maxlev %d, position: -1
+                mutually_exclusive: duplo
+        mi: (a boolean)
+                Mutual Information: a matching function for the adventurousThis
+                option has NOT be extensively tested for usefullnessand should be
+                considered experimental at this infundibulum.
+                flag: -mi
+                mutually_exclusive: mi, hel, lpc, lpa, pear
+        minpatch: (an integer (int or long))
+                * The value of mm should be an odd integer.* The default value of mm
+                is 25.* For more accurate results than mm=25, try 19 or 13.* The
+                smallest allowed patch size is 5.* You may want stop at a larger
+                patch size (say 7 or 9) and usethe -Qfinal option to run that final
+                level with quintic warps,which might run faster and provide the same
+                degree of warp detail.* Trying to make two different brain volumes
+                match in fine detailis usually a waste of time, especially in
+                humans. There is toomuch variability in anatomy to match gyrus to
+                gyrus accurately.For this reason, the default minimum patch size is
+                25 voxels.Using a smaller '-minpatch' might try to force the warp
+                tomatch features that do not match, and the result can be
+                uselessimage distortions -- another reason to LOOK AT THE RESULTS.
+                flag: -minpatch %d
+        nmi: (a boolean)
+                Normalized Mutual Information: a matching function for the
+                adventurousThis option has NOT be extensively tested for
+                usefullnessand should be considered experimental at this
+                infundibulum.
+                flag: -nmi
+                mutually_exclusive: nmi, hel, lpc, lpa, pear
+        noXdis: (a boolean)
+                Warp will not displace in x directoin
+                flag: -noXdis
+        noYdis: (a boolean)
+                Warp will not displace in y directoin
+                flag: -noYdis
+        noZdis: (a boolean)
+                Warp will not displace in z directoin
+                flag: -noZdis
+        noneg: (a boolean)
+                Replace negative values in either input volume with 0.* If there ARE
+                negative input values, and you do NOT use -noneg,then strict Pearson
+                correlation will be used, since the 'clipped'method only is
+                implemented for non-negative volumes.* '-noneg' is not the default,
+                since there might be situations whereyou want to align datasets with
+                positive and negative values mixed.* But, in many cases, the
+                negative values in a dataset are just theresult of interpolation
+                artifacts (or other peculiarities), and sothey should be ignored.
+                That is what '-noneg' is for.
+                flag: -noneg
+        nopad: (a boolean)
+                Do NOT use zero-padding on the 3D base and source images.[Default ==
+                zero-pad, if needed]* The underlying model for deformations goes to
+                zero at theedge of the volume being warped. However, if there
+                issignificant data near an edge of the volume, then it won'tget
+                displaced much, and so the results might not be good.* Zero padding
+                is designed as a way to work around this potentialproblem. You
+                should NOT need the '-nopad' option for anyreason that Zhark can
+                think of, but it is here to be symmetricalwith 3dAllineate.* Note
+                that the output (warped from source) dataset will be on thebase
+                dataset grid whether or not zero-padding is allowed. However,unless
+                you use the following option, allowing zero-padding (i.e.,the
+                default operation) will make the output WARP dataset(s) beon a
+                larger grid (also see '-expad' below).
+                flag: -nopad
+        nopadWARP: (a boolean)
+                If for some reason you require the warp volume tomatch the base
+                volume, then use this option to have the outputWARP dataset(s)
+                truncated.
+                flag: -nopadWARP
+                mutually_exclusive: allsave, expad
+        nopenalty: (a boolean)
+                Replace negative values in either input volume with 0.* If there ARE
+                negative input values, and you do NOT use -noneg,then strict Pearson
+                correlation will be used, since the 'clipped'method only is
+                implemented for non-negative volumes.* '-noneg' is not the default,
+                since there might be situations whereyou want to align datasets with
+                positive and negative values mixed.* But, in many cases, the
+                negative values in a dataset are just theresult of interpolation
+                artifacts (or other peculiarities), and sothey should be ignored.
+                That is what '-noneg' is for.
+                flag: -nopenalty
+        nowarp: (a boolean)
+                Do not save the _WARP file.
+                flag: -nowarp
+        noweight: (a boolean)
+                If you want a binary weight (the old default), use this option.That
+                is, each voxel in the base volume automask will beweighted the same
+                in the computation of the cost functional.
+                flag: -noweight
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name, nipype default value: Qwarp.nii.gz)
+                Output file
+                flag: -prefix %s, position: 0
+        out_weight_file: (a file name)
+                Write the weight volume to disk as a dataset
+                flag: -wtprefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        overwrite: (a boolean)
+                Overwrite outputs
+                flag: -overwrite
+        pblur: (a list of from 1 to 2 items which are a float)
+                Use progressive blurring; that is, for larger patch sizes,the amount
+                of blurring is larger. The general idea is toavoid trying to match
+                finer details when the patch sizeand incremental warps are coarse.
+                When '-blur' is usedas well, it sets a minimum amount of blurring
+                that willbe used. [06 Aug 2014 -- '-pblur' may become the default
+                someday].* You can optionally give the fraction of the patch size
+                thatis used for the progressive blur by providing a value between0
+                and 0.25 after '-pblur'. If you provide TWO values, thethe first
+                fraction is used for progressively blurring thebase image and the
+                second for the source image. The defaultparameters when just
+                '-pblur' is given is the same as givingthe options as '-pblur 0.09
+                0.09'.* '-pblur' is useful when trying to match 2 volumes with
+                highamounts of detail; e.g, warping one subject's brain image
+                tomatch another's, or trying to warp to match a detailed template.*
+                Note that using negative values with '-blur' means that
+                theprogressive blurring will be done with median filters, ratherthan
+                Gaussian linear blurring.-->>*** The combination of the -allineate
+                and -pblur options will makethe results of using 3dQwarp to align to
+                a template somewhatless sensitive to initial head position and
+                scaling.
+                flag: -pblur %s
+        pear: (a boolean)
+                Use strict Pearson correlation for matching.* Not usually
+                recommended, since the 'clipped Pearson' methodused by default will
+                reduce the impact of outlier values.
+                flag: -pear
+        penfac: (a float)
+                Use this value to weight the penalty.The default value is 1.Larger
+                values mean thepenalty counts more, reducing grid
+                distortions,insha'Allah; '-nopenalty' is the same as '-penfac 0'.
+                -->>* [23 Sep 2013] -- Zhark increased the default value of the
+                penalty by a factor of 5, and also made it get progressively larger
+                with each level of refinement. Thus, warping results will vary from
+                earlier instances of 3dQwarp. * The progressive increase in the
+                penalty at higher levels means that the 'cost function' can actually
+                look like the alignment is getting worse when the levels change. *
+                IF you wish to turn off this progression, for whatever reason (e.g.,
+                to keep compatibility with older results), use the option
+                '-penold'.To be completely compatible with the older 3dQwarp, you'll
+                also have to use '-penfac 0.2'.
+                flag: -penfac %f
+        plusminus: (a boolean, nipype default value: True)
+                Normally, the warp displacements dis(x) are defined to matchbase(x)
+                to source(x+dis(x)). With this option, the matchis between
+                base(x-dis(x)) and source(x+dis(x)) -- the twoimages 'meet in the
+                middle'. For more info, view Qwarp` interface
+                flag: -plusminus, position: 1
+                mutually_exclusive: duplo, allsave, iwarp
+        quiet: (a boolean)
+                Cut out most of the fun fun fun progress messages :-(
+                flag: -quiet
+                mutually_exclusive: verb
+        resample: (a boolean)
+                This option simply resamples the source dataset to match thebase
+                dataset grid. You can use this if the two datasetsoverlap well (as
+                seen in the AFNI GUI), but are not on thesame 3D grid.* If they
+                don't overlap well, allineate them first* The reampling here is done
+                with the'wsinc5' method, which has very little blurring artifact.*
+                If the base and source datasets ARE on the same 3D grid,then the
+                -resample option will be ignored.* You CAN use -resample with these
+                3dQwarp options:-plusminus -inilev -iniwarp -duplo
+                flag: -resample
+        source_file: (an existing file name)
+                Source image (opposite phase encoding direction than base image)
+                flag: -source %s
+        verb: (a boolean)
+                more detailed description of the process
+                flag: -verb
+                mutually_exclusive: quiet
+        wball: (a list of from 5 to 5 items which are an integer (int or
+                 long))
+                -wball x y z r fEnhance automatic weight from '-useweight' by a
+                factorof 1+f*Gaussian(FWHM=r) centered in the base image atDICOM
+                coordinates (x,y,z) and with radius 'r'. Thegoal of this option is
+                to try and make the alignmentbetter in a specific part of the
+                brain.* Example: -wball 0 14 6 30 40to emphasize the thalamic area
+                (in MNI/Talairach space).* The 'r' parameter must be positive!* The
+                'f' parameter must be between 1 and 100 (inclusive).* '-wball' does
+                nothing if you input your own weightwith the '-weight' option.*
+                '-wball' does change the binary weight created bythe '-noweight'
+                option.* You can only use '-wball' once in a run of 3dQwarp.*** The
+                effect of '-wball' is not dramatic. The exampleabove makes the
+                average brain image across a collectionof subjects a little sharper
+                in the thalamic area, whichmight have some small value. If you care
+                enough aboutalignment to use '-wball', then you should examine
+                theresults from 3dQwarp for each subject, to see if thealignments
+                are good enough for your purposes.
+                flag: -wball %s
+        weight: (an existing file name)
+                Instead of computing the weight from the base dataset,directly input
+                the weight volume from dataset 'www'.* Useful if you know what over
+                parts of the base image youwant to emphasize or de-emphasize the
+                matching functional.
+                flag: -weight %s
+        wmask: (a tuple of the form: (an existing file name, a float))
+                -wmask ws fSimilar to '-wball', but here, you provide a dataset
+                'ws'that indicates where to increase the weight.* The 'ws' dataset
+                must be on the same 3D grid as the base dataset.* 'ws' is treated as
+                a mask -- it only matters where itis nonzero -- otherwise, the
+                values inside are not used.* After 'ws' comes the factor 'f' by
+                which to increase theautomatically computed weight. Where 'ws' is
+                nonzero,the weighting will be multiplied by (1+f).* As with
+                '-wball', the factor 'f' should be between 1 and 100.* You cannot
+                use '-wball' and '-wmask' together!
+                flag: -wpass %s %f
+        workhard: (a boolean)
+                Iterate more times, which can help when the volumes arehard to align
+                at all, or when you hope to get a more precisealignment.* Slows the
+                program down (possibly a lot), of course.* When you combine
+                '-workhard' with '-duplo', only thefull size volumes get the extra
+                iterations.* For finer control over which refinement levels work
+                hard,you can use this option in the form (for example)
+                -workhard:4:7which implies the extra iterations will be done at
+                levels4, 5, 6, and 7, but not otherwise.* You can also use
+                '-superhard' to iterate even more, butthis extra option will REALLY
+                slow things down.-->>* Under most circumstances, you should not need
+                to use either-workhard or -superhard.-->>* The fastest way to
+                register to a template image is via the-duplo option, and without
+                the -workhard or -superhard options.-->>* If you use this option in
+                the form '-Workhard' (first letterin upper case), then the second
+                iteration at each level isdone with quintic polynomial warps.
+                flag: -workhard
+                mutually_exclusive: boxopt, ballopt
+
+Outputs::
+
+        base_warp: (a file name)
+                Displacement in mm for the base image.If plus minus is used, this is
+                the field suceptibility correctionwarp (in 'mm') for base image.
+                This is only output if plusminusor iwarp options are passed
+        source_warp: (a file name)
+                Displacement in mm for the source image.If plusminus is used this is
+                the field suceptibility correctionwarp (in 'mm') for source image.
+        warped_base: (a file name)
+                Undistorted base file.
+        warped_source: (a file name)
+                Warped source file. If plusminus is used, this is the
+                undistortedsource file.
+        weights: (a file name)
+                Auto-computed weight volume.
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.ROIStats:
+
+
+.. index:: ROIStats
+
+ROIStats
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1823>`__
+
+Wraps command **3dROIstats**
+
+Display statistics over masked regions
+
+For complete details, see the `3dROIstats Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dROIstats.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> roistats = afni.ROIStats()
+>>> roistats.inputs.in_file = 'functional.nii'
+>>> roistats.inputs.mask = 'skeleton_mask.nii.gz'
+>>> roistats.inputs.quiet = True
+>>> roistats.cmdline
+'3dROIstats -quiet -mask skeleton_mask.nii.gz functional.nii'
+>>> res = roistats.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dROIstats
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        mask: (an existing file name)
+                input mask
+                flag: -mask %s, position: 3
+        mask_f2short: (a boolean)
+                Tells the program to convert a float mask to short integers, by
+                simple rounding.
+                flag: -mask_f2short, position: 2
+        quiet: (a boolean)
+                execute quietly
+                flag: -quiet, position: 1
+
+Outputs::
+
+        stats: (an existing file name)
+                output tab separated values file
+
+.. _nipype.interfaces.afni.preprocess.Retroicor:
+
+
+.. index:: Retroicor
+
+Retroicor
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L1903>`__
+
+Wraps command **3dretroicor**
+
+Performs Retrospective Image Correction for physiological
+motion effects, using a slightly modified version of the
+RETROICOR algorithm
+
+The durations of the physiological inputs are assumed to equal
+the duration of the dataset. Any constant sampling rate may be
+used, but 40 Hz seems to be acceptable. This program's cardiac
+peak detection algorithm is rather simplistic, so you might try
+using the scanner's cardiac gating output (transform it to a
+spike wave if necessary).
+
+This program uses slice timing information embedded in the
+dataset to estimate the proper cardiac/respiratory phase for
+each slice. It makes sense to run this program before any
+program that may destroy the slice timings (e.g. 3dvolreg for
+motion correction).
+
+For complete details, see the `3dretroicor Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dretroicor.html>`_
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces import afni
+>>> ret = afni.Retroicor()
+>>> ret.inputs.in_file = 'functional.nii'
+>>> ret.inputs.card = 'mask.1D'
+>>> ret.inputs.resp = 'resp.1D'
+>>> ret.inputs.outputtype = 'NIFTI'
+>>> ret.cmdline
+'3dretroicor -prefix functional_retroicor.nii -resp resp.1D -card mask.1D functional.nii'
+>>> res = ret.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dretroicor
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        card: (an existing file name)
+                1D cardiac data file for cardiac correction
+                flag: -card %s, position: -2
+        cardphase: (a file name)
+                Filename for 1D cardiac phase output
+                flag: -cardphase %s, position: -6
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        order: (an integer (int or long))
+                The order of the correction (2 is typical)
+                flag: -order %s, position: -5
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s, position: 1
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        resp: (an existing file name)
+                1D respiratory waveform data for correction
+                flag: -resp %s, position: -3
+        respphase: (a file name)
+                Filename for 1D resp phase output
+                flag: -respphase %s, position: -7
+        threshold: (an integer (int or long))
+                Threshold for detection of R-wave peaks in input (Make sure it is
+                above the background noise level, Try 3/4 or 4/5 times range plus
+                minimum)
+                flag: -threshold %d, position: -4
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Seg:
+
+
+.. index:: Seg
+
+Seg
+---
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2001>`__
+
+Wraps command **3dSeg**
+
+3dSeg segments brain volumes into tissue classes. The program allows
+for adding a variety of global and voxelwise priors. However for the
+moment, only mixing fractions and MRF are documented.
+
+For complete details, see the `3dSeg Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dSeg.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.afni import preprocess
+>>> seg = preprocess.Seg()
+>>> seg.inputs.in_file = 'structural.nii'
+>>> seg.inputs.mask = 'AUTO'
+>>> seg.cmdline
+'3dSeg -mask AUTO -anat structural.nii'
+>>> res = seg.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                ANAT is the volume to segment
+                flag: -anat %s, position: -1
+        mask: ('AUTO' or an existing file name)
+                only non-zero voxels in mask are analyzed. mask can either be a
+                dataset or the string "AUTO" which would use AFNI's automask
+                function to create the mask.
+                flag: -mask %s, position: -2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        bias_classes: (a unicode string)
+                A semicolon delimited string of classes that contribute to the
+                estimation of the bias field
+                flag: -bias_classes %s
+        bias_fwhm: (a float)
+                The amount of blurring used when estimating the field bias with the
+                Wells method
+                flag: -bias_fwhm %f
+        blur_meth: ('BFT' or 'BIM')
+                set the blurring method for bias field estimation
+                flag: -blur_meth %s
+        bmrf: (a float)
+                Weighting factor controlling spatial homogeneity of the
+                classifications
+                flag: -bmrf %f
+        classes: (a unicode string)
+                CLASS_STRING is a semicolon delimited string of class labels
+                flag: -classes %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        main_N: (an integer (int or long))
+                Number of iterations to perform.
+                flag: -main_N %d
+        mixfloor: (a float)
+                Set the minimum value for any class's mixing fraction
+                flag: -mixfloor %f
+        mixfrac: (a unicode string)
+                MIXFRAC sets up the volume-wide (within mask) tissue fractions while
+                initializing the segmentation (see IGNORE for exception)
+                flag: -mixfrac %s
+        prefix: (a unicode string)
+                the prefix for the output folder containing all output volumes
+                flag: -prefix %s
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+.. _nipype.interfaces.afni.preprocess.SkullStrip:
+
+
+.. index:: SkullStrip
+
+SkullStrip
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2058>`__
+
+Wraps command **3dSkullStrip**
+
+A program to extract the brain from surrounding tissue from MRI
+T1-weighted images.
+TODO Add optional arguments.
+
+For complete details, see the `3dSkullStrip Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dSkullStrip.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> skullstrip = afni.SkullStrip()
+>>> skullstrip.inputs.in_file = 'functional.nii'
+>>> skullstrip.inputs.args = '-o_ply'
+>>> skullstrip.cmdline
+'3dSkullStrip -input functional.nii -o_ply -prefix functional_skullstrip'
+>>> res = skullstrip.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dSkullStrip
+                flag: -input %s, position: 1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.TCorr1D:
+
+
+.. index:: TCorr1D
+
+TCorr1D
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2140>`__
+
+Wraps command **3dTcorr1D**
+
+Computes the correlation coefficient between each voxel time series
+in the input 3D+time dataset.
+
+For complete details, see the `3dTcorr1D Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dTcorr1D.html>`_
+
+>>> from nipype.interfaces import afni
+>>> tcorr1D = afni.TCorr1D()
+>>> tcorr1D.inputs.xset= 'u_rc1s1_Template.nii'
+>>> tcorr1D.inputs.y_1d = 'seed.1D'
+>>> tcorr1D.cmdline
+'3dTcorr1D -prefix u_rc1s1_Template_correlation.nii.gz  u_rc1s1_Template.nii  seed.1D'
+>>> res = tcorr1D.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        xset: (an existing file name)
+                3d+time dataset input
+                flag:  %s, position: -2
+        y_1d: (an existing file name)
+                1D time series file input
+                flag:  %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        ktaub: (a boolean)
+                Correlation is the Kendall's tau_b correlation coefficient
+                flag:  -ktaub, position: 1
+                mutually_exclusive: pearson, spearman, quadrant
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output filename prefix
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        pearson: (a boolean)
+                Correlation is the normal Pearson correlation coefficient
+                flag:  -pearson, position: 1
+                mutually_exclusive: spearman, quadrant, ktaub
+        quadrant: (a boolean)
+                Correlation is the quadrant correlation coefficient
+                flag:  -quadrant, position: 1
+                mutually_exclusive: pearson, spearman, ktaub
+        spearman: (a boolean)
+                Correlation is the Spearman (rank) correlation coefficient
+                flag:  -spearman, position: 1
+                mutually_exclusive: pearson, quadrant, ktaub
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file containing correlations
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.TCorrMap:
+
+
+.. index:: TCorrMap
+
+TCorrMap
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2242>`__
+
+Wraps command **3dTcorrMap**
+
+For each voxel time series, computes the correlation between it
+and all other voxels, and combines this set of values into the
+output dataset(s) in some way.
+
+For complete details, see the `3dTcorrMap Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dTcorrMap.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> tcm = afni.TCorrMap()
+>>> tcm.inputs.in_file = 'functional.nii'
+>>> tcm.inputs.mask = 'mask.nii'
+>>> tcm.mean_file = 'functional_meancorr.nii'
+>>> tcm.cmdline # doctest: +SKIP
+'3dTcorrMap -input functional.nii -mask mask.nii -Mean functional_meancorr.nii'
+>>> res = tcm.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                flag: -input %s
+
+        [Optional]
+        absolute_threshold: (a file name)
+                flag: -Thresh %f %s
+                mutually_exclusive: absolute_threshold, var_absolute_threshold,
+                 var_absolute_threshold_normalize
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        automask: (a boolean)
+                flag: -automask
+        average_expr: (a file name)
+                flag: -Aexpr %s %s
+                mutually_exclusive: average_expr, average_expr_nonzero, sum_expr
+        average_expr_nonzero: (a file name)
+                flag: -Cexpr %s %s
+                mutually_exclusive: average_expr, average_expr_nonzero, sum_expr
+        bandpass: (a tuple of the form: (a float, a float))
+                flag: -bpass %f %f
+        blur_fwhm: (a float)
+                flag: -Gblur %f
+        correlation_maps: (a file name)
+                flag: -CorrMap %s
+        correlation_maps_masked: (a file name)
+                flag: -CorrMask %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        expr: (a unicode string)
+        histogram: (a file name)
+                flag: -Hist %d %s
+        histogram_bin_numbers: (an integer (int or long))
+        mask: (an existing file name)
+                flag: -mask %s
+        mean_file: (a file name)
+                flag: -Mean %s
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        pmean: (a file name)
+                flag: -Pmean %s
+        polort: (an integer (int or long))
+                flag: -polort %d
+        qmean: (a file name)
+                flag: -Qmean %s
+        regress_out_timeseries: (a file name)
+                flag: -ort %s
+        seeds: (an existing file name)
+                flag: -seed %s
+                mutually_exclusive: s, e, e, d, s, _, w, i, d, t, h
+        seeds_width: (a float)
+                flag: -Mseed %f
+                mutually_exclusive: s, e, e, d, s
+        sum_expr: (a file name)
+                flag: -Sexpr %s %s
+                mutually_exclusive: average_expr, average_expr_nonzero, sum_expr
+        thresholds: (a list of items which are an integer (int or long))
+        var_absolute_threshold: (a file name)
+                flag: -VarThresh %f %f %f %s
+                mutually_exclusive: absolute_threshold, var_absolute_threshold,
+                 var_absolute_threshold_normalize
+        var_absolute_threshold_normalize: (a file name)
+                flag: -VarThreshN %f %f %f %s
+                mutually_exclusive: absolute_threshold, var_absolute_threshold,
+                 var_absolute_threshold_normalize
+        zmean: (a file name)
+                flag: -Zmean %s
+
+Outputs::
+
+        absolute_threshold: (a file name)
+        average_expr: (a file name)
+        average_expr_nonzero: (a file name)
+        correlation_maps: (a file name)
+        correlation_maps_masked: (a file name)
+        histogram: (a file name)
+        mean_file: (a file name)
+        pmean: (a file name)
+        qmean: (a file name)
+        sum_expr: (a file name)
+        var_absolute_threshold: (a file name)
+        var_absolute_threshold_normalize: (a file name)
+        zmean: (a file name)
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.TCorrelate:
+
+
+.. index:: TCorrelate
+
+TCorrelate
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2308>`__
+
+Wraps command **3dTcorrelate**
+
+Computes the correlation coefficient between corresponding voxel
+time series in two input 3D+time datasets 'xset' and 'yset'
+
+For complete details, see the `3dTcorrelate Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dTcorrelate.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> tcorrelate = afni.TCorrelate()
+>>> tcorrelate.inputs.xset= 'u_rc1s1_Template.nii'
+>>> tcorrelate.inputs.yset = 'u_rc1s2_Template.nii'
+>>> tcorrelate.inputs.out_file = 'functional_tcorrelate.nii.gz'
+>>> tcorrelate.inputs.polort = -1
+>>> tcorrelate.inputs.pearson = True
+>>> tcorrelate.cmdline
+'3dTcorrelate -prefix functional_tcorrelate.nii.gz -pearson -polort -1 u_rc1s1_Template.nii u_rc1s2_Template.nii'
+>>> res = tcarrelate.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        xset: (an existing file name)
+                input xset
+                flag: %s, position: -2
+        yset: (an existing file name)
+                input yset
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        pearson: (a boolean)
+                Correlation is the normal Pearson correlation coefficient
+                flag: -pearson
+        polort: (an integer (int or long))
+                Remove polynomical trend of order m
+                flag: -polort %d
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.TNorm:
+
+
+.. index:: TNorm
+
+TNorm
+-----
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2371>`__
+
+Wraps command **3dTnorm**
+
+Shifts voxel time series from input so that seperate slices are aligned
+to the same temporal origin.
+
+For complete details, see the `3dTnorm Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dTnorm.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> tnorm = afni.TNorm()
+>>> tnorm.inputs.in_file = 'functional.nii'
+>>> tnorm.inputs.norm2 = True
+>>> tnorm.inputs.out_file = 'rm.errts.unit errts+tlrc'
+>>> tnorm.cmdline
+'3dTnorm -norm2 -prefix rm.errts.unit errts+tlrc functional.nii'
+>>> res = tshift.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dTNorm
+                flag: %s, position: -1
+
+        [Optional]
+        L1fit: (a boolean)
+                Detrend with L1 regression (L2 is the default)
+                 * This option is here just for the hell of it
+                flag: -L1fit
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        norm1: (a boolean)
+                L1 normalize (sum of absolute values = 1)
+                flag: -norm1
+        norm2: (a boolean)
+                L2 normalize (sum of squares = 1) [DEFAULT]
+                flag: -norm2
+        normR: (a boolean)
+                normalize so sum of squares = number of time points * e.g., so RMS =
+                1.
+                flag: -normR
+        normx: (a boolean)
+                Scale so max absolute value = 1 (L_infinity norm)
+                flag: -normx
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        polort: (an integer (int or long))
+                Detrend with polynomials of order p before normalizing
+                 [DEFAULT = don't do this]
+                 * Use '-polort 0' to remove the mean, for example
+                flag: -polort %s
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.TProject:
+
+
+.. index:: TProject
+
+TProject
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2537>`__
+
+Wraps command **3dTproject**
+
+This program projects (detrends) out various 'nuisance' time series from
+each voxel in the input dataset.  Note that all the projections are done
+via linear regression, including the frequency-based options such
+as '-passband'.  In this way, you can bandpass time-censored data, and at
+the same time, remove other time series of no interest
+(e.g., physiological estimates, motion parameters).
+Shifts voxel time series from input so that seperate slices are aligned to
+the same temporal origin.
+
+For complete details, see the `3dTproject Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dTproject.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> tproject = afni.TProject()
+>>> tproject.inputs.in_file = 'functional.nii'
+>>> tproject.inputs.bandpass = (0.00667, 99999)
+>>> tproject.inputs.polort = 3
+>>> tproject.inputs.automask = True
+>>> tproject.inputs.out_file = 'projected.nii.gz'
+>>> tproject.cmdline
+'3dTproject -input functional.nii -automask -bandpass 0.00667 99999 -polort 3 -prefix projected.nii.gz'
+>>> res = tproject.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dTproject
+                flag: -input %s, position: 1
+
+        [Optional]
+        TR: (a float)
+                Use time step dd for the frequency calculations,
+                 rather than the value stored in the dataset header.
+                flag: -TR %g
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        automask: (a boolean)
+                Generate a mask automatically
+                flag: -automask
+                mutually_exclusive: mask
+        bandpass: (a tuple of the form: (a float, a float))
+                Remove all frequencies EXCEPT those in the range
+                flag: -bandpass %g %g
+        blur: (a float)
+                Blur (inside the mask only) with a filter that has
+                 width (FWHM) of fff millimeters.
+                 ++ Spatial blurring (if done) is after the time
+                 series filtering.
+                flag: -blur %g
+        cenmode: ('KILL' or 'ZERO' or 'NTRP')
+                specifies how censored time points are treated in
+                 the output dataset:
+                 + mode = ZERO ==> put zero values in their place
+                 ==> output datset is same length as input
+                 + mode = KILL ==> remove those time points
+                 ==> output dataset is shorter than input
+                 + mode = NTRP ==> censored values are replaced by interpolated
+                 neighboring (in time) non-censored values,
+                 BEFORE any projections, and then the
+                 analysis proceeds without actual removal
+                 of any time points -- this feature is to
+                 keep the Spanish Inquisition happy.
+                 * The default mode is KILL !!!
+                flag: -cenmode %s
+        censor: (an existing file name)
+                filename of censor .1D time series
+                 * This is a file of 1s and 0s, indicating which
+                 time points are to be included (1) and which are
+                 to be excluded (0).
+                flag: -censor %s
+        censortr: (a list of items which are a unicode string)
+                list of strings that specify time indexes
+                 to be removed from the analysis. Each string is
+                 of one of the following forms:
+                 37 => remove global time index #37
+                 2:37 => remove time index #37 in run #2
+                 37..47 => remove global time indexes #37-47
+                 37-47 => same as above
+                 2:37..47 => remove time indexes #37-47 in run #2
+                 *:0-2 => remove time indexes #0-2 in all runs
+                 +Time indexes within each run start at 0.
+                 +Run indexes start at 1 (just be to confusing).
+                 +N.B.: 2:37,47 means index #37 in run #2 and
+                 global time index 47; it does NOT mean
+                 index #37 in run #2 AND index #47 in run #2.
+                flag: -CENSORTR %s
+        concat: (an existing file name)
+                The catenation file, as in 3dDeconvolve, containing the
+                 TR indexes of the start points for each contiguous run
+                 within the input dataset (the first entry should be 0).
+                 ++ Also as in 3dDeconvolve, if the input dataset is
+                 automatically catenated from a collection of datasets,
+                 then the run start indexes are determined directly,
+                 and '-concat' is not needed (and will be ignored).
+                 ++ Each run must have at least 9 time points AFTER
+                 censoring, or the program will not work!
+                 ++ The only use made of this input is in setting up
+                 the bandpass/stopband regressors.
+                 ++ '-ort' and '-dsort' regressors run through all time
+                 points, as read in. If you want separate projections
+                 in each run, then you must either break these ort files
+                 into appropriate components, OR you must run 3dTproject
+                 for each run separately, using the appropriate pieces
+                 from the ort files via the '{...}' selector for the
+                 1D files and the '[...]' selector for the datasets.
+                flag: -concat %s
+        dsort: (a list of items which are an existing file name)
+                Remove the 3D+time time series in dataset fset.
+                 ++ That is, 'fset' contains a different nuisance time
+                 series for each voxel (e.g., from AnatICOR).
+                 ++ Multiple -dsort options are allowed.
+                flag: -dsort %s...
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        mask: (an existing file name)
+                Only operate on voxels nonzero in the mset dataset.
+                 ++ Voxels outside the mask will be filled with zeros.
+                 ++ If no masking option is given, then all voxels
+                 will be processed.
+                flag: -mask %s
+        noblock: (a boolean)
+                Also as in 3dDeconvolve, if you want the program to treat
+                 an auto-catenated dataset as one long run, use this option.
+                 ++ However, '-noblock' will not affect catenation if you use
+                 the '-concat' option.
+                flag: -noblock
+        norm: (a boolean)
+                Normalize each output time series to have sum of
+                 squares = 1. This is the LAST operation.
+                flag: -norm
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        ort: (an existing file name)
+                Remove each column in file
+                 ++ Each column will have its mean removed.
+                flag: -ort %s
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s, position: -1
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        polort: (an integer (int or long))
+                Remove polynomials up to and including degree pp.
+                 ++ Default value is 2.
+                 ++ It makes no sense to use a value of pp greater than
+                 2, if you are bandpassing out the lower frequencies!
+                 ++ For catenated datasets, each run gets a separate set
+                 set of pp+1 Legendre polynomial regressors.
+                 ++ Use of -polort -1 is not advised (if data mean != 0),
+                 even if -ort contains constant terms, as all means are
+                 removed.
+                flag: -polort %d
+        stopband: (a tuple of the form: (a float, a float))
+                Remove all frequencies in the range
+                flag: -stopband %g %g
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.TShift:
+
+
+.. index:: TShift
+
+TShift
+------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2634>`__
+
+Wraps command **3dTshift**
+
+Shifts voxel time series from input so that seperate slices are aligned
+to the same temporal origin.
+
+For complete details, see the `3dTshift Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dTshift.html>`_
+
+Examples
+~~~~~~~~
+
+Slice timing details may be specified explicitly via the ``slice_timing``
+input:
+
+>>> from nipype.interfaces import afni
+>>> TR = 2.5
+>>> tshift = afni.TShift()
+>>> tshift.inputs.in_file = 'functional.nii'
+>>> tshift.inputs.tzero = 0.0
+>>> tshift.inputs.tr = '%.1fs' % TR
+>>> tshift.inputs.slice_timing = list(np.arange(40) / TR)
+>>> tshift.cmdline
+'3dTshift -prefix functional_tshift -tpattern @slice_timing.1D -TR 2.5s -tzero 0.0 functional.nii'
+
+When the ``slice_timing`` input is used, the ``timing_file`` output is populated,
+in this case with the generated file.
+
+>>> tshift._list_outputs()['timing_file']  # doctest: +ELLIPSIS
+'.../slice_timing.1D'
+
+This method creates a ``slice_timing.1D`` file to be passed to ``3dTshift``.
+A pre-existing slice-timing file may be used in the same way:
+
+>>> tshift = afni.TShift()
+>>> tshift.inputs.in_file = 'functional.nii'
+>>> tshift.inputs.tzero = 0.0
+>>> tshift.inputs.tr = '%.1fs' % TR
+>>> tshift.inputs.slice_timing = 'slice_timing.1D'
+>>> tshift.cmdline
+'3dTshift -prefix functional_tshift -tpattern @slice_timing.1D -TR 2.5s -tzero 0.0 functional.nii'
+
+When a pre-existing file is provided, ``timing_file`` is simply passed through.
+
+>>> tshift._list_outputs()['timing_file']  # doctest: +ELLIPSIS
+'.../slice_timing.1D'
+
+Alternatively, pre-specified slice timing patterns may be specified with the
+``tpattern`` input.
+For example, to specify an alternating, ascending slice timing pattern:
+
+>>> tshift = afni.TShift()
+>>> tshift.inputs.in_file = 'functional.nii'
+>>> tshift.inputs.tzero = 0.0
+>>> tshift.inputs.tr = '%.1fs' % TR
+>>> tshift.inputs.tpattern = 'alt+z'
+>>> tshift.cmdline
+'3dTshift -prefix functional_tshift -tpattern alt+z -TR 2.5s -tzero 0.0 functional.nii'
+
+For backwards compatibility, ``tpattern`` may also take filenames prefixed
+with ``@``.
+However, in this case, filenames are not validated, so this usage will be
+deprecated in future versions of Nipype.
+
+>>> tshift = afni.TShift()
+>>> tshift.inputs.in_file = 'functional.nii'
+>>> tshift.inputs.tzero = 0.0
+>>> tshift.inputs.tr = '%.1fs' % TR
+>>> tshift.inputs.tpattern = '@slice_timing.1D'
+>>> tshift.cmdline
+'3dTshift -prefix functional_tshift -tpattern @slice_timing.1D -TR 2.5s -tzero 0.0 functional.nii'
+
+In these cases, ``timing_file`` is undefined.
+
+>>> tshift._list_outputs()['timing_file']  # doctest: +ELLIPSIS
+<undefined>
+
+In any configuration, the interface may be run as usual:
+
+>>> res = tshift.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dTshift
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        ignore: (an integer (int or long))
+                ignore the first set of points specified
+                flag: -ignore %s
+        interp: ('Fourier' or 'linear' or 'cubic' or 'quintic' or 'heptic')
+                different interpolation methods (see 3dTshift for details) default =
+                Fourier
+                flag: -%s
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        rlt: (a boolean)
+                Before shifting, remove the mean and linear trend
+                flag: -rlt
+        rltplus: (a boolean)
+                Before shifting, remove the mean and linear trend and later put back
+                the mean
+                flag: -rlt+
+        slice_timing: (an existing file name or a list of items which are a
+                 float)
+                time offsets from the volume acquisition onset for each slice
+                flag: -tpattern @%s
+                mutually_exclusive: tpattern
+        tpattern: ('alt+z' or 'altplus' or 'alt+z2' or 'alt-z' or 'altminus'
+                 or 'alt-z2' or 'seq+z' or 'seqplus' or 'seq-z' or 'seqminus' or a
+                 unicode string)
+                use specified slice time pattern rather than one in header
+                flag: -tpattern %s
+                mutually_exclusive: slice_timing
+        tr: (a unicode string)
+                manually set the TR. You can attach suffix "s" for seconds or "ms"
+                for milliseconds.
+                flag: -TR %s
+        tslice: (an integer (int or long))
+                align each slice to time offset of given slice
+                flag: -slice %s
+                mutually_exclusive: tzero
+        tzero: (a float)
+                align each slice to given time offset
+                flag: -tzero %s
+                mutually_exclusive: tslice
+
+Outputs::
+
+        out_file: (an existing file name)
+                output file
+        timing_file: (a file name)
+                AFNI formatted timing file, if ``slice_timing`` is a list
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Volreg:
+
+
+.. index:: Volreg
+
+Volreg
+------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2808>`__
+
+Wraps command **3dvolreg**
+
+Register input volumes to a base volume using AFNI 3dvolreg command
+
+For complete details, see the `3dvolreg Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dvolreg.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> volreg = afni.Volreg()
+>>> volreg.inputs.in_file = 'functional.nii'
+>>> volreg.inputs.args = '-Fourier -twopass'
+>>> volreg.inputs.zpad = 4
+>>> volreg.inputs.outputtype = 'NIFTI'
+>>> volreg.cmdline  # doctest: +ELLIPSIS
+'3dvolreg -Fourier -twopass -1Dfile functional.1D -1Dmatrix_save functional.aff12.1D -prefix functional_volreg.nii -zpad 4 -maxdisp1D functional_md.1D functional.nii'
+>>> res = volreg.run()  # doctest: +SKIP
+
+>>> from nipype.interfaces import afni
+>>> volreg = afni.Volreg()
+>>> volreg.inputs.in_file = 'functional.nii'
+>>> volreg.inputs.interp = 'cubic'
+>>> volreg.inputs.verbose = True
+>>> volreg.inputs.zpad = 1
+>>> volreg.inputs.basefile = 'functional.nii'
+>>> volreg.inputs.out_file = 'rm.epi.volreg.r1'
+>>> volreg.inputs.oned_file = 'dfile.r1.1D'
+>>> volreg.inputs.oned_matrix_save = 'mat.r1.tshift+orig.1D'
+>>> volreg.cmdline
+'3dvolreg -cubic -1Dfile dfile.r1.1D -1Dmatrix_save mat.r1.tshift+orig.1D -prefix rm.epi.volreg.r1 -verbose -base functional.nii -zpad 1 -maxdisp1D functional_md.1D functional.nii'
+>>> res = volreg.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dvolreg
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        basefile: (an existing file name)
+                base file for registration
+                flag: -base %s, position: -6
+        copyorigin: (a boolean)
+                copy base file origin coords to output
+                flag: -twodup
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        in_weight_volume: (a tuple of the form: (an existing file name, an
+                 integer (int or long)) or an existing file name)
+                weights for each voxel specified by a file with an optional volume
+                number (defaults to 0)
+                flag: -weight '%s[%d]'
+        interp: ('Fourier' or 'cubic' or 'heptic' or 'quintic' or 'linear')
+                spatial interpolation methods [default = heptic]
+                flag: -%s
+        md1d_file: (a file name)
+                max displacement output file
+                flag: -maxdisp1D %s, position: -4
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        oned_file: (a file name)
+                1D movement parameters output file
+                flag: -1Dfile %s
+        oned_matrix_save: (a file name)
+                Save the matrix transformation
+                flag: -1Dmatrix_save %s
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        timeshift: (a boolean)
+                time shift to mean slice time offset
+                flag: -tshift 0
+        verbose: (a boolean)
+                more detailed description of the process
+                flag: -verbose
+        zpad: (an integer (int or long))
+                Zeropad around the edges by 'n' voxels during rotations
+                flag: -zpad %d, position: -5
+
+Outputs::
+
+        md1d_file: (an existing file name)
+                max displacement info file
+        oned_file: (an existing file name)
+                movement parameters info file
+        oned_matrix_save: (an existing file name)
+                matrix transformation from base to input
+        out_file: (an existing file name)
+                registered file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')
+
+.. _nipype.interfaces.afni.preprocess.Warp:
+
+
+.. index:: Warp
+
+Warp
+----
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/afni/preprocess.py#L2906>`__
+
+Wraps command **3dWarp**
+
+Use 3dWarp for spatially transforming a dataset
+
+For complete details, see the `3dWarp Documentation.
+<https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dWarp.html>`_
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces import afni
+>>> warp = afni.Warp()
+>>> warp.inputs.in_file = 'structural.nii'
+>>> warp.inputs.deoblique = True
+>>> warp.inputs.out_file = 'trans.nii.gz'
+>>> warp.cmdline
+'3dWarp -deoblique -prefix trans.nii.gz structural.nii'
+>>> res = warp.run()  # doctest: +SKIP
+
+>>> warp_2 = afni.Warp()
+>>> warp_2.inputs.in_file = 'structural.nii'
+>>> warp_2.inputs.newgrid = 1.0
+>>> warp_2.inputs.out_file = 'trans.nii.gz'
+>>> warp_2.cmdline
+'3dWarp -newgrid 1.000000 -prefix trans.nii.gz structural.nii'
+>>> res = warp_2.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                input file to 3dWarp
+                flag: %s, position: -1
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        deoblique: (a boolean)
+                transform dataset from oblique to cardinal
+                flag: -deoblique
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        gridset: (an existing file name)
+                copy grid of specified dataset
+                flag: -gridset %s
+        interp: ('linear' or 'cubic' or 'NN' or 'quintic')
+                spatial interpolation methods [default = linear]
+                flag: -%s
+        matparent: (an existing file name)
+                apply transformation from 3dWarpDrive
+                flag: -matparent %s
+        mni2tta: (a boolean)
+                transform dataset from MNI152 to Talaraich
+                flag: -mni2tta
+        newgrid: (a float)
+                specify grid of this size (mm)
+                flag: -newgrid %f
+        num_threads: (an integer (int or long), nipype default value: 1)
+                set number of threads
+        oblique_parent: (an existing file name)
+                Read in the oblique transformation matrix from an oblique dataset
+                and make cardinal dataset oblique to match
+                flag: -oblique_parent %s
+        out_file: (a file name)
+                output image file name
+                flag: -prefix %s
+        outputtype: ('NIFTI' or 'AFNI' or 'NIFTI_GZ')
+                AFNI output filetype
+        save_warp: (a boolean)
+                save warp as .mat file
+                requires: verbose
+        tta2mni: (a boolean)
+                transform dataset from Talairach to MNI152
+                flag: -tta2mni
+        verbose: (a boolean)
+                Print out some information along the way.
+                flag: -verb
+        zpad: (an integer (int or long))
+                pad input dataset with N planes of zero on all sides.
+                flag: -zpad %d
+
+Outputs::
+
+        out_file: (an existing file name)
+                Warped file.
+        warp_file: (a file name)
+                warp transform .mat file
+
+References::
+BibTeX('@article{Cox1996,author={R.W. Cox},title={AFNI: software for analysis and visualization of functional magnetic resonance neuroimages},journal={Computers and Biomedical research},volume={29},number={3},pages={162-173},year={1996},}', key='Cox1996')
+BibTeX('@article{CoxHyde1997,author={R.W. Cox and J.S. Hyde},title={Software tools for analysis and visualization of fMRI data},journal={NMR in Biomedicine},volume={10},number={45},pages={171-178},year={1997},}', key='CoxHyde1997')

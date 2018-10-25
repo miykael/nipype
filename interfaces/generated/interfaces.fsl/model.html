@@ -1,0 +1,1618 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.fsl.model</a><ul>
+<li><a class="reference internal" href="#cluster">Cluster</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contrastmgr">ContrastMgr</a></li>
+<li><a class="reference internal" href="#dualregression">DualRegression</a><ul>
+<li><a class="reference internal" href="#id1">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#feat">FEAT</a></li>
+<li><a class="reference internal" href="#featmodel">FEATModel</a></li>
+<li><a class="reference internal" href="#featregister">FEATRegister</a></li>
+<li><a class="reference internal" href="#filmgls">FILMGLS</a><ul>
+<li><a class="reference internal" href="#id2">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flameo">FLAMEO</a><ul>
+<li><a class="reference internal" href="#id3">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#glm">GLM</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#l2model">L2Model</a><ul>
+<li><a class="reference internal" href="#id4">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#level1design">Level1Design</a><ul>
+<li><a class="reference internal" href="#id5">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#melodic">MELODIC</a><ul>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multipleregressdesign">MultipleRegressDesign</a><ul>
+<li><a class="reference internal" href="#id7">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#randomise">Randomise</a><ul>
+<li><a class="reference internal" href="#id8">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#smm">SMM</a></li>
+<li><a class="reference internal" href="#smoothestimate">SmoothEstimate</a><ul>
+<li><a class="reference internal" href="#id9">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#load-template"><code class="docutils literal notranslate"><span class="pre">load_template()</span></code></a><ul>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#returns">Returns</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-fsl-model">
+<h1>interfaces.fsl.model<a class="headerlink" href="#interfaces-fsl-model" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-fsl-model-cluster"></span><div class="section" id="cluster">
+<span id="index-0"></span><h2>Cluster<a class="headerlink" href="#cluster" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L1950">Link to code</a></p>
+<p>Wraps command <strong>cluster</strong></p>
+<p>Uses FSL cluster to perform clustering on statistical output</p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mf">2.3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;zstat1.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_localmax_txt_file</span> <span class="o">=</span> <span class="s1">&#39;stats.txt&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">use_mm</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;cluster --in=zstat1.nii.gz --olmax=stats.txt --thresh=2.3000000000 --mm&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input volume
+        flag: --in=%s
+threshold: (a float)
+        threshold for input volume
+        flag: --thresh=%.10f
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+connectivity: (an integer (int or long))
+        the connectivity of voxels (default 26)
+        flag: --connectivity=%d
+cope_file: (a file name)
+        cope volume
+        flag: --cope=%s
+dlh: (a float)
+        smoothness estimate = sqrt(det(Lambda))
+        flag: --dlh=%.10f
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+find_min: (a boolean, nipype default value: False)
+        find minima instead of maxima
+        flag: --min
+fractional: (a boolean, nipype default value: False)
+        interprets the threshold as a fraction of the robust range
+        flag: --fractional
+minclustersize: (a boolean, nipype default value: False)
+        prints out minimum significant cluster size
+        flag: --minclustersize
+no_table: (a boolean, nipype default value: False)
+        suppresses printing of the table info
+        flag: --no_table
+num_maxima: (an integer (int or long))
+        no of local maxima to report
+        flag: --num=%d
+out_index_file: (a boolean or a file name)
+        output of cluster index (in size order)
+        flag: --oindex=%s
+out_localmax_txt_file: (a boolean or a file name)
+        local maxima text file
+        flag: --olmax=%s
+out_localmax_vol_file: (a boolean or a file name)
+        output of local maxima volume
+        flag: --olmaxim=%s
+out_max_file: (a boolean or a file name)
+        filename for output of max image
+        flag: --omax=%s
+out_mean_file: (a boolean or a file name)
+        filename for output of mean image
+        flag: --omean=%s
+out_pval_file: (a boolean or a file name)
+        filename for image output of log pvals
+        flag: --opvals=%s
+out_size_file: (a boolean or a file name)
+        filename for output of size image
+        flag: --osize=%s
+out_threshold_file: (a boolean or a file name)
+        thresholded image
+        flag: --othresh=%s
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+peak_distance: (a float)
+        minimum distance between local maxima/minima, in mm (default 0)
+        flag: --peakdist=%.10f
+pthreshold: (a float)
+        p-threshold for clusters
+        flag: --pthresh=%.10f
+        requires: dlh, volume
+std_space_file: (a file name)
+        filename for standard-space volume
+        flag: --stdvol=%s
+use_mm: (a boolean, nipype default value: False)
+        use mm, not voxel, coordinates
+        flag: --mm
+volume: (an integer (int or long))
+        number of voxels in the mask
+        flag: --volume=%d
+warpfield_file: (a file name)
+        file contining warpfield
+        flag: --warpvol=%s
+xfm_file: (a file name)
+        filename for Linear: input-&gt;standard-space transform. Non-linear:
+        input-&gt;highres transform
+        flag: --xfm=%s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">index_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">of</span> <span class="n">cluster</span> <span class="n">index</span> <span class="p">(</span><span class="ow">in</span> <span class="n">size</span> <span class="n">order</span><span class="p">)</span>
+<span class="n">localmax_txt_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">local</span> <span class="n">maxima</span> <span class="n">text</span> <span class="n">file</span>
+<span class="n">localmax_vol_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">of</span> <span class="n">local</span> <span class="n">maxima</span> <span class="n">volume</span>
+<span class="n">max_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="k">for</span> <span class="n">output</span> <span class="n">of</span> <span class="nb">max</span> <span class="n">image</span>
+<span class="n">mean_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="k">for</span> <span class="n">output</span> <span class="n">of</span> <span class="n">mean</span> <span class="n">image</span>
+<span class="n">pval_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="k">for</span> <span class="n">image</span> <span class="n">output</span> <span class="n">of</span> <span class="n">log</span> <span class="n">pvals</span>
+<span class="n">size_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="k">for</span> <span class="n">output</span> <span class="n">of</span> <span class="n">size</span> <span class="n">image</span>
+<span class="n">threshold_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">thresholded</span> <span class="n">image</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-contrastmgr"></span></div>
+</div>
+<div class="section" id="contrastmgr">
+<span id="index-1"></span><h2>ContrastMgr<a class="headerlink" href="#contrastmgr" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L1205">Link to code</a></p>
+<p>Wraps command <strong>contrast_mgr</strong></p>
+<p>Use FSL contrast_mgr command to evaluate contrasts</p>
+<p>In interface mode this file assumes that all the required inputs are in the
+same location. This has deprecated for FSL versions 5.0.7+ as the necessary
+corrections file is no longer generated by FILMGLS.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+corrections: (an existing file name)
+        statistical corrections used within FILM modelling
+dof_file: (an existing file name)
+        degrees of freedom
+param_estimates: (a list of items which are an existing file name)
+        Parameter estimates for each column of the design matrix
+sigmasquareds: (an existing file name)
+        summary of residuals, See Woolrich, et. al., 2001
+tcon_file: (an existing file name)
+        contrast file containing T-contrasts
+        flag: %s, position: -1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+contrast_num: (a long integer &gt;= 1)
+        contrast number to start labeling copes from
+        flag: -cope
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+fcon_file: (an existing file name)
+        contrast file containing F-contrasts
+        flag: -f %s
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+suffix: (a unicode string)
+        suffix to put on the end of the cope filename before the contrast
+        number, default is nothing
+        flag: -suffix %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>copes: (a list of items which are an existing file name)
+        Contrast estimates for each contrast
+fstats: (a list of items which are an existing file name)
+        f-stat file for each contrast
+neffs: (a list of items which are an existing file name)
+        neff file ?? for each contrast
+tstats: (a list of items which are an existing file name)
+        t-stat file for each contrast
+varcopes: (a list of items which are an existing file name)
+        Variance estimates for each contrast
+zfstats: (a list of items which are an existing file name)
+        z-stat file for each F contrast
+zstats: (a list of items which are an existing file name)
+        z-stat file for each contrast
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-dualregression"></span></div>
+<div class="section" id="dualregression">
+<span id="index-2"></span><h2>DualRegression<a class="headerlink" href="#dualregression" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L2068">Link to code</a></p>
+<p>Wraps command <strong>dual_regression</strong></p>
+<p>Wrapper Script for Dual Regression Workflow</p>
+<div class="section" id="id1">
+<h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span> <span class="o">=</span> <span class="n">DualRegression</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;functional.nii&quot;</span><span class="p">,</span> <span class="s2">&quot;functional2.nii&quot;</span><span class="p">,</span> <span class="s2">&quot;functional3.nii&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">group_IC_maps_4D</span> <span class="o">=</span> <span class="s2">&quot;allFA.nii&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">des_norm</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">one_sample_group_mean</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">n_perm</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_dir</span> <span class="o">=</span> <span class="s2">&quot;my_output_directory&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;dual_regression allFA.nii 0 -1 10 my_output_directory functional.nii functional2.nii functional3.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dual_regression</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+group_IC_maps_4D: (an existing file name)
+        4D image containing spatial IC maps (melodic_IC) from the whole-
+        group ICA analysis
+        flag: %s, position: 1
+in_files: (a list of items which are an existing file name)
+        List all subjects&#39; preprocessed, standard-space 4D datasets
+        flag: %s, position: -1
+n_perm: (an integer (int or long))
+        Number of permutations for randomise; set to 1 for just raw tstat
+        output, set to 0 to not run randomise at all.
+        flag: %i, position: 5
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+con_file: (an existing file name)
+        Design contrasts for final cross-subject modelling with randomise
+        flag: %s, position: 4
+des_norm: (a boolean, nipype default value: True)
+        Whether to variance-normalise the timecourses used as the stage-2
+        regressors; True is default and recommended
+        flag: %i, position: 2
+design_file: (an existing file name)
+        Design matrix for final cross-subject modelling with randomise
+        flag: %s, position: 3
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+one_sample_group_mean: (a boolean)
+        perform 1-sample group-mean test instead of generic permutation test
+        flag: -1, position: 3
+out_dir: (a directory name, nipype default value: output)
+        This directory will be created to hold all output and logfiles
+        flag: %s, position: 6
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_dir</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-feat"></span></div>
+</div>
+<div class="section" id="feat">
+<span id="index-3"></span><h2>FEAT<a class="headerlink" href="#feat" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L408">Link to code</a></p>
+<p>Wraps command <strong>feat</strong></p>
+<p>Uses FSL feat to calculate first level stats</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+fsf_file: (an existing file name)
+        File specifying the feat design spec file
+        flag: %s, position: 0
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">feat_dir</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-featmodel"></span></div>
+<div class="section" id="featmodel">
+<span id="index-4"></span><h2>FEATModel<a class="headerlink" href="#featmodel" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L472">Link to code</a></p>
+<p>Wraps command <strong>feat_model</strong></p>
+<p>Uses FSL feat_model to generate design.mat files</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+ev_files: (a list of items which are an existing file name)
+        Event spec files generated by level1design
+        flag: %s, position: 1
+fsf_file: (an existing file name)
+        File specifying the feat design spec file
+        flag: %s, position: 0
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">con_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Contrast</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">contrast</span> <span class="n">vectors</span>
+<span class="n">design_cov</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Graphical</span> <span class="n">representation</span> <span class="n">of</span> <span class="n">design</span> <span class="n">covariance</span>
+<span class="n">design_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Mat</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">ascii</span> <span class="n">matrix</span> <span class="k">for</span> <span class="n">design</span>
+<span class="n">design_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Graphical</span> <span class="n">representation</span> <span class="n">of</span> <span class="n">design</span> <span class="n">matrix</span>
+<span class="n">fcon_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Contrast</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">contrast</span> <span class="n">vectors</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-featregister"></span></div>
+<div class="section" id="featregister">
+<span id="index-5"></span><h2>FEATRegister<a class="headerlink" href="#featregister" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L877">Link to code</a></p>
+<p>Register feat directories to a specific standard</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">feat_dirs</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Lower</span> <span class="n">level</span> <span class="n">feat</span> <span class="n">dirs</span>
+<span class="n">reg_image</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">image</span> <span class="n">to</span> <span class="n">register</span> <span class="n">to</span> <span class="p">(</span><span class="n">will</span> <span class="n">be</span> <span class="n">treated</span> <span class="k">as</span> <span class="n">standard</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">reg_dof</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">int</span> <span class="ow">or</span> <span class="n">long</span><span class="p">),</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">registration</span> <span class="n">degrees</span> <span class="n">of</span> <span class="n">freedom</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fsf_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">FSL</span> <span class="n">feat</span> <span class="n">specification</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-fsl-model-filmgls"></span></div>
+<div class="section" id="filmgls">
+<span id="index-6"></span><h2>FILMGLS<a class="headerlink" href="#filmgls" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L725">Link to code</a></p>
+<p>Wraps command <strong>film_gls</strong></p>
+<p>Use FSL film_gls command to fit a design matrix to voxel timeseries</p>
+<div class="section" id="id2">
+<h3>Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Initialize with no options, assigning them when calling run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">fsl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fgls</span> <span class="o">=</span> <span class="n">fsl</span><span class="o">.</span><span class="n">FILMGLS</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">fgls</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s1">&#39;in_file&#39;</span><span class="p">,</span> <span class="s1">&#39;design_file&#39;</span><span class="p">,</span> <span class="s1">&#39;thresh&#39;</span><span class="p">,</span> <span class="n">rn</span><span class="o">=</span><span class="s1">&#39;stats&#39;</span><span class="p">)</span> <span class="c1">#doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Assign options through the <code class="docutils literal notranslate"><span class="pre">inputs</span></code> attribute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fgls</span> <span class="o">=</span> <span class="n">fsl</span><span class="o">.</span><span class="n">FILMGLS</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fgls</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;functional.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fgls</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">design_file</span> <span class="o">=</span> <span class="s1">&#39;design.mat&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fgls</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fgls</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">results_dir</span> <span class="o">=</span> <span class="s1">&#39;stats&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">fgls</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1">#doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Specify options when creating an instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fgls</span> <span class="o">=</span> <span class="n">fsl</span><span class="o">.</span><span class="n">FILMGLS</span><span class="p">(</span><span class="n">in_file</span><span class="o">=</span><span class="s1">&#39;functional.nii&#39;</span><span class="p">,</span> <span class="n">design_file</span><span class="o">=</span><span class="s1">&#39;design.mat&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">results_dir</span><span class="o">=</span><span class="s1">&#39;stats&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">fgls</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1">#doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input data file
+        flag: --in=%s, position: -3
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+autocorr_estimate_only: (a boolean)
+        perform autocorrelation estimation only
+        flag: --ac
+        mutually_exclusive: autocorr_estimate_only, fit_armodel,
+         tukey_window, multitaper_product, use_pava, autocorr_noestimate
+autocorr_noestimate: (a boolean)
+        do not estimate autocorrs
+        flag: --noest
+        mutually_exclusive: autocorr_estimate_only, fit_armodel,
+         tukey_window, multitaper_product, use_pava, autocorr_noestimate
+brightness_threshold: (a long integer &gt;= 0)
+        susan brightness threshold, otherwise it is estimated
+        flag: --epith=%d
+design_file: (an existing file name)
+        design matrix file
+        flag: --pd=%s, position: -2
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+fcon_file: (an existing file name)
+        contrast file containing F-contrasts
+        flag: --fcon=%s
+fit_armodel: (a boolean)
+        fits autoregressive model - default is to use tukey with
+        M=sqrt(numvols)
+        flag: --ar
+        mutually_exclusive: autocorr_estimate_only, fit_armodel,
+         tukey_window, multitaper_product, use_pava, autocorr_noestimate
+full_data: (a boolean)
+        output full data
+        flag: -v
+mask_size: (an integer (int or long))
+        susan mask size
+        flag: --ms=%d
+mode: (&#39;volumetric&#39; or &#39;surface&#39;)
+        Type of analysis to be done
+        flag: --mode=%s
+multitaper_product: (an integer (int or long))
+        multitapering with slepian tapers and num is the time-bandwidth
+        product
+        flag: --mt=%d
+        mutually_exclusive: autocorr_estimate_only, fit_armodel,
+         tukey_window, multitaper_product, use_pava, autocorr_noestimate
+output_pwdata: (a boolean)
+        output prewhitened data and average design matrix
+        flag: --outputPWdata
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+results_dir: (a directory name, nipype default value: results)
+        directory to store results in
+        flag: --rn=%s
+smooth_autocorr: (a boolean)
+        Smooth auto corr estimates
+        flag: --sa
+surface: (an existing file name)
+        input surface for autocorr smoothing in surface-based analyses
+        flag: --in2=%s
+tcon_file: (an existing file name)
+        contrast file containing T-contrasts
+        flag: --con=%s
+threshold: (a float, nipype default value: -1000.0)
+        threshold
+        flag: --thr=%f, position: -1
+tukey_window: (an integer (int or long))
+        tukey window size to estimate autocorr
+        flag: --tukey=%d
+        mutually_exclusive: autocorr_estimate_only, fit_armodel,
+         tukey_window, multitaper_product, use_pava, autocorr_noestimate
+use_pava: (a boolean)
+        estimates autocorr using PAVA
+        flag: --pava
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">copes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Contrast</span> <span class="n">estimates</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">dof_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">degrees</span> <span class="n">of</span> <span class="n">freedom</span>
+<span class="n">fstats</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">-</span><span class="n">stat</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">logfile</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">FILM</span> <span class="n">run</span> <span class="n">logfile</span>
+<span class="n">param_estimates</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Parameter</span> <span class="n">estimates</span> <span class="k">for</span> <span class="n">each</span> <span class="n">column</span> <span class="n">of</span> <span class="n">the</span> <span class="n">design</span> <span class="n">matrix</span>
+<span class="n">residual4d</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Model</span> <span class="n">fit</span> <span class="n">residual</span> <span class="n">mean</span><span class="o">-</span><span class="n">squared</span> <span class="n">error</span> <span class="k">for</span> <span class="n">each</span> <span class="n">time</span> <span class="n">point</span>
+<span class="n">results_dir</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">directory</span> <span class="n">storing</span> <span class="n">model</span> <span class="n">estimation</span> <span class="n">output</span>
+<span class="n">sigmasquareds</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">summary</span> <span class="n">of</span> <span class="n">residuals</span><span class="p">,</span> <span class="n">See</span> <span class="n">Woolrich</span><span class="p">,</span> <span class="n">et</span><span class="o">.</span> <span class="n">al</span><span class="o">.</span><span class="p">,</span> <span class="mi">2001</span>
+<span class="n">thresholdac</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">FILM</span> <span class="n">autocorrelation</span> <span class="n">parameters</span>
+<span class="n">tstats</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">-</span><span class="n">stat</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">varcopes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Variance</span> <span class="n">estimates</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">zfstats</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">z</span><span class="o">-</span><span class="n">stat</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">F</span> <span class="n">contrast</span>
+<span class="n">zstats</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">z</span><span class="o">-</span><span class="n">stat</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-flameo"></span></div>
+</div>
+<div class="section" id="flameo">
+<span id="index-7"></span><h2>FLAMEO<a class="headerlink" href="#flameo" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L1012">Link to code</a></p>
+<p>Wraps command <strong>flameo</strong></p>
+<p>Use FSL flameo command to perform higher level model fits</p>
+<div class="section" id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Initialize FLAMEO with no options, assigning them when calling run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">fsl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span> <span class="o">=</span> <span class="n">fsl</span><span class="o">.</span><span class="n">FLAMEO</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">cope_file</span> <span class="o">=</span> <span class="s1">&#39;cope.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">var_cope_file</span> <span class="o">=</span> <span class="s1">&#39;varcope.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">cov_split_file</span> <span class="o">=</span> <span class="s1">&#39;cov_split.mat&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">design_file</span> <span class="o">=</span> <span class="s1">&#39;design.mat&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">t_con_file</span> <span class="o">=</span> <span class="s1">&#39;design.con&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mask_file</span> <span class="o">=</span> <span class="s1">&#39;mask.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">run_mode</span> <span class="o">=</span> <span class="s1">&#39;fe&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flameo</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;flameo --copefile=cope.nii.gz --covsplitfile=cov_split.mat --designfile=design.mat --ld=stats --maskfile=mask.nii --runmode=fe --tcontrastsfile=design.con --varcopefile=varcope.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+cope_file: (an existing file name)
+        cope regressor data file
+        flag: --copefile=%s
+cov_split_file: (an existing file name)
+        ascii matrix specifying the groups the covariance is split into
+        flag: --covsplitfile=%s
+design_file: (an existing file name)
+        design matrix file
+        flag: --designfile=%s
+mask_file: (an existing file name)
+        mask file
+        flag: --maskfile=%s
+run_mode: (&#39;fe&#39; or &#39;ols&#39; or &#39;flame1&#39; or &#39;flame12&#39;)
+        inference to perform
+        flag: --runmode=%s
+t_con_file: (an existing file name)
+        ascii matrix specifying t-contrasts
+        flag: --tcontrastsfile=%s
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+burnin: (an integer (int or long))
+        number of jumps at start of mcmc to be discarded
+        flag: --burnin=%d
+dof_var_cope_file: (an existing file name)
+        dof data file for varcope data
+        flag: --dofvarcopefile=%s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+f_con_file: (an existing file name)
+        ascii matrix specifying f-contrasts
+        flag: --fcontrastsfile=%s
+fix_mean: (a boolean)
+        fix mean for tfit
+        flag: --fixmean
+infer_outliers: (a boolean)
+        infer outliers - not for fe
+        flag: --inferoutliers
+log_dir: (a directory name, nipype default value: stats)
+        flag: --ld=%s
+n_jumps: (an integer (int or long))
+        number of jumps made by mcmc
+        flag: --njumps=%d
+no_pe_outputs: (a boolean)
+        do not output pe files
+        flag: --nopeoutput
+outlier_iter: (an integer (int or long))
+        Number of max iterations to use when inferring outliers. Default is
+        12.
+        flag: --ioni=%d
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+sample_every: (an integer (int or long))
+        number of jumps for each sample
+        flag: --sampleevery=%d
+sigma_dofs: (an integer (int or long))
+        sigma (in mm) to use for Gaussian smoothing the DOFs in FLAME 2.
+        Default is 1mm, -1 indicates no smoothing
+        flag: --sigma_dofs=%d
+var_cope_file: (an existing file name)
+        varcope weightings data file
+        flag: --varcopefile=%s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">copes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Contrast</span> <span class="n">estimates</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">fstats</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">-</span><span class="n">stat</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">mrefvars</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="n">random</span> <span class="n">effect</span> <span class="n">variances</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">pes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Parameter</span> <span class="n">estimates</span> <span class="k">for</span> <span class="n">each</span> <span class="n">column</span> <span class="n">of</span> <span class="n">the</span> <span class="n">design</span> <span class="n">matrix</span> <span class="k">for</span> <span class="n">each</span>
+        <span class="n">voxel</span>
+<span class="n">res4d</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Model</span> <span class="n">fit</span> <span class="n">residual</span> <span class="n">mean</span><span class="o">-</span><span class="n">squared</span> <span class="n">error</span> <span class="k">for</span> <span class="n">each</span> <span class="n">time</span> <span class="n">point</span>
+<span class="n">stats_dir</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">directory</span> <span class="n">storing</span> <span class="n">model</span> <span class="n">estimation</span> <span class="n">output</span>
+<span class="n">tdof</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">temporal</span> <span class="n">dof</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">tstats</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">-</span><span class="n">stat</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">var_copes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Variance</span> <span class="n">estimates</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">weights</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">weights</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+<span class="n">zfstats</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">z</span> <span class="n">stat</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">f</span> <span class="n">contrast</span>
+<span class="n">zstats</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">z</span><span class="o">-</span><span class="n">stat</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">contrast</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{BeckmannJenkinsonSmith2003">‘<span>&#64;</span>article{BeckmannJenkinsonSmith2003</a>,author={C.F. Beckmann, M. Jenkinson, and S.M. Smith},title={General multilevel linear modeling for group analysis in FMRI.},journal={NeuroImage},volume={20},pages={1052-1063},year={2003},}’, key=’BeckmannJenkinsonSmith2003’)
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{WoolrichBehrensBeckmannJenkinsonSmith2004">‘<span>&#64;</span>article{WoolrichBehrensBeckmannJenkinsonSmith2004</a>,author={M.W. Woolrich, T.E. Behrens, C.F. Beckmann, M. Jenkinson, and S.M. Smith},title={Multilevel linear modelling for FMRI group analysis using Bayesian inference.},journal={NeuroImage},volume={21},pages={1732-1747},year={2004},}’, key=’WoolrichBehrensBeckmannJenkinsonSmith2004’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-glm"></span></div>
+</div>
+<div class="section" id="glm">
+<span id="index-8"></span><h2>GLM<a class="headerlink" href="#glm" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L2356">Link to code</a></p>
+<p>Wraps command <strong>fsl_glm</strong></p>
+<p>FSL GLM:</p>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.fsl</span> <span class="k">as</span> <span class="nn">fsl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">glm</span> <span class="o">=</span> <span class="n">fsl</span><span class="o">.</span><span class="n">GLM</span><span class="p">(</span><span class="n">in_file</span><span class="o">=</span><span class="s1">&#39;functional.nii&#39;</span><span class="p">,</span> <span class="n">design</span><span class="o">=</span><span class="s1">&#39;maps.nii&#39;</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;NIFTI&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">glm</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;fsl_glm -i functional.nii -d maps.nii -o functional_glm.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+design: (an existing file name)
+        file name of the GLM design matrix (text time courses for temporal
+        regression or an image file for spatial regression)
+        flag: -d %s, position: 2
+in_file: (an existing file name)
+        input file name (text matrix or 3D/4D image file)
+        flag: -i %s, position: 1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+contrasts: (an existing file name)
+        matrix of t-statics contrasts
+        flag: -c %s
+dat_norm: (a boolean)
+        switch on normalization of the data time series to unit std
+        deviation
+        flag: --dat_norm
+demean: (a boolean)
+        switch on demeaining of design and data
+        flag: --demean
+des_norm: (a boolean)
+        switch on normalization of the design matrix columns to unit std
+        deviation
+        flag: --des_norm
+dof: (an integer (int or long))
+        set degrees of freedom explicitly
+        flag: --dof=%d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+mask: (an existing file name)
+        mask image file name if input is image
+        flag: -m %s
+out_cope: (a file name)
+        output file name for COPE (either as txt or image
+        flag: --out_cope=%s
+out_data_name: (a file name)
+        output file name for pre-processed data
+        flag: --out_data=%s
+out_f_name: (a file name)
+        output file name for F-value of full model fit
+        flag: --out_f=%s
+out_file: (a file name)
+        filename for GLM parameter estimates (GLM betas)
+        flag: -o %s, position: 3
+out_p_name: (a file name)
+        output file name for p-values of Z-stats (either as text file or
+        image)
+        flag: --out_p=%s
+out_pf_name: (a file name)
+        output file name for p-value for full model fit
+        flag: --out_pf=%s
+out_res_name: (a file name)
+        output file name for residuals
+        flag: --out_res=%s
+out_sigsq_name: (a file name)
+        output file name for residual noise variance sigma-square
+        flag: --out_sigsq=%s
+out_t_name: (a file name)
+        output file name for t-stats (either as txt or image
+        flag: --out_t=%s
+out_varcb_name: (a file name)
+        output file name for variance of COPEs
+        flag: --out_varcb=%s
+out_vnscales_name: (a file name)
+        output file name for scaling factors for variance normalisation
+        flag: --out_vnscales=%s
+out_z_name: (a file name)
+        output file name for Z-stats (either as txt or image
+        flag: --out_z=%s
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+var_norm: (a boolean)
+        perform MELODIC variance-normalisation on data
+        flag: --vn
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_cope</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">COPEs</span> <span class="p">(</span><span class="n">either</span> <span class="k">as</span> <span class="n">text</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">image</span><span class="p">)</span>
+<span class="n">out_data</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="k">for</span> <span class="n">preprocessed</span> <span class="n">data</span>
+<span class="n">out_f</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">F</span><span class="o">-</span><span class="n">value</span> <span class="n">of</span> <span class="n">full</span> <span class="n">model</span> <span class="n">fit</span>
+<span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">file</span> <span class="n">name</span> <span class="n">of</span> <span class="n">GLM</span> <span class="n">parameters</span> <span class="p">(</span><span class="k">if</span> <span class="n">generated</span><span class="p">)</span>
+<span class="n">out_p</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">p</span><span class="o">-</span><span class="n">values</span> <span class="n">of</span> <span class="n">Z</span><span class="o">-</span><span class="n">stats</span> <span class="p">(</span><span class="n">either</span> <span class="k">as</span> <span class="n">text</span> <span class="n">file</span> <span class="ow">or</span>
+        <span class="n">image</span><span class="p">)</span>
+<span class="n">out_pf</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span> <span class="k">for</span> <span class="n">full</span> <span class="n">model</span> <span class="n">fit</span>
+<span class="n">out_res</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">residuals</span>
+<span class="n">out_sigsq</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">residual</span> <span class="n">noise</span> <span class="n">variance</span> <span class="n">sigma</span><span class="o">-</span><span class="n">square</span>
+<span class="n">out_t</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">t</span><span class="o">-</span><span class="n">stats</span> <span class="p">(</span><span class="n">either</span> <span class="k">as</span> <span class="n">text</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">image</span><span class="p">)</span>
+<span class="n">out_varcb</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">variance</span> <span class="n">of</span> <span class="n">COPEs</span>
+<span class="n">out_vnscales</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">scaling</span> <span class="n">factors</span> <span class="k">for</span> <span class="n">variance</span> <span class="n">normalisation</span>
+<span class="n">out_z</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">file</span> <span class="n">name</span> <span class="k">for</span> <span class="n">COPEs</span> <span class="p">(</span><span class="n">either</span> <span class="k">as</span> <span class="n">text</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-l2model"></span></div>
+</div>
+<div class="section" id="l2model">
+<span id="index-9"></span><h2>L2Model<a class="headerlink" href="#l2model" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L1315">Link to code</a></p>
+<p>Generate subject specific second level model</p>
+<div class="section" id="id4">
+<h3>Examples<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.fsl</span> <span class="k">import</span> <span class="n">L2Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">L2Model</span><span class="p">(</span><span class="n">num_copes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c1"># 3 sessions</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">num_copes</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">long</span> <span class="n">integer</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">number</span> <span class="n">of</span> <span class="n">copes</span> <span class="n">to</span> <span class="n">be</span> <span class="n">combined</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">design_con</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">design</span> <span class="n">contrast</span> <span class="n">file</span>
+<span class="n">design_grp</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">design</span> <span class="n">group</span> <span class="n">file</span>
+<span class="n">design_mat</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">design</span> <span class="n">matrix</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-fsl-model-level1design"></span></div>
+</div>
+<div class="section" id="level1design">
+<span id="index-10"></span><h2>Level1Design<a class="headerlink" href="#level1design" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L96">Link to code</a></p>
+<p>Generate FEAT specific files</p>
+<div class="section" id="id5">
+<h3>Examples<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">level1design</span> <span class="o">=</span> <span class="n">Level1Design</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">level1design</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interscan_interval</span> <span class="o">=</span> <span class="mf">2.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">level1design</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bases</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dgamma&#39;</span><span class="p">:{</span><span class="s1">&#39;derivs&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">level1design</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">session_info</span> <span class="o">=</span> <span class="s1">&#39;session_info.npz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">level1design</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+bases: (a dictionary with keys which are &#39;dgamma&#39; and with values
+         which are a dictionary with keys which are &#39;derivs&#39; and with values
+         which are a boolean or a dictionary with keys which are &#39;gamma&#39; and
+         with values which are a dictionary with keys which are &#39;derivs&#39; or
+         &#39;gammasigma&#39; or &#39;gammadelay&#39; and with values which are any value or
+         a dictionary with keys which are &#39;custom&#39; and with values which are
+         a dictionary with keys which are &#39;bfcustompath&#39; and with values
+         which are a unicode string or a dictionary with keys which are
+         &#39;none&#39; and with values which are a dictionary with keys which are
+         any value and with values which are any value or a dictionary with
+         keys which are &#39;none&#39; and with values which are None)
+        name of basis function and options e.g., {&#39;dgamma&#39;: {&#39;derivs&#39;:
+        True}}
+interscan_interval: (a float)
+        Interscan interval (in secs)
+model_serial_correlations: (a boolean)
+        Option to model serial correlations using an autoregressive
+        estimator (order 1). Setting this option is only useful in the
+        context of the fsf file. If you set this to False, you need to
+        repeat this option for FILMGLS by setting autocorr_noestimate to
+        True
+session_info: (any value)
+        Session specific information generated by ``modelgen.SpecifyModel``
+
+[Optional]
+contrasts: (a list of items which are a tuple of the form: (a unicode
+         string, &#39;T&#39;, a list of items which are a unicode string, a list of
+         items which are a float) or a tuple of the form: (a unicode string,
+         &#39;T&#39;, a list of items which are a unicode string, a list of items
+         which are a float, a list of items which are a float) or a tuple of
+         the form: (a unicode string, &#39;F&#39;, a list of items which are a tuple
+         of the form: (a unicode string, &#39;T&#39;, a list of items which are a
+         unicode string, a list of items which are a float) or a tuple of
+         the form: (a unicode string, &#39;T&#39;, a list of items which are a
+         unicode string, a list of items which are a float, a list of items
+         which are a float)))
+        List of contrasts with each contrast being a list of the form -
+        [(&#39;name&#39;, &#39;stat&#39;, [condition list], [weight list], [session list])].
+        if session list is None or not provided, all sessions are used. For
+        F contrasts, the condition list should contain previously defined
+        T-contrasts.
+orthogonalization: (a dictionary with keys which are an integer (int
+         or long) and with values which are a dictionary with keys which are
+         an integer (int or long) and with values which are a boolean or an
+         integer (int or long), nipype default value: {})
+        which regressors to make orthogonal e.g., {1: {0:0,1:0,2:0}, 2:
+        {0:1,1:1,2:0}} to make the second regressor in a 2-regressor model
+        orthogonal to the first.
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ev_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span>
+         <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">condition</span> <span class="n">information</span> <span class="n">files</span>
+<span class="n">fsf_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">FSL</span> <span class="n">feat</span> <span class="n">specification</span> <span class="n">files</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-fsl-model-melodic"></span></div>
+</div>
+<div class="section" id="melodic">
+<span id="index-11"></span><h2>MELODIC<a class="headerlink" href="#melodic" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L1734">Link to code</a></p>
+<p>Wraps command <strong>melodic</strong></p>
+<p>Multivariate Exploratory Linear Optimised Decomposition into Independent
+Components</p>
+<div class="section" id="id6">
+<h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span> <span class="o">=</span> <span class="n">MELODIC</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">approach</span> <span class="o">=</span> <span class="s1">&#39;tica&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;functional.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;functional2.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;functional3.nii&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">no_bet</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bg_threshold</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">tr_sec</span> <span class="o">=</span> <span class="mf">1.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mm_thresh</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_stats</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">t_des</span> <span class="o">=</span> <span class="s1">&#39;timeDesign.mat&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">t_con</span> <span class="o">=</span> <span class="s1">&#39;timeDesign.con&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">s_des</span> <span class="o">=</span> <span class="s1">&#39;subjectDesign.mat&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">s_con</span> <span class="o">=</span> <span class="s1">&#39;subjectDesign.con&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_dir</span> <span class="o">=</span> <span class="s1">&#39;groupICA.out&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;melodic -i functional.nii,functional2.nii,functional3.nii -a tica --bgthreshold=10.000000 --mmthresh=0.500000 --nobet -o groupICA.out --Ostats --Scon=subjectDesign.con --Sdes=subjectDesign.mat --Tcon=timeDesign.con --Tdes=timeDesign.mat --tr=1.500000&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">melodic_setup</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_files: (a list of items which are an existing file name)
+        input file names (either single file name or a list)
+        flag: -i %s, position: 0
+
+[Optional]
+ICs: (an existing file name)
+        filename of the IC components file for mixture modelling
+        flag: --ICs=%s
+approach: (a unicode string)
+        approach for decomposition, 2D: defl, symm (default), 3D: tica
+        (default), concat
+        flag: -a %s
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+bg_image: (an existing file name)
+        specify background image for report (default: mean image)
+        flag: --bgimage=%s
+bg_threshold: (a float)
+        brain/non-brain threshold used to mask non-brain voxels, as a
+        percentage (only if --nobet selected)
+        flag: --bgthreshold=%f
+cov_weight: (a float)
+        voxel-wise weights for the covariance matrix (e.g. segmentation
+        information)
+        flag: --covarweight=%f
+dim: (an integer (int or long))
+        dimensionality reduction into #num dimensions (default: automatic
+        estimation)
+        flag: -d %d
+dim_est: (a unicode string)
+        use specific dim. estimation technique: lap, bic, mdl, aic, mean
+        (default: lap)
+        flag: --dimest=%s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+epsilon: (a float)
+        minimum error change
+        flag: --eps=%f
+epsilonS: (a float)
+        minimum error change for rank-1 approximation in TICA
+        flag: --epsS=%f
+log_power: (a boolean)
+        calculate log of power for frequency spectrum
+        flag: --logPower
+mask: (an existing file name)
+        file name of mask for thresholding
+        flag: -m %s
+max_restart: (an integer (int or long))
+        maximum number of restarts
+        flag: --maxrestart=%d
+maxit: (an integer (int or long))
+        maximum number of iterations before restart
+        flag: --maxit=%d
+migp: (a boolean)
+        switch on MIGP data reduction
+        flag: --migp
+migpN: (an integer (int or long))
+        number of internal Eigenmaps
+        flag: --migpN %d
+migp_factor: (an integer (int or long))
+        Internal Factor of mem-threshold relative to number of Eigenmaps
+        (default: 2)
+        flag: --migp_factor %d
+migp_shuffle: (a boolean)
+        randomise MIGP file order (default: TRUE)
+        flag: --migp_shuffle
+mix: (an existing file name)
+        mixing matrix for mixture modelling / filtering
+        flag: --mix=%s
+mm_thresh: (a float)
+        threshold for Mixture Model based inference
+        flag: --mmthresh=%f
+no_bet: (a boolean)
+        switch off BET
+        flag: --nobet
+no_mask: (a boolean)
+        switch off masking
+        flag: --nomask
+no_mm: (a boolean)
+        switch off mixture modelling on IC maps
+        flag: --no_mm
+non_linearity: (a unicode string)
+        nonlinearity: gauss, tanh, pow3, pow4
+        flag: --nl=%s
+num_ICs: (an integer (int or long))
+        number of IC&#39;s to extract (for deflation approach)
+        flag: -n %d
+out_all: (a boolean)
+        output everything
+        flag: --Oall
+out_dir: (a directory name)
+        output directory name
+        flag: -o %s
+out_mean: (a boolean)
+        output mean volume
+        flag: --Omean
+out_orig: (a boolean)
+        output the original ICs
+        flag: --Oorig
+out_pca: (a boolean)
+        output PCA results
+        flag: --Opca
+out_stats: (a boolean)
+        output thresholded maps and probability maps
+        flag: --Ostats
+out_unmix: (a boolean)
+        output unmixing matrix
+        flag: --Ounmix
+out_white: (a boolean)
+        output whitening/dewhitening matrices
+        flag: --Owhite
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+pbsc: (a boolean)
+        switch off conversion to percent BOLD signal change
+        flag: --pbsc
+rem_cmp: (a list of items which are an integer (int or long))
+        component numbers to remove
+        flag: -f %d
+remove_deriv: (a boolean)
+        removes every second entry in paradigm file (EV derivatives)
+        flag: --remove_deriv
+report: (a boolean)
+        generate Melodic web report
+        flag: --report
+report_maps: (a unicode string)
+        control string for spatial map images (see slicer)
+        flag: --report_maps=%s
+s_con: (an existing file name)
+        t-contrast matrix across subject-domain
+        flag: --Scon=%s
+s_des: (an existing file name)
+        design matrix across subject-domain
+        flag: --Sdes=%s
+sep_vn: (a boolean)
+        switch off joined variance normalization
+        flag: --sep_vn
+sep_whiten: (a boolean)
+        switch on separate whitening
+        flag: --sep_whiten
+smode: (an existing file name)
+        matrix of session modes for report generation
+        flag: --smode=%s
+t_con: (an existing file name)
+        t-contrast matrix across time-domain
+        flag: --Tcon=%s
+t_des: (an existing file name)
+        design matrix across time-domain
+        flag: --Tdes=%s
+tr_sec: (a float)
+        TR in seconds
+        flag: --tr=%f
+update_mask: (a boolean)
+        switch off mask updating
+        flag: --update_mask
+var_norm: (a boolean)
+        switch off variance normalization
+        flag: --vn
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_dir</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">report_dir</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">directory</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-multipleregressdesign"></span></div>
+</div>
+<div class="section" id="multipleregressdesign">
+<span id="index-12"></span><h2>MultipleRegressDesign<a class="headerlink" href="#multipleregressdesign" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L1416">Link to code</a></p>
+<p>Generate multiple regression design</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">FSL does not demean columns for higher level analysis.</p>
+</div>
+<p>Please see <a class="reference external" href="http://www.fmrib.ox.ac.uk/fsl/feat5/detail.html#higher">FSL documentation</a>
+for more details on model specification for higher level analysis.</p>
+<div class="section" id="id7">
+<h3>Examples<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.fsl</span> <span class="k">import</span> <span class="n">MultipleRegressDesign</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">MultipleRegressDesign</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">contrasts</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;group mean&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,[</span><span class="s1">&#39;reg1&#39;</span><span class="p">],[</span><span class="mi">1</span><span class="p">]]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">regressors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">reg1</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">reg2</span><span class="o">=</span><span class="p">[</span><span class="mf">2.</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Mandatory</span><span class="p">]</span>
+<span class="n">contrasts</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="nb">tuple</span> <span class="n">of</span> <span class="n">the</span> <span class="n">form</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span>
+         <span class="n">string</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">,</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span>
+         <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="n">a</span> <span class="nb">tuple</span> <span class="n">of</span> <span class="n">the</span> <span class="n">form</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">,</span>
+         <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="nb">tuple</span> <span class="n">of</span> <span class="n">the</span> <span class="n">form</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">unicode</span>
+         <span class="n">string</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span><span class="p">,</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span>
+         <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="nb">float</span><span class="p">)))</span>
+        <span class="n">List</span> <span class="n">of</span> <span class="n">contrasts</span> <span class="k">with</span> <span class="n">each</span> <span class="n">contrast</span> <span class="n">being</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">the</span> <span class="n">form</span> <span class="o">-</span>
+        <span class="p">[(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;stat&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">condition</span> <span class="nb">list</span><span class="p">],</span> <span class="p">[</span><span class="n">weight</span> <span class="nb">list</span><span class="p">])]</span><span class="o">.</span> <span class="k">if</span> <span class="n">session</span> <span class="nb">list</span>
+        <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">provided</span><span class="p">,</span> <span class="nb">all</span> <span class="n">sessions</span> <span class="n">are</span> <span class="n">used</span><span class="o">.</span> <span class="n">For</span> <span class="n">F</span> <span class="n">contrasts</span><span class="p">,</span> <span class="n">the</span>
+        <span class="n">condition</span> <span class="nb">list</span> <span class="n">should</span> <span class="n">contain</span> <span class="n">previously</span> <span class="n">defined</span> <span class="n">T</span><span class="o">-</span><span class="n">contrasts</span> <span class="n">without</span>
+        <span class="nb">any</span> <span class="n">weight</span> <span class="nb">list</span><span class="o">.</span>
+<span class="n">regressors</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">dictionary</span> <span class="k">with</span> <span class="n">keys</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="n">unicode</span> <span class="n">string</span> <span class="ow">and</span>
+         <span class="k">with</span> <span class="n">values</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">dictionary</span> <span class="n">containing</span> <span class="n">named</span> <span class="n">lists</span> <span class="n">of</span> <span class="n">regressors</span>
+
+<span class="p">[</span><span class="n">Optional</span><span class="p">]</span>
+<span class="n">groups</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">int</span> <span class="ow">or</span> <span class="n">long</span><span class="p">))</span>
+        <span class="nb">list</span> <span class="n">of</span> <span class="n">group</span> <span class="n">identifiers</span> <span class="p">(</span><span class="n">defaults</span> <span class="n">to</span> <span class="n">single</span> <span class="n">group</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">design_con</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">design</span> <span class="n">t</span><span class="o">-</span><span class="n">contrast</span> <span class="n">file</span>
+<span class="n">design_fts</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">design</span> <span class="n">f</span><span class="o">-</span><span class="n">contrast</span> <span class="n">file</span>
+<span class="n">design_grp</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">design</span> <span class="n">group</span> <span class="n">file</span>
+<span class="n">design_mat</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">design</span> <span class="n">matrix</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-fsl-model-randomise"></span></div>
+</div>
+<div class="section" id="randomise">
+<span id="index-13"></span><h2>Randomise<a class="headerlink" href="#randomise" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L2193">Link to code</a></p>
+<p>Wraps command <strong>randomise</strong></p>
+<p>FSL Randomise: feeds the 4D projected FA data into GLM
+modelling and thresholding
+in order to find voxels which correlate with your model</p>
+<div class="section" id="id8">
+<h3>Example<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.fsl</span> <span class="k">as</span> <span class="nn">fsl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rand</span> <span class="o">=</span> <span class="n">fsl</span><span class="o">.</span><span class="n">Randomise</span><span class="p">(</span><span class="n">in_file</span><span class="o">=</span><span class="s1">&#39;allFA.nii&#39;</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="s1">&#39;mask.nii&#39;</span><span class="p">,</span> <span class="n">tcon</span><span class="o">=</span><span class="s1">&#39;design.con&#39;</span><span class="p">,</span> <span class="n">design_mat</span><span class="o">=</span><span class="s1">&#39;design.mat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rand</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;randomise -i allFA.nii -o &quot;randomise&quot; -d design.mat -t design.con -m mask.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        4D input file
+        flag: -i %s, position: 0
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+base_name: (a unicode string, nipype default value: randomise)
+        the rootname that all generated files will have
+        flag: -o &quot;%s&quot;, position: 1
+c_thresh: (a float)
+        carry out cluster-based thresholding
+        flag: -c %.1f
+cm_thresh: (a float)
+        carry out cluster-mass-based thresholding
+        flag: -C %.1f
+demean: (a boolean)
+        demean data temporally before model fitting
+        flag: -D
+design_mat: (an existing file name)
+        design matrix file
+        flag: -d %s, position: 2
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+f_c_thresh: (a float)
+        carry out f cluster thresholding
+        flag: -F %.2f
+f_cm_thresh: (a float)
+        carry out f cluster-mass thresholding
+        flag: -S %.2f
+f_only: (a boolean)
+        calculate f-statistics only
+        flag: --f_only
+fcon: (an existing file name)
+        f contrasts file
+        flag: -f %s
+mask: (an existing file name)
+        mask image
+        flag: -m %s
+num_perm: (an integer (int or long))
+        number of permutations (default 5000, set to 0 for exhaustive)
+        flag: -n %d
+one_sample_group_mean: (a boolean)
+        perform 1-sample group-mean test instead of generic permutation test
+        flag: -1
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+p_vec_n_dist_files: (a boolean)
+        output permutation vector and null distribution text files
+        flag: -P
+raw_stats_imgs: (a boolean)
+        output raw ( unpermuted ) statistic images
+        flag: -R
+seed: (an integer (int or long))
+        specific integer seed for random number generator
+        flag: --seed=%d
+show_info_parallel_mode: (a boolean)
+        print out information required for parallel mode and exit
+        flag: -Q
+show_total_perms: (a boolean)
+        print out how many unique permutations would be generated and exit
+        flag: -q
+tcon: (an existing file name)
+        t contrasts file
+        flag: -t %s, position: 3
+tfce: (a boolean)
+        carry out Threshold-Free Cluster Enhancement
+        flag: -T
+tfce2D: (a boolean)
+        carry out Threshold-Free Cluster Enhancement with 2D optimisation
+        flag: --T2
+tfce_C: (a float)
+        TFCE connectivity (6 or 26; default=6)
+        flag: --tfce_C=%.2f
+tfce_E: (a float)
+        TFCE extent parameter (default=0.5)
+        flag: --tfce_E=%.2f
+tfce_H: (a float)
+        TFCE height parameter (default=2)
+        flag: --tfce_H=%.2f
+var_smooth: (an integer (int or long))
+        use variance smoothing (std is in mm)
+        flag: -v %d
+vox_p_values: (a boolean)
+        output voxelwise (corrected and uncorrected) p-value images
+        flag: -x
+x_block_labels: (an existing file name)
+        exchangeability block labels file
+        flag: -e %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f_corrected_p_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span>
+         <span class="n">name</span><span class="p">)</span>
+        <span class="n">f</span> <span class="n">contrast</span> <span class="n">FWE</span> <span class="p">(</span><span class="n">Family</span><span class="o">-</span><span class="n">wise</span> <span class="n">error</span><span class="p">)</span> <span class="n">corrected</span> <span class="n">p</span> <span class="n">values</span> <span class="n">files</span>
+<span class="n">f_p_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">f</span> <span class="n">contrast</span> <span class="n">uncorrected</span> <span class="n">p</span> <span class="n">values</span> <span class="n">files</span>
+<span class="n">fstat_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">f</span> <span class="n">contrast</span> <span class="n">raw</span> <span class="n">statistic</span>
+<span class="n">t_corrected_p_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span>
+         <span class="n">name</span><span class="p">)</span>
+        <span class="n">t</span> <span class="n">contrast</span> <span class="n">FWE</span> <span class="p">(</span><span class="n">Family</span><span class="o">-</span><span class="n">wise</span> <span class="n">error</span><span class="p">)</span> <span class="n">corrected</span> <span class="n">p</span> <span class="n">values</span> <span class="n">files</span>
+<span class="n">t_p_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">f</span> <span class="n">contrast</span> <span class="n">uncorrected</span> <span class="n">p</span> <span class="n">values</span> <span class="n">files</span>
+<span class="n">tstat_files</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">items</span> <span class="n">which</span> <span class="n">are</span> <span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">t</span> <span class="n">contrast</span> <span class="n">raw</span> <span class="n">statistic</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-smm"></span></div>
+</div>
+<div class="section" id="smm">
+<span id="index-14"></span><h2>SMM<a class="headerlink" href="#smm" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L1573">Link to code</a></p>
+<p>Wraps command <strong>mm –ld=logdir</strong></p>
+<p>Spatial Mixture Modelling. For more detail on the spatial mixture modelling
+see Mixture Models with Adaptive Spatial Regularisation for Segmentation
+with an Application to FMRI Data; Woolrich, M., Behrens, T., Beckmann, C.,
+and Smith, S.; IEEE Trans. Medical Imaging, 24(1):1-11, 2005.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+mask: (an existing file name)
+        mask file
+        flag: --mask=&quot;%s&quot;, position: 1
+spatial_data_file: (an existing file name)
+        statistics spatial map
+        flag: --sdf=&quot;%s&quot;, position: 0
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+no_deactivation_class: (a boolean)
+        enforces no deactivation class
+        flag: --zfstatmode, position: 2
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activation_p_map</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">deactivation_p_map</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">null_p_map</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="nipype-interfaces-fsl-model-smoothestimate"></span></div>
+<div class="section" id="smoothestimate">
+<span id="index-15"></span><h2>SmoothEstimate<a class="headerlink" href="#smoothestimate" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L1805">Link to code</a></p>
+<p>Wraps command <strong>smoothest</strong></p>
+<p>Estimates the smoothness of an image</p>
+<div class="section" id="id9">
+<h3>Examples<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">est</span> <span class="o">=</span> <span class="n">SmoothEstimate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">est</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">zstat_file</span> <span class="o">=</span> <span class="s1">&#39;zstat1.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">est</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mask_file</span> <span class="o">=</span> <span class="s1">&#39;mask.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">est</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;smoothest --mask=mask.nii --zstat=zstat1.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+dof: (an integer (int or long))
+        number of degrees of freedom
+        flag: --dof=%d
+        mutually_exclusive: zstat_file
+mask_file: (an existing file name)
+        brain mask volume
+        flag: --mask=%s
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+output_type: (&#39;NIFTI&#39; or &#39;NIFTI_PAIR&#39; or &#39;NIFTI_GZ&#39; or
+         &#39;NIFTI_PAIR_GZ&#39;)
+        FSL output type
+residual_fit_file: (an existing file name)
+        residual-fit image file
+        flag: --res=%s
+        requires: dof
+zstat_file: (an existing file name)
+        zstat image file
+        flag: --zstat=%s
+        mutually_exclusive: dof
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dlh</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">smoothness</span> <span class="n">estimate</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">det</span><span class="p">(</span><span class="n">Lambda</span><span class="p">))</span>
+<span class="n">resels</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">number</span> <span class="n">of</span> <span class="n">resels</span>
+<span class="n">volume</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">int</span> <span class="ow">or</span> <span class="n">long</span><span class="p">))</span>
+        <span class="n">number</span> <span class="n">of</span> <span class="n">voxels</span> <span class="ow">in</span> <span class="n">mask</span>
+</pre></div>
+</div>
+<p>References::
+BibTeX(<a class="reference external" href="mailto:'&#37;&#52;&#48;article{JenkinsonBeckmannBehrensWoolrichSmith2012">‘<span>&#64;</span>article{JenkinsonBeckmannBehrensWoolrichSmith2012</a>,author={M. Jenkinson, C.F. Beckmann, T.E. Behrens, M.W. Woolrich, and S.M. Smith},title={FSL},journal={NeuroImage},volume={62},pages={782-790},year={2012},}’, key=’JenkinsonBeckmannBehrensWoolrichSmith2012’)</p>
+<span class="target" id="module-nipype.interfaces.fsl.model"></span></div>
+</div>
+<div class="section" id="load-template">
+<span id="nipype-interfaces-fsl-model-load-template"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">load_template()</span></code><a class="headerlink" href="#load-template" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/fsl/model.py#L2412">Link to code</a></p>
+<p>Load a template from the model_templates directory</p>
+<div class="section" id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>The name of the file to load</dd>
+</dl>
+</div>
+<div class="section" id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></h3>
+<p>template : string.Template</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

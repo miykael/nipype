@@ -1,0 +1,158 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.image
+================
+
+
+.. _nipype.interfaces.image.Reorient:
+
+
+.. index:: Reorient
+
+Reorient
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/image.py#L110>`__
+
+Conform an image to a given orientation
+
+Flips and reorder the image data array so that the axes match the
+directions indicated in ``orientation``.
+The default ``RAS`` orientation corresponds to the first axis being ordered
+from left to right, the second axis from posterior to anterior, and the
+third axis from inferior to superior.
+
+For oblique images, the original orientation is considered to be the
+closest plumb orientation.
+
+No resampling is performed, and thus the output image is not de-obliqued
+or registered to any other image or template.
+
+The effective transform is calculated from the original affine matrix to
+the reoriented affine matrix.
+
+Examples
+~~~~~~~~
+
+If an image is not reoriented, the original file is not modified
+
+.. testsetup::
+
+    >>> def print_affine(matrix):
+    ...     print(str(matrix).replace(']', ' ').replace('[', ' '))
+
+>>> import numpy as np
+>>> from nipype.interfaces.image import Reorient
+>>> reorient = Reorient(orientation='LPS')
+>>> reorient.inputs.in_file = 'segmentation0.nii.gz'
+>>> res = reorient.run()
+>>> res.outputs.out_file
+'segmentation0.nii.gz'
+
+>>> print_affine(np.loadtxt(res.outputs.transform))
+1.  0.  0.  0.
+0.  1.  0.  0.
+0.  0.  1.  0.
+0.  0.  0.  1.
+
+>>> reorient.inputs.orientation = 'RAS'
+>>> res = reorient.run()
+>>> res.outputs.out_file  # doctest: +ELLIPSIS
+'.../segmentation0_ras.nii.gz'
+
+>>> print_affine(np.loadtxt(res.outputs.transform))
+-1.   0.   0.  60.
+ 0.  -1.   0.  72.
+ 0.   0.   1.   0.
+ 0.   0.   0.   1.
+
+.. testcleanup::
+
+    >>> import os
+    >>> os.unlink(res.outputs.out_file)
+    >>> os.unlink(res.outputs.transform)
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                Input image
+
+        [Optional]
+        orientation: ('RAS' or 'RAI' or 'RPS' or 'RPI' or 'LAS' or 'LAI' or
+                 'LPS' or 'LPI' or 'RSA' or 'RSP' or 'RIA' or 'RIP' or 'LSA' or
+                 'LSP' or 'LIA' or 'LIP' or 'ARS' or 'ARI' or 'ALS' or 'ALI' or
+                 'PRS' or 'PRI' or 'PLS' or 'PLI' or 'ASR' or 'ASL' or 'AIR' or
+                 'AIL' or 'PSR' or 'PSL' or 'PIR' or 'PIL' or 'SRA' or 'SRP' or
+                 'SLA' or 'SLP' or 'IRA' or 'IRP' or 'ILA' or 'ILP' or 'SAR' or
+                 'SAL' or 'SPR' or 'SPL' or 'IAR' or 'IAL' or 'IPR' or 'IPL', nipype
+                 default value: RAS)
+                Target axis orientation
+
+Outputs::
+
+        out_file: (an existing file name)
+                Reoriented image
+        transform: (an existing file name)
+                Affine transform from input orientation to output
+
+.. _nipype.interfaces.image.Rescale:
+
+
+.. index:: Rescale
+
+Rescale
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/image.py#L32>`__
+
+Rescale an image
+
+Rescales the non-zero portion of ``in_file`` to match the bounds of the
+non-zero portion of ``ref_file``.
+Reference values in the input and reference images are defined by the
+``percentile`` parameter, and the reference values in each image are
+identified and the remaining values are scaled accordingly.
+In the case of ``percentile == 0``, the reference values are the maxima
+and minima of each image.
+If the ``invert`` parameter is set, the input file is inverted prior to
+rescaling.
+
+Examples
+~~~~~~~~
+
+To use a high-resolution T1w image as a registration target for a T2\*
+image, it may be useful to invert the T1w image and rescale to the T2\*
+range.
+Using the 1st and 99th percentiles may reduce the impact of outlier
+voxels.
+
+>>> from nipype.interfaces.image import Rescale
+>>> invert_t1w = Rescale(invert=True)
+>>> invert_t1w.inputs.in_file = 'structural.nii'
+>>> invert_t1w.inputs.ref_file = 'functional.nii'
+>>> invert_t1w.inputs.percentile = 1.
+>>> res = invert_t1w.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                Skull-stripped image to rescale
+        ref_file: (an existing file name)
+                Skull-stripped reference image
+
+        [Optional]
+        invert: (a boolean)
+                Invert contrast of rescaled image
+        percentile: (0.0 <= a floating point number <= 50.0, nipype default
+                 value: 0.0)
+                Percentile to use for reference to allow for outliers - 1 indicates
+                the 1st and 99th percentiles in the input file will be mapped to the
+                99th and 1st percentiles in the reference; 0 indicates minima and
+                maxima will be mapped
+
+Outputs::
+
+        out_file: (an existing file name)
+                Rescaled image

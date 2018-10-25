@@ -1,0 +1,36 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.niftyseg.base
+========================
+
+
+.. _nipype.interfaces.niftyseg.base.NiftySegCommand:
+
+
+.. index:: NiftySegCommand
+
+NiftySegCommand
+---------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/base.py#L24>`__
+
+Wraps command **None**
+
+Base support interface for NiftySeg commands.
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+
+Outputs::
+
+        None

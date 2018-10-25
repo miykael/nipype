@@ -1,0 +1,49 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.dipy.anisotropic_power
+=================================
+
+
+.. _nipype.interfaces.dipy.anisotropic_power.APMQball:
+
+
+.. index:: APMQball
+
+APMQball
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dipy/anisotropic_power.py#L22>`__
+
+Calculates the anisotropic power map
+
+Example
+~~~~~~~
+
+>>> import nipype.interfaces.dipy as dipy
+>>> apm = dipy.APMQball()
+>>> apm.inputs.in_file = 'diffusion.nii'
+>>> apm.inputs.in_bvec = 'bvecs'
+>>> apm.inputs.in_bval = 'bvals'
+>>> apm.run()                                   # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_bval: (an existing file name)
+                input b-values table
+        in_bvec: (an existing file name)
+                input b-vectors table
+        in_file: (an existing file name)
+                input diffusion data
+
+        [Optional]
+        b0_thres: (an integer (int or long), nipype default value: 700)
+                b0 threshold
+        mask_file: (an existing file name)
+                An optional brain mask
+        out_prefix: (a unicode string)
+                output prefix for file names
+
+Outputs::
+
+        out_file: (an existing file name)

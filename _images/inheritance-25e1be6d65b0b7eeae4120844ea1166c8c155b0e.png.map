@@ -1,0 +1,10 @@
+<map id="inheritance9517efab27" name="inheritance9517efab27">
+<area shape="poly" id="node1" title="Implements common interface functionality." alt="" coords="124,72,123,69,119,66,112,64,104,63,95,63,87,63,79,64,72,66,68,69,67,72,68,75,72,77,79,79,87,80,95,81,104,80,112,79,119,77,123,75"/>
+<area shape="poly" id="node3" title="Implements functionality to interact with command line programs" alt="" coords="200,72,199,69,195,66,188,64,180,63,171,63,162,63,153,64,147,66,143,69,141,72,143,75,147,77,153,79,162,80,171,81,180,80,188,79,195,77,199,75"/>
+<area shape="poly" id="node2" title="This is an abstract definition for Interface objects." alt="" coords="50,72,49,69,45,66,41,64,34,63,28,63,21,63,15,64,10,66,7,69,6,72,7,75,10,77,15,79,21,80,28,81,34,80,41,79,45,77,49,75"/>
+<area shape="poly" id="node6" href="#nipype.interfaces.matlab.MatlabCommand" target="_top" title="Interface that runs matlab code" alt="" coords="290,72,288,69,283,66,275,64,265,63,253,63,242,63,232,64,224,66,219,69,217,72,219,75,224,77,232,79,242,80,253,81,265,80,275,79,283,77,288,75"/>
+<area shape="poly" id="node5" title="Enables any Python class derived from it to have trait attributes." alt="" coords="125,11,123,8,119,5,113,3,105,2,95,1,86,2,78,3,72,5,68,8,66,11,68,13,72,16,78,18,86,19,95,20,105,19,113,18,119,16,123,13"/>
+<area shape="poly" id="node11" title="Provide a few methods necessary to support nipype interface api" alt="" coords="205,11,203,8,198,5,191,3,181,2,171,1,160,2,151,3,143,5,139,8,137,11,139,13,143,16,151,18,160,19,171,20,181,19,191,18,198,16,203,13"/>
+<area shape="poly" id="node7" href="#nipype.interfaces.matlab.MatlabInputSpec" target="_top" title="Basic expected inputs to Matlab interface" alt="" coords="575,11,573,8,568,5,560,3,550,2,539,1,528,2,518,3,510,5,505,8,503,11,505,13,510,16,518,18,528,19,539,20,550,19,560,18,568,16,573,13"/>
+<area shape="poly" id="node10" title="Create a subclass with strict traits." alt="" coords="280,11,279,8,275,5,269,3,262,2,253,1,245,2,237,3,231,5,227,8,226,11,227,13,231,16,237,18,245,19,253,20,262,19,269,18,275,16,279,13"/>
+</map>

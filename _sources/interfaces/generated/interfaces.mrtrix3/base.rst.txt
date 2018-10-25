@@ -1,0 +1,35 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.mrtrix3.base
+=======================
+
+
+.. _nipype.interfaces.mrtrix3.base.MRTrix3Base:
+
+
+.. index:: MRTrix3Base
+
+MRTrix3Base
+-----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/base.py#L72>`__
+
+Wraps command **None**
+
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+
+Outputs::
+
+        None

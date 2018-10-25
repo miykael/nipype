@@ -1,0 +1,993 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.dtitk.registration
+=============================
+
+
+.. _nipype.interfaces.dtitk.registration.AffScalarVol:
+
+
+.. index:: AffScalarVol
+
+AffScalarVol
+------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L316>`__
+
+Wraps command **affineScalarVolume**
+
+Applies affine transform to a scalar volume
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.AffScalarVol()
+>>> node.inputs.in_file = 'im1.nii'
+>>> node.inputs.transform = 'im_affine.aff'
+>>> node.cmdline
+'affineScalarVolume -in im1.nii -interp 0 -out im1_affxfmd.nii -trans
+ im_affine.aff'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                moving scalar volume
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        deformation: (a tuple of the form: (a float, a float, a float, a
+                 float, a float, a float))
+                (xx,yy,zz,xy,yz,xz)
+                flag: -deformation %g %g %g %g %g %g
+                mutually_exclusive: transform
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        euler: (a tuple of the form: (a float, a float, a float))
+                (theta, phi, psi) in degrees
+                flag: -euler %g %g %g
+                mutually_exclusive: transform
+        interpolation: ('trilinear' or 'NN', nipype default value: trilinear)
+                trilinear or nearest neighbor interpolation
+                flag: -interp %s
+        out_file: (a file name)
+                output filename
+                flag: -out %s
+        target: (an existing file name)
+                output volume specification read from the target volume if specified
+                flag: -target %s
+                mutually_exclusive: transform
+        transform: (an existing file name)
+                transform to apply: specify an input transformation file; parameters
+                input will be ignored
+                flag: -trans %s
+                mutually_exclusive: target, translation, euler, deformation
+        translation: (a tuple of the form: (a float, a float, a float))
+                translation (x,y,z) in mm
+                flag: -translation %g %g %g
+                mutually_exclusive: transform
+
+Outputs::
+
+        out_file: (an existing file name)
+                moved volume
+
+.. _nipype.interfaces.dtitk.registration.AffSymTensor3DVol:
+
+
+.. index:: AffSymTensor3DVol
+
+AffSymTensor3DVol
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L261>`__
+
+Wraps command **affineSymTensor3DVolume**
+
+Applies affine transform to a tensor volume
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.AffSymTensor3DVol()
+>>> node.inputs.in_file = 'im1.nii'
+>>> node.inputs.transform = 'im_affine.aff'
+>>> node.cmdline
+'affineSymTensor3DVolume -in im1.nii -interp LEI -out im1_affxfmd.nii
+ -reorient PPD -trans im_affine.aff'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                moving tensor volume
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        deformation: (a tuple of the form: (a float, a float, a float, a
+                 float, a float, a float))
+                (xx,yy,zz,xy,yz,xz)
+                flag: -deformation %g %g %g %g %g %g
+                mutually_exclusive: transform
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        euler: (a tuple of the form: (a float, a float, a float))
+                (theta, phi, psi) in degrees
+                flag: -euler %g %g %g
+                mutually_exclusive: transform
+        interpolation: ('LEI' or 'EI', nipype default value: LEI)
+                Log Euclidean/Euclidean Interpolation
+                flag: -interp %s
+        out_file: (a file name)
+                output filename
+                flag: -out %s
+        reorient: ('PPD' or 'NO' or 'FS', nipype default value: PPD)
+                Reorientation strategy: preservation of principal direction, no
+                reorientation, or finite strain
+                flag: -reorient %s
+        target: (an existing file name)
+                output volume specification read from the target volume if specified
+                flag: -target %s
+                mutually_exclusive: transform
+        transform: (an existing file name)
+                transform to apply: specify an input transformation file; parameters
+                input will be ignored
+                flag: -trans %s
+                mutually_exclusive: target, translation, euler, deformation
+        translation: (a tuple of the form: (a float, a float, a float))
+                translation (x,y,z) in mm
+                flag: -translation %g %g %g
+                mutually_exclusive: transform
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.Affine:
+
+
+.. index:: Affine
+
+Affine
+------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L99>`__
+
+Wraps command **dti_affine_reg**
+
+Performs affine registration between two tensor volumes
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.Affine()
+>>> node.inputs.fixed_file = 'im1.nii'
+>>> node.inputs.moving_file = 'im2.nii'
+>>> node.inputs.similarity_metric = 'EDS'
+>>> node.inputs.sampling_xyz = (4,4,4)
+>>> node.inputs.ftol = 0.01
+>>> node.inputs.initialize_xfm = 'im_affine.aff'
+>>> node.cmdline
+'dti_affine_reg im1.nii im2.nii EDS 4 4 4 0.01 im_affine.aff'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        fixed_file: (an existing file name)
+                fixed tensor volume
+                flag: %s, position: 0
+        ftol: (a float, nipype default value: 0.01)
+                cost function tolerance
+                flag: %g, position: 4
+        moving_file: (an existing file name)
+                moving tensor volume
+                flag: %s, position: 1
+        sampling_xyz: (a tuple of the form: (a value of class 'int', a value
+                 of class 'int', a value of class 'int'), nipype default value: (4,
+                 4, 4))
+                dist between samp points (mm) (x,y,z)
+                flag: %g %g %g, position: 3
+        similarity_metric: ('EDS' or 'GDS' or 'DDS' or 'NMI', nipype default
+                 value: EDS)
+                similarity metric
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        initialize_xfm: (an existing file name)
+                Initialize w/DTITK-FORMATaffine
+                flag: %s, position: 5
+
+Outputs::
+
+        out_file: (an existing file name)
+        out_file_xfm: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.AffineTask:
+
+
+.. index:: AffineTask
+
+AffineTask
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L464>`__
+
+Wraps command **dti_affine_reg**
+
+
+Inputs::
+
+        [Mandatory]
+        fixed_file: (an existing file name)
+                fixed tensor volume
+                flag: %s, position: 0
+        ftol: (a float, nipype default value: 0.01)
+                cost function tolerance
+                flag: %g, position: 4
+        moving_file: (an existing file name)
+                moving tensor volume
+                flag: %s, position: 1
+        sampling_xyz: (a tuple of the form: (a value of class 'int', a value
+                 of class 'int', a value of class 'int'), nipype default value: (4,
+                 4, 4))
+                dist between samp points (mm) (x,y,z)
+                flag: %g %g %g, position: 3
+        similarity_metric: ('EDS' or 'GDS' or 'DDS' or 'NMI', nipype default
+                 value: EDS)
+                similarity metric
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        initialize_xfm: (an existing file name)
+                Initialize w/DTITK-FORMATaffine
+                flag: %s, position: 5
+
+Outputs::
+
+        out_file: (an existing file name)
+        out_file_xfm: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.ComposeXfm:
+
+
+.. index:: ComposeXfm
+
+ComposeXfm
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L185>`__
+
+Wraps command **dfRightComposeAffine**
+
+ Combines diffeomorphic and affine transforms
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.ComposeXfm()
+>>> node.inputs.in_df = 'im_warp.df.nii'
+>>> node.inputs.in_aff= 'im_affine.aff'
+>>> node.cmdline
+'dfRightComposeAffine -aff im_affine.aff -df im_warp.df.nii -out
+ im_warp_affdf.df.nii'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_aff: (an existing file name)
+                affine transform file
+                flag: -aff %s
+        in_df: (an existing file name)
+                diffeomorphic warp file
+                flag: -df %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        out_file: (a file name)
+                output path
+                flag: -out %s
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.ComposeXfmTask:
+
+
+.. index:: ComposeXfmTask
+
+ComposeXfmTask
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L472>`__
+
+Wraps command **dfRightComposeAffine**
+
+
+Inputs::
+
+        [Mandatory]
+        in_aff: (an existing file name)
+                affine transform file
+                flag: -aff %s
+        in_df: (an existing file name)
+                diffeomorphic warp file
+                flag: -df %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        out_file: (a file name)
+                output path
+                flag: -out %s
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.Diffeo:
+
+
+.. index:: Diffeo
+
+Diffeo
+------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L142>`__
+
+Wraps command **dti_diffeomorphic_reg**
+
+Performs diffeomorphic registration between two tensor volumes
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.Diffeo()
+>>> node.inputs.fixed_file = 'im1.nii'
+>>> node.inputs.moving_file = 'im2.nii'
+>>> node.inputs.mask_file = 'mask.nii'
+>>> node.inputs.legacy = 1
+>>> node.inputs.n_iters = 6
+>>> node.inputs.ftol = 0.002
+>>> node.cmdline
+'dti_diffeomorphic_reg im1.nii im2.nii mask.nii 1 6 0.002'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        ftol: (a float, nipype default value: 0.002)
+                iteration for the optimization to stop
+                flag: %g, position: 5
+        legacy: (1, nipype default value: 1)
+                legacy parameter; always set to 1
+                flag: %d, position: 3
+        n_iters: (an integer (int or long), nipype default value: 6)
+                number of iterations
+                flag: %d, position: 4
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fixed_file: (an existing file name)
+                fixed tensor volume
+                flag: %s, position: 0
+        mask_file: (an existing file name)
+                mask
+                flag: %s, position: 2
+        moving_file: (an existing file name)
+                moving tensor volume
+                flag: %s, position: 1
+
+Outputs::
+
+        out_file: (an existing file name)
+        out_file_xfm: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.DiffeoScalarVol:
+
+
+.. index:: DiffeoScalarVol
+
+DiffeoScalarVol
+---------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L431>`__
+
+Wraps command **deformationScalarVolume**
+
+Applies diffeomorphic transform to a scalar volume
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.DiffeoScalarVol()
+>>> node.inputs.in_file = 'im1.nii'
+>>> node.inputs.transform = 'im_warp.df.nii'
+>>> node.cmdline
+'deformationScalarVolume -in im1.nii -interp 0 -out im1_diffeoxfmd.nii
+ -trans im_warp.df.nii'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                moving scalar volume
+                flag: -in %s
+        transform: (an existing file name)
+                transform to apply
+                flag: -trans %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        flip: (a tuple of the form: (an integer (int or long), an integer
+                 (int or long), an integer (int or long)))
+                flag: -flip %d %d %d
+        interpolation: ('trilinear' or 'NN', nipype default value: trilinear)
+                trilinear, or nearest neighbor
+                flag: -interp %s
+        out_file: (a file name)
+                output filename
+                flag: -out %s
+        resampling_type: ('backward' or 'forward')
+                use backward or forward resampling
+                flag: -type %s
+        target: (an existing file name)
+                output volume specification read from the target volume if specified
+                flag: -target %s
+                mutually_exclusive: voxel_size
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target
+
+Outputs::
+
+        out_file: (an existing file name)
+                moved volume
+
+.. _nipype.interfaces.dtitk.registration.DiffeoSymTensor3DVol:
+
+
+.. index:: DiffeoSymTensor3DVol
+
+DiffeoSymTensor3DVol
+--------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L375>`__
+
+Wraps command **deformationSymTensor3DVolume**
+
+Applies diffeomorphic transform to a tensor volume
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.DiffeoSymTensor3DVol()
+>>> node.inputs.in_file = 'im1.nii'
+>>> node.inputs.transform = 'im_warp.df.nii'
+>>> node.cmdline
+'deformationSymTensor3DVolume -df FD -in im1.nii -interp LEI -out
+ im1_diffeoxfmd.nii -reorient PPD -trans im_warp.df.nii'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                moving tensor volume
+                flag: -in %s
+        transform: (an existing file name)
+                transform to apply
+                flag: -trans %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        df: (a unicode string, nipype default value: FD)
+                flag: -df %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        flip: (a tuple of the form: (an integer (int or long), an integer
+                 (int or long), an integer (int or long)))
+                flag: -flip %d %d %d
+        interpolation: ('LEI' or 'EI', nipype default value: LEI)
+                Log Euclidean/Euclidean Interpolation
+                flag: -interp %s
+        out_file: (a file name)
+                output filename
+                flag: -out %s
+        reorient: ('PPD' or 'FS', nipype default value: PPD)
+                Reorientation strategy: preservation of principal direction or
+                finite strain
+                flag: -reorient %s
+        resampling_type: ('backward' or 'forward')
+                use backward or forward resampling
+                flag: -type %s
+        target: (an existing file name)
+                output volume specification read from the target volume if specified
+                flag: -target %s
+                mutually_exclusive: voxel_size
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.DiffeoTask:
+
+
+.. index:: DiffeoTask
+
+DiffeoTask
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L468>`__
+
+Wraps command **dti_diffeomorphic_reg**
+
+
+Inputs::
+
+        [Mandatory]
+        ftol: (a float, nipype default value: 0.002)
+                iteration for the optimization to stop
+                flag: %g, position: 5
+        legacy: (1, nipype default value: 1)
+                legacy parameter; always set to 1
+                flag: %d, position: 3
+        n_iters: (an integer (int or long), nipype default value: 6)
+                number of iterations
+                flag: %d, position: 4
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fixed_file: (an existing file name)
+                fixed tensor volume
+                flag: %s, position: 0
+        mask_file: (an existing file name)
+                mask
+                flag: %s, position: 2
+        moving_file: (an existing file name)
+                moving tensor volume
+                flag: %s, position: 1
+
+Outputs::
+
+        out_file: (an existing file name)
+        out_file_xfm: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.Rigid:
+
+
+.. index:: Rigid
+
+Rigid
+-----
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L58>`__
+
+Wraps command **dti_rigid_reg**
+
+Performs rigid registration between two tensor volumes
+
+Example
+~~~~~~~
+
+>>> from nipype.interfaces import dtitk
+>>> node = dtitk.Rigid()
+>>> node.inputs.fixed_file = 'im1.nii'
+>>> node.inputs.moving_file = 'im2.nii'
+>>> node.inputs.similarity_metric = 'EDS'
+>>> node.inputs.sampling_xyz = (4,4,4)
+>>> node.inputs.ftol = 0.01
+>>> node.cmdline
+'dti_rigid_reg im1.nii im2.nii EDS 4 4 4 0.01'
+>>> node.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        fixed_file: (an existing file name)
+                fixed tensor volume
+                flag: %s, position: 0
+        ftol: (a float, nipype default value: 0.01)
+                cost function tolerance
+                flag: %g, position: 4
+        moving_file: (an existing file name)
+                moving tensor volume
+                flag: %s, position: 1
+        sampling_xyz: (a tuple of the form: (a value of class 'int', a value
+                 of class 'int', a value of class 'int'), nipype default value: (4,
+                 4, 4))
+                dist between samp points (mm) (x,y,z)
+                flag: %g %g %g, position: 3
+        similarity_metric: ('EDS' or 'GDS' or 'DDS' or 'NMI', nipype default
+                 value: EDS)
+                similarity metric
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        initialize_xfm: (an existing file name)
+                Initialize w/DTITK-FORMATaffine
+                flag: %s, position: 5
+
+Outputs::
+
+        out_file: (an existing file name)
+        out_file_xfm: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.RigidTask:
+
+
+.. index:: RigidTask
+
+RigidTask
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L460>`__
+
+Wraps command **dti_rigid_reg**
+
+
+Inputs::
+
+        [Mandatory]
+        fixed_file: (an existing file name)
+                fixed tensor volume
+                flag: %s, position: 0
+        ftol: (a float, nipype default value: 0.01)
+                cost function tolerance
+                flag: %g, position: 4
+        moving_file: (an existing file name)
+                moving tensor volume
+                flag: %s, position: 1
+        sampling_xyz: (a tuple of the form: (a value of class 'int', a value
+                 of class 'int', a value of class 'int'), nipype default value: (4,
+                 4, 4))
+                dist between samp points (mm) (x,y,z)
+                flag: %g %g %g, position: 3
+        similarity_metric: ('EDS' or 'GDS' or 'DDS' or 'NMI', nipype default
+                 value: EDS)
+                similarity metric
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        initialize_xfm: (an existing file name)
+                Initialize w/DTITK-FORMATaffine
+                flag: %s, position: 5
+
+Outputs::
+
+        out_file: (an existing file name)
+        out_file_xfm: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.affScalarVolTask:
+
+
+.. index:: affScalarVolTask
+
+affScalarVolTask
+----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L476>`__
+
+Wraps command **affineScalarVolume**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                moving scalar volume
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        deformation: (a tuple of the form: (a float, a float, a float, a
+                 float, a float, a float))
+                (xx,yy,zz,xy,yz,xz)
+                flag: -deformation %g %g %g %g %g %g
+                mutually_exclusive: transform
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        euler: (a tuple of the form: (a float, a float, a float))
+                (theta, phi, psi) in degrees
+                flag: -euler %g %g %g
+                mutually_exclusive: transform
+        interpolation: ('trilinear' or 'NN', nipype default value: trilinear)
+                trilinear or nearest neighbor interpolation
+                flag: -interp %s
+        out_file: (a file name)
+                output filename
+                flag: -out %s
+        target: (an existing file name)
+                output volume specification read from the target volume if specified
+                flag: -target %s
+                mutually_exclusive: transform
+        transform: (an existing file name)
+                transform to apply: specify an input transformation file; parameters
+                input will be ignored
+                flag: -trans %s
+                mutually_exclusive: target, translation, euler, deformation
+        translation: (a tuple of the form: (a float, a float, a float))
+                translation (x,y,z) in mm
+                flag: -translation %g %g %g
+                mutually_exclusive: transform
+
+Outputs::
+
+        out_file: (an existing file name)
+                moved volume
+
+.. _nipype.interfaces.dtitk.registration.affSymTensor3DVolTask:
+
+
+.. index:: affSymTensor3DVolTask
+
+affSymTensor3DVolTask
+---------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L480>`__
+
+Wraps command **affineSymTensor3DVolume**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                moving tensor volume
+                flag: -in %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        deformation: (a tuple of the form: (a float, a float, a float, a
+                 float, a float, a float))
+                (xx,yy,zz,xy,yz,xz)
+                flag: -deformation %g %g %g %g %g %g
+                mutually_exclusive: transform
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        euler: (a tuple of the form: (a float, a float, a float))
+                (theta, phi, psi) in degrees
+                flag: -euler %g %g %g
+                mutually_exclusive: transform
+        interpolation: ('LEI' or 'EI', nipype default value: LEI)
+                Log Euclidean/Euclidean Interpolation
+                flag: -interp %s
+        out_file: (a file name)
+                output filename
+                flag: -out %s
+        reorient: ('PPD' or 'NO' or 'FS', nipype default value: PPD)
+                Reorientation strategy: preservation of principal direction, no
+                reorientation, or finite strain
+                flag: -reorient %s
+        target: (an existing file name)
+                output volume specification read from the target volume if specified
+                flag: -target %s
+                mutually_exclusive: transform
+        transform: (an existing file name)
+                transform to apply: specify an input transformation file; parameters
+                input will be ignored
+                flag: -trans %s
+                mutually_exclusive: target, translation, euler, deformation
+        translation: (a tuple of the form: (a float, a float, a float))
+                translation (x,y,z) in mm
+                flag: -translation %g %g %g
+                mutually_exclusive: transform
+
+Outputs::
+
+        out_file: (an existing file name)
+
+.. _nipype.interfaces.dtitk.registration.diffeoScalarVolTask:
+
+
+.. index:: diffeoScalarVolTask
+
+diffeoScalarVolTask
+-------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L484>`__
+
+Wraps command **deformationScalarVolume**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                moving scalar volume
+                flag: -in %s
+        transform: (an existing file name)
+                transform to apply
+                flag: -trans %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        flip: (a tuple of the form: (an integer (int or long), an integer
+                 (int or long), an integer (int or long)))
+                flag: -flip %d %d %d
+        interpolation: ('trilinear' or 'NN', nipype default value: trilinear)
+                trilinear, or nearest neighbor
+                flag: -interp %s
+        out_file: (a file name)
+                output filename
+                flag: -out %s
+        resampling_type: ('backward' or 'forward')
+                use backward or forward resampling
+                flag: -type %s
+        target: (an existing file name)
+                output volume specification read from the target volume if specified
+                flag: -target %s
+                mutually_exclusive: voxel_size
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target
+
+Outputs::
+
+        out_file: (an existing file name)
+                moved volume
+
+.. _nipype.interfaces.dtitk.registration.diffeoSymTensor3DVolTask:
+
+
+.. index:: diffeoSymTensor3DVolTask
+
+diffeoSymTensor3DVolTask
+------------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/dtitk/registration.py#L488>`__
+
+Wraps command **deformationSymTensor3DVolume**
+
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                moving tensor volume
+                flag: -in %s
+        transform: (an existing file name)
+                transform to apply
+                flag: -trans %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        df: (a unicode string, nipype default value: FD)
+                flag: -df %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        flip: (a tuple of the form: (an integer (int or long), an integer
+                 (int or long), an integer (int or long)))
+                flag: -flip %d %d %d
+        interpolation: ('LEI' or 'EI', nipype default value: LEI)
+                Log Euclidean/Euclidean Interpolation
+                flag: -interp %s
+        out_file: (a file name)
+                output filename
+                flag: -out %s
+        reorient: ('PPD' or 'FS', nipype default value: PPD)
+                Reorientation strategy: preservation of principal direction or
+                finite strain
+                flag: -reorient %s
+        resampling_type: ('backward' or 'forward')
+                use backward or forward resampling
+                flag: -type %s
+        target: (an existing file name)
+                output volume specification read from the target volume if specified
+                flag: -target %s
+                mutually_exclusive: voxel_size
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                xyz voxel size (superseded by target)
+                flag: -vsize %g %g %g
+                mutually_exclusive: target
+
+Outputs::
+
+        out_file: (an existing file name)

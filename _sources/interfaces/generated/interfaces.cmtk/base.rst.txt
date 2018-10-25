@@ -1,0 +1,23 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.cmtk.base
+====================
+
+
+.. _nipype.interfaces.cmtk.base.CFFBaseInterface:
+
+
+.. index:: CFFBaseInterface
+
+CFFBaseInterface
+----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/cmtk/base.py#L10>`__
+
+Inputs::
+
+        None
+
+Outputs::
+
+        None

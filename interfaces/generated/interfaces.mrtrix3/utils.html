@@ -1,0 +1,916 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.mrtrix3.utils</a><ul>
+<li><a class="reference internal" href="#brainmask">BrainMask</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#computetdi">ComputeTDI</a><ul>
+<li><a class="reference internal" href="#id1">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dwiextract">DWIExtract</a><ul>
+<li><a class="reference internal" href="#id2">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#generate5tt">Generate5tt</a><ul>
+<li><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mrconvert">MRConvert</a><ul>
+<li><a class="reference internal" href="#id4">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mrmath">MRMath</a><ul>
+<li><a class="reference internal" href="#id5">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mesh2pve">Mesh2PVE</a><ul>
+<li><a class="reference internal" href="#id6">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tck2vtk">TCK2VTK</a><ul>
+<li><a class="reference internal" href="#id7">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tensormetrics">TensorMetrics</a><ul>
+<li><a class="reference internal" href="#id8">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-mrtrix3-utils">
+<h1>interfaces.mrtrix3.utils<a class="headerlink" href="#interfaces-mrtrix3-utils" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-brainmask"></span><div class="section" id="brainmask">
+<span id="index-0"></span><h2>BrainMask<a class="headerlink" href="#brainmask" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L34">Link to code</a></p>
+<p>Wraps command <strong>dwi2mask</strong></p>
+<p>Convert a mesh surface to a partial volume estimation image</p>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bmsk</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">BrainMask</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bmsk</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;dwi.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bmsk</span><span class="o">.</span><span class="n">cmdline</span>                               <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;dwi2mask dwi.mif brainmask.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bmsk</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                                 <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input diffusion weighted images
+        flag: %s, position: -2
+out_file: (a file name, nipype default value: brainmask.mif)
+        output brain mask
+        flag: %s, position: -1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+bval_scale: (&#39;yes&#39; or &#39;no&#39;)
+        specifies whether the b - values should be scaled by the square of
+        the corresponding DW gradient norm, as often required for multishell
+        or DSI DW acquisition schemes. The default action can also be set in
+        the MRtrix config file, under the BValueScaling entry. Valid choices
+        are yes / no, true / false, 0 / 1 (default: true).
+        flag: -bvalue_scaling %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+grad_file: (an existing file name)
+        dw gradient scheme (MRTrix format
+        flag: -grad %s
+grad_fsl: (a tuple of the form: (an existing file name, an existing
+         file name))
+        (bvecs, bvals) dw gradient scheme (FSL format
+        flag: -fslgrad %s %s
+in_bval: (an existing file name)
+        bvals file in FSL format
+in_bvec: (an existing file name)
+        bvecs file in FSL format
+        flag: -fslgrad %s %s
+nthreads: (an integer (int or long))
+        number of threads. if zero, the number of available cpus will be
+        used
+        flag: -nthreads %d
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">the</span> <span class="n">output</span> <span class="n">response</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-computetdi"></span></div>
+</div>
+<div class="section" id="computetdi">
+<span id="index-1"></span><h2>ComputeTDI<a class="headerlink" href="#computetdi" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L368">Link to code</a></p>
+<p>Wraps command <strong>tckmap</strong></p>
+<p>Use track data as a form of contrast for producing a high-resolution
+image.</p>
+<div class="admonition-references admonition">
+<p class="first admonition-title">References</p>
+<ul class="last simple">
+<li>For TDI or DEC TDI: Calamante, F.; Tournier, J.-D.; Jackson, G. D. &amp;
+Connelly, A. Track-density imaging (TDI): Super-resolution white
+matter imaging using whole-brain track-density mapping. NeuroImage,
+2010, 53, 1233-1243</li>
+<li>If using -contrast length and -stat_vox mean: Pannek, K.; Mathias,
+J. L.; Bigler, E. D.; Brown, G.; Taylor, J. D. &amp; Rose, S. E. The
+average pathlength map: A diffusion MRI tractography-derived index
+for studying brain pathology. NeuroImage, 2011, 55, 133-141</li>
+<li>If using -dixel option with TDI contrast only: Smith, R.E., Tournier,
+J-D., Calamante, F., Connelly, A. A novel paradigm for automated
+segmentation of very large whole-brain probabilistic tractography
+data sets. In proc. ISMRM, 2011, 19, 673</li>
+<li>If using -dixel option with any other contrast: Pannek, K., Raffelt,
+D., Salvado, O., Rose, S. Incorporating directional information in
+diffusion tractography derived maps: angular track imaging (ATI).
+In Proc. ISMRM, 2012, 20, 1912</li>
+<li>If using -tod option: Dhollander, T., Emsell, L., Van Hecke, W., Maes,
+F., Sunaert, S., Suetens, P. Track Orientation Density Imaging (TODI)
+and Track Orientation Distribution (TOD) based tractography.
+NeuroImage, 2014, 94, 312-336</li>
+<li>If using other contrasts / statistics: Calamante, F.; Tournier, J.-D.;
+Smith, R. E. &amp; Connelly, A. A generalised framework for
+super-resolution track-weighted imaging. NeuroImage, 2012, 59,
+2494-2503</li>
+<li>If using -precise mapping option: Smith, R. E.; Tournier, J.-D.;
+Calamante, F. &amp; Connelly, A. SIFT: Spherical-deconvolution informed
+filtering of tractograms. NeuroImage, 2013, 67, 298-312 (Appendix 3)</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tdi</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">ComputeTDI</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tdi</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;dti.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tdi</span><span class="o">.</span><span class="n">cmdline</span>                               <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;tckmap dti.mif tdi.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tdi</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                                 <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input tractography
+        flag: %s, position: -2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+contrast: (&#39;tdi&#39; or &#39;length&#39; or &#39;invlength&#39; or &#39;scalar_map&#39; or
+         &#39;scalar_map_conut&#39; or &#39;fod_amp&#39; or &#39;curvature&#39;)
+        define the desired form of contrast for the output image
+        flag: -constrast %s
+data_type: (&#39;float&#39; or &#39;unsigned int&#39;)
+        specify output image data type
+        flag: -datatype %s
+dixel: (a file name)
+        map streamlines todixels within each voxel. Directions are stored
+        asazimuth elevation pairs.
+        flag: -dixel %s
+ends_only: (a boolean)
+        only map the streamline endpoints to the image
+        flag: -ends_only
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+fwhm_tck: (a float)
+        define the statistic for choosing the contribution to be made by
+        each streamline as a function of the samples taken along their
+        lengths
+        flag: -fwhm_tck %f
+in_map: (an existing file name)
+        provide thescalar image map for generating images with &#39;scalar_map&#39;
+        contrasts, or the SHs image for fod_amp
+        flag: -image %s
+map_zero: (a boolean)
+        if a streamline has zero contribution based on the contrast &amp;
+        statistic, typically it is not mapped; use this option to still
+        contribute to the map even if this is the case (these non-
+        contributing voxels can then influence the mean value in each voxel
+        of the map)
+        flag: -map_zero
+max_tod: (an integer (int or long))
+        generate a Track Orientation Distribution (TOD) in each voxel.
+        flag: -tod %d
+nthreads: (an integer (int or long))
+        number of threads. if zero, the number of available cpus will be
+        used
+        flag: -nthreads %d
+out_file: (a file name, nipype default value: tdi.mif)
+        output TDI file
+        flag: %s, position: -1
+precise: (a boolean)
+        use a more precise streamline mapping strategy, that accurately
+        quantifies the length through each voxel (these lengths are then
+        taken into account during TWI calculation)
+        flag: -precise
+reference: (an existing file name)
+        a referenceimage to be used as template
+        flag: -template %s
+stat_tck: (&#39;mean&#39; or &#39;sum&#39; or &#39;min&#39; or &#39;max&#39; or &#39;median&#39; or
+         &#39;mean_nonzero&#39; or &#39;gaussian&#39; or &#39;ends_min&#39; or &#39;ends_mean&#39; or
+         &#39;ends_max&#39; or &#39;ends_prod&#39;)
+        define the statistic for choosing the contribution to be made by
+        each streamline as a function of the samples taken along their
+        lengths.
+        flag: -stat_tck %s
+stat_vox: (&#39;sum&#39; or &#39;min&#39; or &#39;mean&#39; or &#39;max&#39;)
+        define the statistic for choosing the finalvoxel intesities for a
+        given contrast
+        flag: -stat_vox %s
+tck_weights: (an existing file name)
+        specify a text scalar file containing the streamline weights
+        flag: -tck_weights_in %s
+upsample: (an integer (int or long))
+        upsample the tracks by some ratio using Hermite interpolation before
+        mappping
+        flag: -upsample %d
+use_dec: (a boolean)
+        perform mapping in DEC space
+        flag: -dec
+vox_size: (a list of items which are an integer (int or long))
+        voxel dimensions
+        flag: -vox %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">TDI</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-dwiextract"></span></div>
+</div>
+<div class="section" id="dwiextract">
+<span id="index-2"></span><h2>DWIExtract<a class="headerlink" href="#dwiextract" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L520">Link to code</a></p>
+<p>Wraps command <strong>dwiextract</strong></p>
+<p>Extract diffusion-weighted volumes, b=0 volumes, or certain shells from a
+DWI dataset</p>
+<div class="section" id="id2">
+<h3>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dwiextract</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">DWIExtract</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dwiextract</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;dwi.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dwiextract</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bzero</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dwiextract</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;b0vols.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dwiextract</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">grad_fsl</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;bvecs&#39;</span><span class="p">,</span> <span class="s1">&#39;bvals&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dwiextract</span><span class="o">.</span><span class="n">cmdline</span>                             <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;dwiextract -bzero -fslgrad bvecs bvals dwi.mif b0vols.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dwiextract</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                               <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input image
+        flag: %s, position: -2
+out_file: (a file name)
+        output image
+        flag: %s, position: -1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+bval_scale: (&#39;yes&#39; or &#39;no&#39;)
+        specifies whether the b - values should be scaled by the square of
+        the corresponding DW gradient norm, as often required for multishell
+        or DSI DW acquisition schemes. The default action can also be set in
+        the MRtrix config file, under the BValueScaling entry. Valid choices
+        are yes / no, true / false, 0 / 1 (default: true).
+        flag: -bvalue_scaling %s
+bzero: (a boolean)
+        extract b=0 volumes
+        flag: -bzero
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+grad_file: (an existing file name)
+        dw gradient scheme (MRTrix format
+        flag: -grad %s
+grad_fsl: (a tuple of the form: (an existing file name, an existing
+         file name))
+        (bvecs, bvals) dw gradient scheme (FSL format
+        flag: -fslgrad %s %s
+in_bval: (an existing file name)
+        bvals file in FSL format
+in_bvec: (an existing file name)
+        bvecs file in FSL format
+        flag: -fslgrad %s %s
+nobzero: (a boolean)
+        extract non b=0 volumes
+        flag: -no_bzero
+nthreads: (an integer (int or long))
+        number of threads. if zero, the number of available cpus will be
+        used
+        flag: -nthreads %d
+shell: (a list of items which are a float)
+        specify one or more gradient shells
+        flag: -shell %s
+singleshell: (a boolean)
+        extract volumes with a specific shell
+        flag: -singleshell
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">image</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-generate5tt"></span></div>
+</div>
+<div class="section" id="generate5tt">
+<span id="index-3"></span><h2>Generate5tt<a class="headerlink" href="#generate5tt" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L142">Link to code</a></p>
+<p>Wraps command <strong>5ttgen</strong></p>
+<p>Generate a 5TT image suitable for ACT using the selected algorithm</p>
+<div class="section" id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen5tt</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">Generate5tt</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen5tt</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;T1.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen5tt</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="s1">&#39;fsl&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen5tt</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;5tt.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen5tt</span><span class="o">.</span><span class="n">cmdline</span>                             <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;5ttgen fsl T1.nii.gz 5tt.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen5tt</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                               <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+algorithm: (&#39;fsl&#39; or &#39;gif&#39; or &#39;freesurfer&#39;)
+        tissue segmentation algorithm
+        flag: %s, position: -3
+in_file: (an existing file name)
+        input image
+        flag: %s, position: -2
+out_file: (a file name)
+        output image
+        flag: %s, position: -1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+bval_scale: (&#39;yes&#39; or &#39;no&#39;)
+        specifies whether the b - values should be scaled by the square of
+        the corresponding DW gradient norm, as often required for multishell
+        or DSI DW acquisition schemes. The default action can also be set in
+        the MRtrix config file, under the BValueScaling entry. Valid choices
+        are yes / no, true / false, 0 / 1 (default: true).
+        flag: -bvalue_scaling %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+grad_file: (an existing file name)
+        dw gradient scheme (MRTrix format
+        flag: -grad %s
+grad_fsl: (a tuple of the form: (an existing file name, an existing
+         file name))
+        (bvecs, bvals) dw gradient scheme (FSL format
+        flag: -fslgrad %s %s
+in_bval: (an existing file name)
+        bvals file in FSL format
+in_bvec: (an existing file name)
+        bvecs file in FSL format
+        flag: -fslgrad %s %s
+nthreads: (an integer (int or long))
+        number of threads. if zero, the number of available cpus will be
+        used
+        flag: -nthreads %d
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">image</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-mrconvert"></span></div>
+</div>
+<div class="section" id="mrconvert">
+<span id="index-4"></span><h2>MRConvert<a class="headerlink" href="#mrconvert" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L589">Link to code</a></p>
+<p>Wraps command <strong>mrconvert</strong></p>
+<p>Perform conversion between different file types and optionally extract a
+subset of the input image</p>
+<div class="section" id="id4">
+<h3>Example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrconvert</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">MRConvert</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrconvert</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;dwi.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrconvert</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">grad_fsl</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;bvecs&#39;</span><span class="p">,</span> <span class="s1">&#39;bvals&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrconvert</span><span class="o">.</span><span class="n">cmdline</span>                             <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;mrconvert -fslgrad bvecs bvals dwi.nii.gz dwi.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrconvert</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                               <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input image
+        flag: %s, position: -2
+out_file: (a file name, nipype default value: dwi.mif)
+        output image
+        flag: %s, position: -1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+axes: (a list of items which are an integer (int or long))
+        specify the axes that will be used
+        flag: -axes %s
+bval_scale: (&#39;yes&#39; or &#39;no&#39;)
+        specifies whether the b - values should be scaled by the square of
+        the corresponding DW gradient norm, as often required for multishell
+        or DSI DW acquisition schemes. The default action can also be set in
+        the MRtrix config file, under the BValueScaling entry. Valid choices
+        are yes / no, true / false, 0 / 1 (default: true).
+        flag: -bvalue_scaling %s
+coord: (a list of items which are a float)
+        extract data at the specified coordinates
+        flag: -coord %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+grad_file: (an existing file name)
+        dw gradient scheme (MRTrix format
+        flag: -grad %s
+grad_fsl: (a tuple of the form: (an existing file name, an existing
+         file name))
+        (bvecs, bvals) dw gradient scheme (FSL format
+        flag: -fslgrad %s %s
+in_bval: (an existing file name)
+        bvals file in FSL format
+in_bvec: (an existing file name)
+        bvecs file in FSL format
+        flag: -fslgrad %s %s
+nthreads: (an integer (int or long))
+        number of threads. if zero, the number of available cpus will be
+        used
+        flag: -nthreads %d
+scaling: (a list of items which are a float)
+        specify the data scaling parameter
+        flag: -scaling %s
+vox: (a list of items which are a float)
+        change the voxel dimensions
+        flag: -vox %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">image</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-mrmath"></span></div>
+</div>
+<div class="section" id="mrmath">
+<span id="index-5"></span><h2>MRMath<a class="headerlink" href="#mrmath" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L652">Link to code</a></p>
+<p>Wraps command <strong>mrmath</strong></p>
+<p>Compute summary statistic on image intensities
+along a specified axis of a single image</p>
+<div class="section" id="id5">
+<h3>Example<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrmath</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">MRMath</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrmath</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;dwi.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrmath</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;mean&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrmath</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrmath</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;dwi_mean.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrmath</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">grad_fsl</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;bvecs&#39;</span><span class="p">,</span> <span class="s1">&#39;bvals&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrmath</span><span class="o">.</span><span class="n">cmdline</span>                             <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;mrmath -axis 3 -fslgrad bvecs bvals dwi.mif mean dwi_mean.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrmath</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                               <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input image
+        flag: %s, position: -3
+operation: (&#39;mean&#39; or &#39;median&#39; or &#39;sum&#39; or &#39;product&#39; or &#39;rms&#39; or
+         &#39;norm&#39; or &#39;var&#39; or &#39;std&#39; or &#39;min&#39; or &#39;max&#39; or &#39;absmax&#39; or &#39;magmax&#39;)
+        operation to computer along a specified axis
+        flag: %s, position: -2
+out_file: (a file name)
+        output image
+        flag: %s, position: -1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+axis: (an integer (int or long))
+        specfied axis to perform the operation along
+        flag: -axis %d
+bval_scale: (&#39;yes&#39; or &#39;no&#39;)
+        specifies whether the b - values should be scaled by the square of
+        the corresponding DW gradient norm, as often required for multishell
+        or DSI DW acquisition schemes. The default action can also be set in
+        the MRtrix config file, under the BValueScaling entry. Valid choices
+        are yes / no, true / false, 0 / 1 (default: true).
+        flag: -bvalue_scaling %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+grad_file: (an existing file name)
+        dw gradient scheme (MRTrix format
+        flag: -grad %s
+grad_fsl: (a tuple of the form: (an existing file name, an existing
+         file name))
+        (bvecs, bvals) dw gradient scheme (FSL format
+        flag: -fslgrad %s %s
+in_bval: (an existing file name)
+        bvals file in FSL format
+in_bvec: (an existing file name)
+        bvecs file in FSL format
+        flag: -fslgrad %s %s
+nthreads: (an integer (int or long))
+        number of threads. if zero, the number of available cpus will be
+        used
+        flag: -nthreads %d
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">image</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-mesh2pve"></span></div>
+</div>
+<div class="section" id="mesh2pve">
+<span id="index-6"></span><h2>Mesh2PVE<a class="headerlink" href="#mesh2pve" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L91">Link to code</a></p>
+<p>Wraps command <strong>mesh2pve</strong></p>
+<p>Convert a mesh surface to a partial volume estimation image</p>
+<div class="section" id="id6">
+<h3>Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m2p</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">Mesh2PVE</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m2p</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;surf1.vtk&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m2p</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="s1">&#39;dwi.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m2p</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_first</span> <span class="o">=</span> <span class="s1">&#39;T1.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m2p</span><span class="o">.</span><span class="n">cmdline</span>                               <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;mesh2pve -first T1.nii.gz surf1.vtk dwi.mif mesh2volume.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m2p</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                                 <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input mesh
+        flag: %s, position: -3
+out_file: (a file name, nipype default value: mesh2volume.nii.gz)
+        output file containing SH coefficients
+        flag: %s, position: -1
+reference: (an existing file name)
+        input reference image
+        flag: %s, position: -2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+in_first: (an existing file name)
+        indicates that the mesh file is provided by FSL FIRST
+        flag: -first %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">the</span> <span class="n">output</span> <span class="n">response</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-tck2vtk"></span></div>
+</div>
+<div class="section" id="tck2vtk">
+<span id="index-7"></span><h2>TCK2VTK<a class="headerlink" href="#tck2vtk" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L469">Link to code</a></p>
+<p>Wraps command <strong>tck2vtk</strong></p>
+<p>Convert a track file to a vtk format, cave: coordinates are in XYZ
+coordinates not reference</p>
+<div class="section" id="id7">
+<h3>Example<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vtk</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">TCK2VTK</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vtk</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;tracks.tck&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vtk</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="s1">&#39;b0.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vtk</span><span class="o">.</span><span class="n">cmdline</span>                               <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;tck2vtk -image b0.nii tracks.tck tracks.vtk&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vtk</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                                 <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input tractography
+        flag: %s, position: -2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+nthreads: (an integer (int or long))
+        number of threads. if zero, the number of available cpus will be
+        used
+        flag: -nthreads %d
+out_file: (a file name, nipype default value: tracks.vtk)
+        output VTK file
+        flag: %s, position: -1
+reference: (an existing file name)
+        if specified, the properties of this image will be used to convert
+        track point positions from real (scanner) coordinates into image
+        coordinates (in mm).
+        flag: -image %s
+voxel: (an existing file name)
+        if specified, the properties of this image will be used to convert
+        track point positions from real (scanner) coordinates into image
+        coordinates.
+        flag: -image %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">VTK</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-mrtrix3-utils-tensormetrics"></span></div>
+</div>
+<div class="section" id="tensormetrics">
+<span id="index-8"></span><h2>TensorMetrics<a class="headerlink" href="#tensormetrics" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mrtrix3/utils.py#L212">Link to code</a></p>
+<p>Wraps command <strong>tensor2metric</strong></p>
+<p>Compute metrics from tensors</p>
+<div class="section" id="id8">
+<h3>Example<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">nipype.interfaces.mrtrix3</span> <span class="k">as</span> <span class="nn">mrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span> <span class="o">=</span> <span class="n">mrt</span><span class="o">.</span><span class="n">TensorMetrics</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;dti.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_fa</span> <span class="o">=</span> <span class="s1">&#39;fa.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">cmdline</span>                               <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;tensor2metric -num 1 -fa fa.mif dti.mif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>                                 <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        input DTI image
+        flag: %s, position: -1
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+component: (a list of items which are any value, nipype default
+         value: [1])
+        specify the desired eigenvalue/eigenvector(s). Note that several
+        eigenvalues can be specified as a number sequence
+        flag: -num %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+in_mask: (an existing file name)
+        only perform computation within the specified binary brain mask
+        image
+        flag: -mask %s
+modulate: (&#39;FA&#39; or &#39;none&#39; or &#39;eval&#39;)
+        how to modulate the magnitude of the eigenvectors
+        flag: -modulate %s
+out_adc: (a file name)
+        output ADC file
+        flag: -adc %s
+out_eval: (a file name)
+        output selected eigenvalue(s) file
+        flag: -value %s
+out_evec: (a file name)
+        output selected eigenvector(s) file
+        flag: -vector %s
+out_fa: (a file name)
+        output FA file
+        flag: -fa %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_adc</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">ADC</span> <span class="n">file</span>
+<span class="n">out_eval</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">selected</span> <span class="n">eigenvalue</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">file</span>
+<span class="n">out_evec</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">selected</span> <span class="n">eigenvector</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">file</span>
+<span class="n">out_fa</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">FA</span> <span class="n">file</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

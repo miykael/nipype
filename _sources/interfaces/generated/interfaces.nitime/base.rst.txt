@@ -1,0 +1,23 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.nitime.base
+======================
+
+
+.. _nipype.interfaces.nitime.base.NitimeBaseInterface:
+
+
+.. index:: NitimeBaseInterface
+
+NitimeBaseInterface
+-------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/nitime/base.py#L9>`__
+
+Inputs::
+
+        None
+
+Outputs::
+
+        None

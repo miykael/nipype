@@ -1,0 +1,684 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.ants.registration
+============================
+
+
+.. _nipype.interfaces.ants.registration.MeasureImageSimilarity:
+
+
+.. index:: MeasureImageSimilarity
+
+MeasureImageSimilarity
+----------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/registration.py#L1428>`__
+
+Wraps command **MeasureImageSimilarity**
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.ants import MeasureImageSimilarity
+>>> sim = MeasureImageSimilarity()
+>>> sim.inputs.dimension = 3
+>>> sim.inputs.metric = 'MI'
+>>> sim.inputs.fixed_image = 'T1.nii'
+>>> sim.inputs.moving_image = 'resting.nii'
+>>> sim.inputs.metric_weight = 1.0
+>>> sim.inputs.radius_or_number_of_bins = 5
+>>> sim.inputs.sampling_strategy = 'Regular'
+>>> sim.inputs.sampling_percentage = 1.0
+>>> sim.inputs.fixed_image_mask = 'mask.nii'
+>>> sim.inputs.moving_image_mask = 'mask.nii.gz'
+>>> sim.cmdline
+'MeasureImageSimilarity --dimensionality 3 --masks ["mask.nii","mask.nii.gz"] --metric MI["T1.nii","resting.nii",1.0,5,Regular,1.0]'
+
+Inputs::
+
+        [Mandatory]
+        fixed_image: (an existing file name)
+                Image to which the moving image is warped
+        metric: ('CC' or 'MI' or 'Mattes' or 'MeanSquares' or 'Demons' or
+                 'GC')
+                flag: %s
+        moving_image: (an existing file name)
+                Image to apply transformation to (generally a coregistered
+                functional)
+        radius_or_number_of_bins: (an integer (int or long))
+                The number of bins in each stage for the MI and Mattes metric, or
+                the radius for other metrics
+                requires: metric
+        sampling_percentage: (0.0 <= a floating point number <= 1.0)
+                Percentage of points accessible to the sampling strategy over which
+                to optimize the metric.
+                requires: metric
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        dimension: (2 or 3 or 4)
+                Dimensionality of the fixed/moving image pair
+                flag: --dimensionality %d, position: 1
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fixed_image_mask: (an existing file name)
+                mask used to limit metric sampling region of the fixed image
+                flag: %s
+        metric_weight: (a float, nipype default value: 1.0)
+                The "metricWeight" variable is not used.
+                requires: metric
+        moving_image_mask: (an existing file name)
+                mask used to limit metric sampling region of the moving image
+                requires: fixed_image_mask
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+        sampling_strategy: ('None' or 'Regular' or 'Random', nipype default
+                 value: None)
+                Manner of choosing point set over which to optimize the metric.
+                Defaults to "None" (i.e. a dense sampling of one sample per voxel).
+                requires: metric
+
+Outputs::
+
+        similarity: (a float)
+
+.. _nipype.interfaces.ants.registration.Registration:
+
+
+.. index:: Registration
+
+Registration
+------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/registration.py#L558>`__
+
+Wraps command **antsRegistration**
+
+ANTs Registration command for registration of images
+
+`antsRegistration <http://stnava.github.io/ANTs/>`_ registers a ``moving_image`` to a ``fixed_image``,
+using a predefined (sequence of) cost function(s) and transformation operations.
+The cost function is defined using one or more 'metrics', specifically
+local cross-correlation (``CC``), Mean Squares (``MeanSquares``), Demons (``Demons``),
+global correlation (``GC``), or Mutual Information (``Mattes`` or ``MI``).
+
+ANTS can use both linear (``Translation``, ``Rigid``, ``Affine``, ``CompositeAffine``,
+or ``Translation``) and non-linear transformations (``BSpline``, ``GaussianDisplacementField``,
+``TimeVaryingVelocityField``, ``TimeVaryingBSplineVelocityField``, ``SyN``, ``BSplineSyN``,
+``Exponential``, or ``BSplineExponential``). Usually, registration is done in multiple
+*stages*. For example first an Affine, then a Rigid, and ultimately a non-linear
+(Syn)-transformation.
+
+antsRegistration can be initialized using one ore more transforms from moving_image
+to fixed_image with the ``initial_moving_transform``-input. For example, when you
+already have a warpfield that corrects for geometrical distortions in an EPI (functional) image,
+that you want to apply before an Affine registration to a structural image.
+You could put this transform into 'intial_moving_transform'.
+
+The Registration-interface can output the resulting transform(s) that map moving_image to
+fixed_image in a single file as a ``composite_transform`` (if ``write_composite_transform``
+is set to ``True``), or a list of transforms as ``forwards_transforms``. It can also output
+inverse transforms (from ``fixed_image`` to ``moving_image``) in a similar fashion using
+``inverse_composite_transform``. Note that the order of ``forward_transforms`` is in 'natural'
+order: the first element should be applied first, the last element should be applied last.
+
+Note, however, that ANTS tools always apply lists of transformations in reverse order (the last
+transformation in the list is applied first). Therefore, if the output forward_transforms
+is a list, one can not directly feed it into, for example, ``ants.ApplyTransforms``. To
+make ``ants.ApplyTransforms`` apply the transformations in the same order as ``ants.Registration``,
+you have to provide the list of transformations in reverse order from ``forward_transforms``.
+``reverse_forward_transforms`` outputs ``forward_transforms`` in reverse order and can be used for
+this purpose. Note also that, because ``composite_transform`` is always a single file, this
+output is preferred for  most use-cases.
+
+More information can be found in the `ANTS
+manual <https://sourceforge.net/projects/advants/files/Documentation/ants.pdf/download>`_.
+
+See below for some useful examples.
+
+Examples
+~~~~~~~~
+
+Set up a Registration node with some default settings. This Node registers
+'fixed1.nii' to 'moving1.nii' by first fitting a linear 'Affine' transformation, and
+then a non-linear 'SyN' transformation, both using the Mutual Information-cost
+metric.
+
+The registration is initialized by first applying the (linear) transform
+trans.mat.
+
+>>> import copy, pprint
+>>> from nipype.interfaces.ants import Registration
+>>> reg = Registration()
+>>> reg.inputs.fixed_image = 'fixed1.nii'
+>>> reg.inputs.moving_image = 'moving1.nii'
+>>> reg.inputs.output_transform_prefix = "output_"
+>>> reg.inputs.initial_moving_transform = 'trans.mat'
+>>> reg.inputs.transforms = ['Affine', 'SyN']
+>>> reg.inputs.transform_parameters = [(2.0,), (0.25, 3.0, 0.0)]
+>>> reg.inputs.number_of_iterations = [[1500, 200], [100, 50, 30]]
+>>> reg.inputs.dimension = 3
+>>> reg.inputs.write_composite_transform = True
+>>> reg.inputs.collapse_output_transforms = False
+>>> reg.inputs.initialize_transforms_per_stage = False
+>>> reg.inputs.metric = ['Mattes']*2
+>>> reg.inputs.metric_weight = [1]*2 # Default (value ignored currently by ANTs)
+>>> reg.inputs.radius_or_number_of_bins = [32]*2
+>>> reg.inputs.sampling_strategy = ['Random', None]
+>>> reg.inputs.sampling_percentage = [0.05, None]
+>>> reg.inputs.convergence_threshold = [1.e-8, 1.e-9]
+>>> reg.inputs.convergence_window_size = [20]*2
+>>> reg.inputs.smoothing_sigmas = [[1,0], [2,1,0]]
+>>> reg.inputs.sigma_units = ['vox'] * 2
+>>> reg.inputs.shrink_factors = [[2,1], [3,2,1]]
+>>> reg.inputs.use_estimate_learning_rate_once = [True, True]
+>>> reg.inputs.use_histogram_matching = [True, True] # This is the default
+>>> reg.inputs.output_warped_image = 'output_warped_image.nii.gz'
+>>> reg.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 0 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+>>> reg.run()  # doctest: +SKIP
+
+Same as reg1, but first invert the initial transform ('trans.mat') before applying it.
+
+>>> reg.inputs.invert_initial_moving_transform = True
+>>> reg1 = copy.deepcopy(reg)
+>>> reg1.inputs.winsorize_lower_quantile = 0.025
+>>> reg1.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.025, 1.0 ]  --write-composite-transform 1'
+>>> reg1.run()  # doctest: +SKIP
+
+Clip extremely high intensity data points using winsorize_upper_quantile. All data points
+higher than the 0.975 quantile are set to the value of the 0.975 quantile.
+
+>>> reg2 = copy.deepcopy(reg)
+>>> reg2.inputs.winsorize_upper_quantile = 0.975
+>>> reg2.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 0.975 ]  --write-composite-transform 1'
+
+Clip extremely low intensity data points using winsorize_lower_quantile. All data points
+lower than the 0.025 quantile are set to the original value at the 0.025 quantile.
+
+
+>>> reg3 = copy.deepcopy(reg)
+>>> reg3.inputs.winsorize_lower_quantile = 0.025
+>>> reg3.inputs.winsorize_upper_quantile = 0.975
+>>> reg3.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.025, 0.975 ]  --write-composite-transform 1'
+
+Use float instead of double for computations (saves memory usage)
+
+>>> reg3a = copy.deepcopy(reg)
+>>> reg3a.inputs.float = True
+>>> reg3a.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --float 1 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+Force to use double instead of float for computations (more precision and memory usage).
+
+>>> reg3b = copy.deepcopy(reg)
+>>> reg3b.inputs.float = False
+>>> reg3b.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --float 0 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+'collapse_output_transforms' can be used to put all transformation in a single 'composite_transform'-
+file. Note that forward_transforms will now be an empty list.
+
+>>> # Test collapse transforms flag
+>>> reg4 = copy.deepcopy(reg)
+>>> reg4.inputs.save_state = 'trans.mat'
+>>> reg4.inputs.restore_state = 'trans.mat'
+>>> reg4.inputs.initialize_transforms_per_stage = True
+>>> reg4.inputs.collapse_output_transforms = True
+>>> outputs = reg4._list_outputs()
+>>> pprint.pprint(outputs)  # doctest: +ELLIPSIS,
+{'composite_transform': '.../nipype/testing/data/output_Composite.h5',
+ 'elapsed_time': <undefined>,
+ 'forward_invert_flags': [],
+ 'forward_transforms': [],
+ 'inverse_composite_transform': '.../nipype/testing/data/output_InverseComposite.h5',
+ 'inverse_warped_image': <undefined>,
+ 'metric_value': <undefined>,
+ 'reverse_invert_flags': [],
+ 'reverse_transforms': [],
+ 'save_state': '.../nipype/testing/data/trans.mat',
+ 'warped_image': '.../nipype/testing/data/output_warped_image.nii.gz'}
+>>> reg4.cmdline
+'antsRegistration --collapse-output-transforms 1 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 1 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --restore-state trans.mat --save-state trans.mat --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+
+>>> # Test collapse transforms flag
+>>> reg4b = copy.deepcopy(reg4)
+>>> reg4b.inputs.write_composite_transform = False
+>>> outputs = reg4b._list_outputs()
+>>> pprint.pprint(outputs)  # doctest: +ELLIPSIS,
+{'composite_transform': <undefined>,
+ 'elapsed_time': <undefined>,
+ 'forward_invert_flags': [False, False],
+ 'forward_transforms': ['.../nipype/testing/data/output_0GenericAffine.mat',
+ '.../nipype/testing/data/output_1Warp.nii.gz'],
+ 'inverse_composite_transform': <undefined>,
+ 'inverse_warped_image': <undefined>,
+ 'metric_value': <undefined>,
+ 'reverse_invert_flags': [True, False],
+ 'reverse_transforms': ['.../nipype/testing/data/output_0GenericAffine.mat',     '.../nipype/testing/data/output_1InverseWarp.nii.gz'],
+ 'save_state': '.../nipype/testing/data/trans.mat',
+ 'warped_image': '.../nipype/testing/data/output_warped_image.nii.gz'}
+>>> reg4b.aggregate_outputs()  # doctest: +SKIP
+>>> reg4b.cmdline
+'antsRegistration --collapse-output-transforms 1 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 1 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --restore-state trans.mat --save-state trans.mat --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 0'
+
+One can use multiple similarity metrics in a single registration stage.The Node below first
+performs a linear registation using only the Mutual Information ('Mattes')-metric.
+In a second stage, it performs a non-linear registration ('Syn') using both a
+Mutual Information and a local cross-correlation ('CC')-metric. Both metrics are weighted
+equally ('metric_weight' is .5 for both). The Mutual Information- metric uses 32 bins.
+The local cross-correlations (correlations between every voxel's neighborhoods) is computed
+with a radius of 4.
+
+>>> # Test multiple metrics per stage
+>>> reg5 = copy.deepcopy(reg)
+>>> reg5.inputs.fixed_image = 'fixed1.nii'
+>>> reg5.inputs.moving_image = 'moving1.nii'
+>>> reg5.inputs.metric = ['Mattes', ['Mattes', 'CC']]
+>>> reg5.inputs.metric_weight = [1, [.5,.5]]
+>>> reg5.inputs.radius_or_number_of_bins = [32, [32, 4] ]
+>>> reg5.inputs.sampling_strategy = ['Random', None] # use default strategy in second stage
+>>> reg5.inputs.sampling_percentage = [0.05, [0.05, 0.10]]
+>>> reg5.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 0.5, 32, None, 0.05 ] --metric CC[ fixed1.nii, moving1.nii, 0.5, 4, None, 0.1 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+ANTS Registration can also use multiple modalities to perform the registration. Here it is assumed
+that fixed1.nii and fixed2.nii are in the same space, and so are moving1.nii and
+moving2.nii. First, a linear registration is performed matching fixed1.nii to moving1.nii,
+then a non-linear registration is performed to match fixed2.nii to moving2.nii, starting from
+the transformation of the first step.
+
+>>> # Test multiple inputS
+>>> reg6 = copy.deepcopy(reg5)
+>>> reg6.inputs.fixed_image = ['fixed1.nii', 'fixed2.nii']
+>>> reg6.inputs.moving_image = ['moving1.nii', 'moving2.nii']
+>>> reg6.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 0.5, 32, None, 0.05 ] --metric CC[ fixed2.nii, moving2.nii, 0.5, 4, None, 0.1 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+Different methods can be used for the interpolation when applying transformations.
+
+>>> # Test Interpolation Parameters (BSpline)
+>>> reg7a = copy.deepcopy(reg)
+>>> reg7a.inputs.interpolation = 'BSpline'
+>>> reg7a.inputs.interpolation_parameters = (3,)
+>>> reg7a.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation BSpline[ 3 ] --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+>>> # Test Interpolation Parameters (MultiLabel/Gaussian)
+>>> reg7b = copy.deepcopy(reg)
+>>> reg7b.inputs.interpolation = 'Gaussian'
+>>> reg7b.inputs.interpolation_parameters = (1.0, 1.0)
+>>> reg7b.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Gaussian[ 1.0, 1.0 ] --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+BSplineSyN non-linear registration with custom parameters.
+
+>>> # Test Extended Transform Parameters
+>>> reg8 = copy.deepcopy(reg)
+>>> reg8.inputs.transforms = ['Affine', 'BSplineSyN']
+>>> reg8.inputs.transform_parameters = [(2.0,), (0.25, 26, 0, 3)]
+>>> reg8.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform BSplineSyN[ 0.25, 26, 0, 3 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+Mask the fixed image in the second stage of the registration (but not the first).
+
+>>> # Test masking
+>>> reg9 = copy.deepcopy(reg)
+>>> reg9.inputs.fixed_image_masks = ['NULL', 'fixed1.nii']
+>>> reg9.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ trans.mat, 1 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --masks [ NULL, NULL ] --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --masks [ fixed1.nii, NULL ] --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+Here we use both a warpfield and a linear transformation, before registration commences.  Note that
+the first transformation that needs to be applied ('ants_Warp.nii.gz') is last in the list of
+'initial_moving_transform'.
+
+>>> # Test initialization with multiple transforms matrices (e.g., unwarp and affine transform)
+>>> reg10 = copy.deepcopy(reg)
+>>> reg10.inputs.initial_moving_transform = ['func_to_struct.mat', 'ants_Warp.nii.gz']
+>>> reg10.inputs.invert_initial_moving_transform = [False, False]
+>>> reg10.cmdline
+'antsRegistration --collapse-output-transforms 0 --dimensionality 3 --initial-moving-transform [ func_to_struct.mat, 0 ] [ ants_Warp.nii.gz, 0 ] --initialize-transforms-per-stage 0 --interpolation Linear --output [ output_, output_warped_image.nii.gz ] --transform Affine[ 2.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32, Random, 0.05 ] --convergence [ 1500x200, 1e-08, 20 ] --smoothing-sigmas 1.0x0.0vox --shrink-factors 2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --transform SyN[ 0.25, 3.0, 0.0 ] --metric Mattes[ fixed1.nii, moving1.nii, 1, 32 ] --convergence [ 100x50x30, 1e-09, 20 ] --smoothing-sigmas 2.0x1.0x0.0vox --shrink-factors 3x2x1 --use-estimate-learning-rate-once 1 --use-histogram-matching 1 --winsorize-image-intensities [ 0.0, 1.0 ]  --write-composite-transform 1'
+
+Inputs::
+
+        [Mandatory]
+        fixed_image: (a list of items which are an existing file name)
+                Image to which the moving_image should be transformed(usually a
+                structural image)
+        metric: (a list of items which are 'CC' or 'MeanSquares' or 'Demons'
+                 or 'GC' or 'MI' or 'Mattes' or a list of items which are 'CC' or
+                 'MeanSquares' or 'Demons' or 'GC' or 'MI' or 'Mattes')
+                the metric(s) to use for each stage. Note that multiple metrics per
+                stage are not supported in ANTS 1.9.1 and earlier.
+        metric_weight: (a list of items which are a float or a list of items
+                 which are a float, nipype default value: [1.0])
+                the metric weight(s) for each stage. The weights must sum to 1 per
+                stage.
+                requires: metric
+        moving_image: (a list of items which are an existing file name)
+                Image that will be registered to the space of fixed_image. This is
+                theimage on which the transformations will be applied to
+        shrink_factors: (a list of items which are a list of items which are
+                 an integer (int or long))
+        smoothing_sigmas: (a list of items which are a list of items which
+                 are a float)
+        transforms: (a list of items which are 'Rigid' or 'Affine' or
+                 'CompositeAffine' or 'Similarity' or 'Translation' or 'BSpline' or
+                 'GaussianDisplacementField' or 'TimeVaryingVelocityField' or
+                 'TimeVaryingBSplineVelocityField' or 'SyN' or 'BSplineSyN' or
+                 'Exponential' or 'BSplineExponential')
+                flag: %s
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        collapse_output_transforms: (a boolean, nipype default value: True)
+                Collapse output transforms. Specifically, enabling this option
+                combines all adjacent linear transforms and composes all adjacent
+                displacement field transforms before writing the results to disk.
+                flag: --collapse-output-transforms %d
+        convergence_threshold: (a list of at least 1 items which are a float,
+                 nipype default value: [1e-06])
+                requires: number_of_iterations
+        convergence_window_size: (a list of at least 1 items which are an
+                 integer (int or long), nipype default value: [10])
+                requires: convergence_threshold
+        dimension: (3 or 2, nipype default value: 3)
+                image dimension (2 or 3)
+                flag: --dimensionality %d
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        fixed_image_mask: (an existing file name)
+                Mask used to limit metric sampling region of the fixed imagein all
+                stages
+                flag: %s
+                mutually_exclusive: fixed_image_masks
+        fixed_image_masks: (a list of items which are an existing file name
+                 or 'NULL')
+                Masks used to limit metric sampling region of the fixed image,
+                defined per registration stage(Use "NULL" to omit a mask at a given
+                stage)
+                mutually_exclusive: fixed_image_mask
+        float: (a boolean)
+                Use float instead of double for computations.
+                flag: --float %d
+        initial_moving_transform: (a list of items which are an existing file
+                 name)
+                A transform or a list of transforms that should be appliedbefore the
+                registration begins. Note that, when a list is given,the
+                transformations are applied in reverse order.
+                flag: %s
+                mutually_exclusive: initial_moving_transform_com
+        initial_moving_transform_com: (0 or 1 or 2)
+                Align the moving_image nad fixed_image befor registration usingthe
+                geometric center of the images (=0), the image intensities (=1),or
+                the origin of the images (=2)
+                flag: %s
+                mutually_exclusive: initial_moving_transform
+        initialize_transforms_per_stage: (a boolean, nipype default value:
+                 False)
+                Initialize linear transforms from the previous stage. By enabling
+                this option, the current linear stage transform is directly
+                intialized from the previous stages linear transform; this allows
+                multiple linear stages to be run where each stage directly updates
+                the estimated linear transform from the previous stage. (e.g.
+                Translation -> Rigid -> Affine).
+                flag: --initialize-transforms-per-stage %d
+        interpolation: ('Linear' or 'NearestNeighbor' or 'CosineWindowedSinc'
+                 or 'WelchWindowedSinc' or 'HammingWindowedSinc' or
+                 'LanczosWindowedSinc' or 'BSpline' or 'MultiLabel' or 'Gaussian',
+                 nipype default value: Linear)
+                flag: %s
+        interpolation_parameters: (a tuple of the form: (an integer (int or
+                 long)) or a tuple of the form: (a float, a float))
+        invert_initial_moving_transform: (a list of items which are a
+                 boolean)
+                One boolean or a list of booleans that indicatewhether the
+                inverse(s) of the transform(s) definedin initial_moving_transform
+                should be used.
+                mutually_exclusive: initial_moving_transform_com
+                requires: initial_moving_transform
+        metric_item_trait: ('CC' or 'MeanSquares' or 'Demons' or 'GC' or 'MI'
+                 or 'Mattes')
+        metric_stage_trait: ('CC' or 'MeanSquares' or 'Demons' or 'GC' or
+                 'MI' or 'Mattes' or a list of items which are 'CC' or 'MeanSquares'
+                 or 'Demons' or 'GC' or 'MI' or 'Mattes')
+        metric_weight_item_trait: (a float, nipype default value: 1.0)
+        metric_weight_stage_trait: (a float or a list of items which are a
+                 float)
+        moving_image_mask: (an existing file name)
+                mask used to limit metric sampling region of the moving imagein all
+                stages
+                mutually_exclusive: moving_image_masks
+                requires: fixed_image_mask
+        moving_image_masks: (a list of items which are an existing file name
+                 or 'NULL')
+                Masks used to limit metric sampling region of the moving image,
+                defined per registration stage(Use "NULL" to omit a mask at a given
+                stage)
+                mutually_exclusive: moving_image_mask
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of ITK threads to use
+        number_of_iterations: (a list of items which are a list of items
+                 which are an integer (int or long))
+        output_inverse_warped_image: (a boolean or a file name)
+                requires: output_warped_image
+        output_transform_prefix: (a unicode string, nipype default value:
+                 transform)
+                flag: %s
+        output_warped_image: (a boolean or a file name)
+        radius_bins_item_trait: (an integer (int or long), nipype default
+                 value: 5)
+        radius_bins_stage_trait: (an integer (int or long) or a list of items
+                 which are an integer (int or long))
+        radius_or_number_of_bins: (a list of items which are an integer (int
+                 or long) or a list of items which are an integer (int or long),
+                 nipype default value: [5])
+                the number of bins in each stage for the MI and Mattes metric, the
+                radius for other metrics
+                requires: metric_weight
+        restore_state: (an existing file name)
+                Filename for restoring the internal restorable state of the
+                registration
+                flag: --restore-state %s
+        restrict_deformation: (a list of items which are a list of items
+                 which are 0 or 1)
+                This option allows the user to restrict the optimization of the
+                displacement field, translation, rigid or affine transform on a per-
+                component basis. For example, if one wants to limit the deformation
+                or rotation of 3-D volume to the first two dimensions, this is
+                possible by specifying a weight vector of '1x1x0' for a deformation
+                field or '1x1x0x1x1x0' for a rigid transformation. Low-dimensional
+                restriction only works if there are no preceding transformations.
+        sampling_percentage: (a list of items which are 0.0 <= a floating
+                 point number <= 1.0 or None or a list of items which are 0.0 <= a
+                 floating point number <= 1.0 or None)
+                the metric sampling percentage(s) to use for each stage
+                requires: sampling_strategy
+        sampling_percentage_item_trait: (0.0 <= a floating point number <=
+                 1.0 or None)
+        sampling_percentage_stage_trait: (0.0 <= a floating point number <=
+                 1.0 or None or a list of items which are 0.0 <= a floating point
+                 number <= 1.0 or None)
+        sampling_strategy: (a list of items which are 'None' or 'Regular' or
+                 'Random' or None or a list of items which are 'None' or 'Regular'
+                 or 'Random' or None)
+                the metric sampling strategy (strategies) for each stage
+                requires: metric_weight
+        sampling_strategy_item_trait: ('None' or 'Regular' or 'Random' or
+                 None)
+        sampling_strategy_stage_trait: ('None' or 'Regular' or 'Random' or
+                 None or a list of items which are 'None' or 'Regular' or 'Random'
+                 or None)
+        save_state: (a file name)
+                Filename for saving the internal restorable state of the
+                registration
+                flag: --save-state %s
+        sigma_units: (a list of items which are 'mm' or 'vox')
+                units for smoothing sigmas
+                requires: smoothing_sigmas
+        transform_parameters: (a list of items which are a tuple of the form:
+                 (a float) or a tuple of the form: (a float, a float, a float) or a
+                 tuple of the form: (a float, an integer (int or long), an integer
+                 (int or long), an integer (int or long)) or a tuple of the form: (a
+                 float, an integer (int or long), a float, a float, a float, a
+                 float) or a tuple of the form: (a float, a float, a float, an
+                 integer (int or long)) or a tuple of the form: (a float, an integer
+                 (int or long), an integer (int or long), an integer (int or long),
+                 an integer (int or long)))
+        use_estimate_learning_rate_once: (a list of items which are a
+                 boolean)
+        use_histogram_matching: (a boolean or a list of items which are a
+                 boolean, nipype default value: True)
+                Histogram match the images before registration.
+        verbose: (a boolean, nipype default value: False)
+                flag: -v
+        winsorize_lower_quantile: (0.0 <= a floating point number <= 1.0,
+                 nipype default value: 0.0)
+                The Lower quantile to clip image ranges
+                flag: %s
+        winsorize_upper_quantile: (0.0 <= a floating point number <= 1.0,
+                 nipype default value: 1.0)
+                The Upper quantile to clip image ranges
+                flag: %s
+        write_composite_transform: (a boolean, nipype default value: False)
+                flag: --write-composite-transform %d
+
+Outputs::
+
+        composite_transform: (an existing file name)
+                Composite transform file
+        elapsed_time: (a float)
+                the total elapsed time as reported by ANTs
+        forward_invert_flags: (a list of items which are a boolean)
+                List of flags corresponding to the forward transforms
+        forward_transforms: (a list of items which are an existing file name)
+                List of output transforms for forward registration
+        inverse_composite_transform: (a file name)
+                Inverse composite transform file
+        inverse_warped_image: (a file name)
+                Outputs the inverse of the warped image
+        metric_value: (a float)
+                the final value of metric
+        reverse_invert_flags: (a list of items which are a boolean)
+                List of flags corresponding to the reverse transforms
+        reverse_transforms: (a list of items which are an existing file name)
+                List of output transforms for reverse registration
+        save_state: (a file name)
+                The saved registration state to be restored
+        warped_image: (a file name)
+                Outputs warped image
+
+.. _nipype.interfaces.ants.registration.RegistrationSynQuick:
+
+
+.. index:: RegistrationSynQuick
+
+RegistrationSynQuick
+--------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/ants/registration.py#L1541>`__
+
+Wraps command **antsRegistrationSyNQuick.sh**
+
+Registration using a symmetric image normalization method (SyN).
+You can read more in Avants et al.; Med Image Anal., 2008
+(https://www.ncbi.nlm.nih.gov/pubmed/17659998).
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.ants import RegistrationSynQuick
+>>> reg = RegistrationSynQuick()
+>>> reg.inputs.fixed_image = 'fixed1.nii'
+>>> reg.inputs.moving_image = 'moving1.nii'
+>>> reg.inputs.num_threads = 2
+>>> reg.cmdline
+'antsRegistrationSyNQuick.sh -d 3 -f fixed1.nii -r 32 -m moving1.nii -n 2 -o transform -p d -s 26 -t s'
+>>> reg.run()  # doctest: +SKIP
+
+example for multiple images
+
+>>> from nipype.interfaces.ants import RegistrationSynQuick
+>>> reg = RegistrationSynQuick()
+>>> reg.inputs.fixed_image = ['fixed1.nii', 'fixed2.nii']
+>>> reg.inputs.moving_image = ['moving1.nii', 'moving2.nii']
+>>> reg.inputs.num_threads = 2
+>>> reg.cmdline
+'antsRegistrationSyNQuick.sh -d 3 -f fixed1.nii -f fixed2.nii -r 32 -m moving1.nii -m moving2.nii -n 2 -o transform -p d -s 26 -t s'
+>>> reg.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        fixed_image: (a list of items which are an existing file name)
+                Fixed image or source image or reference image
+                flag: -f %s...
+        moving_image: (a list of items which are an existing file name)
+                Moving image or target image
+                flag: -m %s...
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        dimension: (3 or 2, nipype default value: 3)
+                image dimension (2 or 3)
+                flag: -d %d
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        histogram_bins: (an integer (int or long), nipype default value: 32)
+                histogram bins for mutual information in SyN stage (default = 32)
+                flag: -r %d
+        num_threads: (an integer (int or long), nipype default value: 1)
+                Number of threads (default = 1)
+                flag: -n %d
+        output_prefix: (a unicode string, nipype default value: transform)
+                A prefix that is prepended to all output files
+                flag: -o %s
+        precision_type: ('double' or 'float', nipype default value: double)
+                precision type (default = double)
+                flag: -p %s
+        spline_distance: (an integer (int or long), nipype default value: 26)
+                spline distance for deformable B-spline SyN transform (default = 26)
+                flag: -s %d
+        transform_type: ('s' or 't' or 'r' or 'a' or 'sr' or 'b' or 'br',
+                 nipype default value: s)
+                 transform type
+                 t: translation
+                 r: rigid
+                 a: rigid + affine
+                 s: rigid + affine + deformable syn (default)
+                 sr: rigid + deformable syn
+                 b: rigid + affine + deformable b-spline syn
+                 br: rigid + deformable b-spline syn
+                flag: -t %s
+        use_histogram_matching: (a boolean)
+                use histogram matching
+                flag: -j %d
+
+Outputs::
+
+        forward_warp_field: (an existing file name)
+                Forward warp field
+        inverse_warp_field: (an existing file name)
+                Inverse warp field
+        inverse_warped_image: (an existing file name)
+                Inverse warped image
+        out_matrix: (an existing file name)
+                Affine matrix
+        warped_image: (an existing file name)
+                Warped image

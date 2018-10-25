@@ -1,0 +1,25 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.mixins.reporting
+===========================
+
+
+.. _nipype.interfaces.mixins.reporting.ReportCapableInterface:
+
+
+.. index:: ReportCapableInterface
+
+ReportCapableInterface
+----------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/mixins/reporting.py#L27>`__
+
+Mixin to enable reporting for Nipype interfaces
+
+Inputs::
+
+        None
+
+Outputs::
+
+        None

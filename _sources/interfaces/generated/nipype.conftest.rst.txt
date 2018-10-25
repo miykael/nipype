@@ -1,0 +1,32 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+conftest
+========
+
+
+.. module:: nipype.conftest
+
+
+.. _nipype.conftest.add_np:
+
+:func:`add_np`
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b//home/line/anaconda3/lib/python3.6/site-packages/_pytest/fixtures.py#L9>`__
+
+
+
+
+
+
+.. _nipype.conftest.in_testing:
+
+:func:`in_testing`
+------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b//home/line/anaconda3/lib/python3.6/site-packages/_pytest/fixtures.py#L17>`__
+
+
+
+
+

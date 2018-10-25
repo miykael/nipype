@@ -1,0 +1,83 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.quickshear
+=====================
+
+
+.. _nipype.interfaces.quickshear.Quickshear:
+
+
+.. index:: Quickshear
+
+Quickshear
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/quickshear.py#L41>`__
+
+Wraps command **quickshear**
+
+Quickshear is a simple geometric defacing algorithm
+
+Given an anatomical image and a reasonable brainmask, Quickshear estimates
+a shearing plane with the brain mask on one side and the face on the other,
+zeroing out the face side.
+
+>>> from nipype.interfaces.quickshear import Quickshear
+>>> qs = Quickshear(in_file='T1.nii', mask_file='brain_mask.nii')
+>>> qs.cmdline
+'quickshear T1.nii brain_mask.nii T1_defaced.nii'
+
+In the absence of a precomputed mask, a simple pipeline can be generated
+with any tool that generates brain masks:
+
+>>> from nipype.pipeline import engine as pe
+>>> from nipype.interfaces import utility as niu
+>>> from nipype.interfaces.fsl import BET
+>>> deface_wf = pe.Workflow('deface_wf')
+>>> inputnode = pe.Node(niu.IdentityInterface(['in_file']),
+...                     name='inputnode')
+>>> outputnode = pe.Node(niu.IdentityInterface(['out_file']),
+...                      name='outputnode')
+>>> bet = pe.Node(BET(mask=True), name='bet')
+>>> quickshear = pe.Node(Quickshear(), name='quickshear')
+>>> deface_wf.connect([
+...     (inputnode, bet, [('in_file', 'in_file')]),
+...     (inputnode, quickshear, [('in_file', 'in_file')]),
+...     (bet, quickshear, [('mask_file', 'mask_file')]),
+...     (quickshear, outputnode, [('out_file', 'out_file')]),
+...     ])
+>>> inputnode.inputs.in_file = 'T1.nii'
+>>> res = deface_wf.run()  # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_file: (an existing file name)
+                neuroimage to deface
+                flag: %s, position: 1
+        mask_file: (an existing file name)
+                brain mask
+                flag: %s, position: 2
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        buff: (an integer (int or long))
+                buffer size (in voxels) between shearing plane and the brain
+                flag: %d, position: 4
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        out_file: (a file name)
+                defaced output image
+                flag: %s, position: 3
+
+Outputs::
+
+        out_file: (an existing file name)
+                defaced output image
+
+References::
+BibTeX('@inproceedings{Schimke2011,address = {San Francisco},author = {Schimke, Nakeisha and Hale, John},booktitle = {Proceedings of the 2nd USENIX Conference on Health Security and Privacy},title = {{Quickshear Defacing for Neuroimages}},year = {2011},month = sep}', key='Schimke2011')

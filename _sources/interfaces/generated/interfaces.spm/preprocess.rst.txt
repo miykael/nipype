@@ -1,0 +1,1365 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.spm.preprocess
+=========================
+
+
+.. _nipype.interfaces.spm.preprocess.ApplyDeformations:
+
+
+.. index:: ApplyDeformations
+
+ApplyDeformations
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L2090>`__
+
+Inputs::
+
+        [Mandatory]
+        deformation_field: (an existing file name)
+        in_files: (a list of items which are an existing, uncompressed file
+                 (valid extensions: [.img, .nii, .hdr]))
+        reference_volume: (an existing, uncompressed file (valid extensions:
+                 [.img, .nii, .hdr]))
+
+        [Optional]
+        interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+
+Outputs::
+
+        out_files: (a list of items which are an existing file name)
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.Coregister:
+
+
+.. index:: Coregister
+
+Coregister
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L762>`__
+
+Use spm_coreg for estimating cross-modality rigid body alignment
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=39
+
+Examples
+~~~~~~~~
+
+>>> import nipype.interfaces.spm as spm
+>>> coreg = spm.Coregister()
+>>> coreg.inputs.target = 'functional.nii'
+>>> coreg.inputs.source = 'structural.nii'
+>>> coreg.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        source: (a list of items which are an existing, uncompressed file
+                 (valid extensions: [.img, .nii, .hdr]))
+                file to register to target
+        target: (an existing, uncompressed file (valid extensions: [.img,
+                 .nii, .hdr]))
+                reference file to register to
+
+        [Optional]
+        apply_to_files: (a list of items which are an existing file name)
+                files to apply transformation to
+        cost_function: ('mi' or 'nmi' or 'ecc' or 'ncc')
+                cost function, one of:
+                 'mi' - Mutual Information,
+                 'nmi' - Normalised Mutual Information,
+                 'ecc' - Entropy Correlation Coefficient,
+                 'ncc' - Normalised Cross Correlation
+        fwhm: (a list of from 2 to 2 items which are a float)
+                gaussian smoothing kernel width (mm)
+        jobtype: ('estwrite' or 'estimate' or 'write', nipype default value:
+                 estwrite)
+                one of: estimate, write, estwrite
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        out_prefix: (a string, nipype default value: r)
+                coregistered output prefix
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        separation: (a list of items which are a float)
+                sampling separation in mm
+        tolerance: (a list of items which are a float)
+                acceptable tolerance for each of 12 params
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        write_interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        write_mask: (a boolean)
+                True/False mask output image
+        write_wrap: (a list of from 3 to 3 items which are an integer (int or
+                 long))
+                Check if interpolation should wrap in [x,y,z]
+
+Outputs::
+
+        coregistered_files: (a list of items which are an existing file name)
+                Coregistered other files
+        coregistered_source: (a list of items which are an existing file
+                 name)
+                Coregistered source files
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.CreateWarped:
+
+
+.. index:: CreateWarped
+
+CreateWarped
+------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L2028>`__
+
+Apply a flow field estimated by DARTEL to create warped images
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=190
+
+Examples
+~~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> create_warped = spm.CreateWarped()
+>>> create_warped.inputs.image_files = ['rc1s1.nii', 'rc1s2.nii']
+>>> create_warped.inputs.flowfield_files = ['u_rc1s1_Template.nii', 'u_rc1s2_Template.nii']
+>>> create_warped.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        flowfield_files: (a list of items which are an existing, uncompressed
+                 file (valid extensions: [.img, .nii, .hdr]))
+                DARTEL flow fields u_rc1*
+        image_files: (a list of items which are an existing, uncompressed
+                 file (valid extensions: [.img, .nii, .hdr]))
+                A list of files to be warped
+
+        [Optional]
+        interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        iterations: (0 <= a long integer <= 9)
+                The number of iterations: log2(number of time steps)
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        modulate: (a boolean)
+                Modulate images
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+
+Outputs::
+
+        warped_files: (a list of items which are an existing file name)
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.DARTEL:
+
+
+.. index:: DARTEL
+
+DARTEL
+------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L1817>`__
+
+Use spm DARTEL to create a template and flow fields
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=185
+
+Examples
+~~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> dartel = spm.DARTEL()
+>>> dartel.inputs.image_files = [['rc1s1.nii','rc1s2.nii'],['rc2s1.nii', 'rc2s2.nii']]
+>>> dartel.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        image_files: (a list of items which are a list of items which are an
+                 existing, uncompressed file (valid extensions: [.img, .nii, .hdr]))
+                A list of files to be segmented
+
+        [Optional]
+        iteration_parameters: (a list of from 3 to 12 items which are a tuple
+                 of the form: (1 <= a long integer <= 10, a tuple of the form: (a
+                 float, a float, a float), 1 or 2 or 4 or 8 or 16 or 32 or 64 or 128
+                 or 256 or 512, 0 or 0.5 or 1 or 2 or 4 or 8 or 16 or 32))
+                List of tuples for each iteration
+                 - Inner iterations
+                 - Regularization parameters
+                 - Time points for deformation model
+                 - smoothing parameter
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        optimization_parameters: (a tuple of the form: (a float, 1 <= a long
+                 integer <= 8, 1 <= a long integer <= 8))
+                 Optimization settings a tuple
+                 - LM regularization
+                 - cycles of multigrid solver
+                 - relaxation iterations
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        regularization_form: ('Linear' or 'Membrane' or 'Bending')
+                Form of regularization energy term
+        template_prefix: (a unicode string, nipype default value: Template)
+                Prefix for template
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+
+Outputs::
+
+        dartel_flow_fields: (a list of items which are an existing file name)
+                DARTEL flow fields
+        final_template_file: (an existing file name)
+                final DARTEL template
+        template_files: (a list of items which are an existing file name)
+                Templates from different stages of iteration
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.DARTELNorm2MNI:
+
+
+.. index:: DARTELNorm2MNI
+
+DARTELNorm2MNI
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L1934>`__
+
+Use spm DARTEL to normalize data to MNI space
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=188
+
+Examples
+~~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> nm = spm.DARTELNorm2MNI()
+>>> nm.inputs.template_file = 'Template_6.nii'
+>>> nm.inputs.flowfield_files = ['u_rc1s1_Template.nii', 'u_rc1s3_Template.nii']
+>>> nm.inputs.apply_to_files = ['c1s1.nii', 'c1s3.nii']
+>>> nm.inputs.modulate = True
+>>> nm.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        apply_to_files: (a list of items which are an existing, uncompressed
+                 file (valid extensions: [.img, .nii, .hdr]))
+                Files to apply the transform to
+        flowfield_files: (a list of items which are an existing, uncompressed
+                 file (valid extensions: [.img, .nii, .hdr]))
+                DARTEL flow fields u_rc1*
+        template_file: (an existing, uncompressed file (valid extensions:
+                 [.img, .nii, .hdr]))
+                DARTEL template
+
+        [Optional]
+        bounding_box: (a tuple of the form: (a float, a float, a float, a
+                 float, a float, a float))
+                Voxel sizes for output file
+        fwhm: (a list of from 3 to 3 items which are a float or a float)
+                3-list of fwhm for each dimension
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        modulate: (a boolean)
+                Modulate out images - no modulation preserves concentrations
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        voxel_size: (a tuple of the form: (a float, a float, a float))
+                Voxel sizes for output file
+
+Outputs::
+
+        normalization_parameter_file: (an existing file name)
+                Transform parameters to MNI space
+        normalized_files: (a list of items which are an existing file name)
+                Normalized files in MNI space
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.FieldMap:
+
+
+.. index:: FieldMap
+
+FieldMap
+--------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L111>`__
+
+Use the fieldmap toolbox from spm to calculate the voxel displacement map (VDM).
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=173
+
+To do
+~~~~~
+Deal with real/imag magnitude images and with the two phase files case.
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.spm import FieldMap
+>>> fm = FieldMap()
+>>> fm.inputs.phase_file = 'phase.nii'
+>>> fm.inputs.magnitude_file = 'magnitude.nii'
+>>> fm.inputs.echo_times = (5.19, 7.65)
+>>> fm.inputs.blip_direction = 1
+>>> fm.inputs.total_readout_time = 15.6
+>>> fm.inputs.epi_file = 'epi.nii'
+>>> fm.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        blip_direction: (1 or -1)
+                polarity of the phase-encode blips
+        echo_times: (a tuple of the form: (a float, a float))
+                short and long echo times
+        epi_file: (an existing file name)
+                EPI to unwarp
+        magnitude_file: (an existing file name)
+                presubstracted magnitude file
+        phase_file: (an existing file name)
+                presubstracted phase file
+        total_readout_time: (a float)
+                total EPI readout time
+
+        [Optional]
+        anat_file: (an existing file name)
+                anatomical image for comparison
+        epifm: (a boolean, nipype default value: False)
+                epi-based field map
+        jacobian_modulation: (a boolean, nipype default value: False)
+                jacobian modulation
+        jobtype: ('calculatevdm' or 'applyvdm', nipype default value:
+                 calculatevdm)
+                one of: calculatevdm, applyvdm
+        mask_fwhm: (a long integer >= 0, nipype default value: 5)
+                gaussian smoothing kernel width
+        maskbrain: (a boolean, nipype default value: True)
+                masking or no masking of the brain
+        matchanat: (a boolean, nipype default value: True)
+                match anatomical image to EPI
+        matchvdm: (a boolean, nipype default value: True)
+                match VDM to EPI
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        method: ('Mark3D' or 'Mark2D' or 'Huttonish', nipype default value:
+                 Mark3D)
+                One of: Mark3D, Mark2D, Huttonish
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        ndilate: (a long integer >= 0, nipype default value: 4)
+                number of erosions
+        nerode: (a long integer >= 0, nipype default value: 2)
+                number of erosions
+        pad: (a long integer >= 0, nipype default value: 0)
+                padding kernel width
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        reg: (a float, nipype default value: 0.02)
+                regularization value used in the segmentation
+        sessname: (a unicode string, nipype default value: _run-)
+                VDM filename extension
+        template: (an existing file name)
+                template image for brain masking
+        thresh: (a float, nipype default value: 0.5)
+                threshold used to create brain mask from segmented data
+        unwarp_fwhm: (a long integer >= 0, nipype default value: 10)
+                gaussian smoothing kernel width
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        writeunwarped: (a boolean, nipype default value: False)
+                write unwarped EPI
+        ws: (a boolean, nipype default value: True)
+                weighted smoothing
+
+Outputs::
+
+        vdm: (an existing file name)
+                voxel difference map
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.NewSegment:
+
+
+.. index:: NewSegment
+
+NewSegment
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L1553>`__
+
+Use spm_preproc8 (New Segment) to separate structural images into
+different tissue classes. Supports multiple modalities.
+
+NOTE: This interface currently supports single channel input only
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=43
+
+Examples
+~~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> seg = spm.NewSegment()
+>>> seg.inputs.channel_files = 'structural.nii'
+>>> seg.inputs.channel_info = (0.0001, 60, (True, True))
+>>> seg.run() # doctest: +SKIP
+
+For VBM pre-processing [http://www.fil.ion.ucl.ac.uk/~john/misc/VBMclass10.pdf],
+TPM.nii should be replaced by /path/to/spm8/toolbox/Seg/TPM.nii
+
+>>> seg = NewSegment()
+>>> seg.inputs.channel_files = 'structural.nii'
+>>> tissue1 = (('TPM.nii', 1), 2, (True,True), (False, False))
+>>> tissue2 = (('TPM.nii', 2), 2, (True,True), (False, False))
+>>> tissue3 = (('TPM.nii', 3), 2, (True,False), (False, False))
+>>> tissue4 = (('TPM.nii', 4), 2, (False,False), (False, False))
+>>> tissue5 = (('TPM.nii', 5), 2, (False,False), (False, False))
+>>> seg.inputs.tissues = [tissue1, tissue2, tissue3, tissue4, tissue5]
+>>> seg.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        channel_files: (a list of items which are an existing, uncompressed
+                 file (valid extensions: [.img, .nii, .hdr]))
+                A list of files to be segmented
+
+        [Optional]
+        affine_regularization: ('mni' or 'eastern' or 'subj' or 'none')
+                mni, eastern, subj, none
+        channel_info: (a tuple of the form: (a float, a float, a tuple of the
+                 form: (a boolean, a boolean)))
+                A tuple with the following fields:
+                 - bias reguralisation (0-10)
+                 - FWHM of Gaussian smoothness of bias
+                 - which maps to save (Corrected, Field) - a tuple of two boolean
+                values
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        sampling_distance: (a float)
+                Sampling distance on data for parameter estimation
+        tissues: (a list of items which are a tuple of the form: (a tuple of
+                 the form: (an existing, uncompressed file (valid extensions: [.img,
+                 .nii, .hdr]), an integer (int or long)), an integer (int or long),
+                 a tuple of the form: (a boolean, a boolean), a tuple of the form:
+                 (a boolean, a boolean)))
+                A list of tuples (one per tissue) with the following fields:
+                 - tissue probability map (4D), 1-based index to frame
+                 - number of gaussians
+                 - which maps to save [Native, DARTEL] - a tuple of two boolean
+                values
+                 - which maps to save [Unmodulated, Modulated] - a tuple of two
+                boolean values
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        warping_regularization: (a list of from 5 to 5 items which are a
+                 float or a float)
+                Warping regularization parameter(s). Accepts float or list of floats
+                (the latter is required by SPM12)
+        write_deformation_fields: (a list of from 2 to 2 items which are a
+                 boolean)
+                Which deformation fields to write:[Inverse, Forward]
+
+Outputs::
+
+        bias_corrected_images: (a list of items which are an existing file
+                 name)
+                bias corrected images
+        bias_field_images: (a list of items which are an existing file name)
+                bias field images
+        dartel_input_images: (a list of items which are a list of items which
+                 are an existing file name)
+                dartel imported class images
+        forward_deformation_field: (a list of items which are an existing
+                 file name)
+        inverse_deformation_field: (a list of items which are an existing
+                 file name)
+        modulated_class_images: (a list of items which are a list of items
+                 which are an existing file name)
+                modulated+normalized class images
+        native_class_images: (a list of items which are a list of items which
+                 are an existing file name)
+                native space probability maps
+        normalized_class_images: (a list of items which are a list of items
+                 which are an existing file name)
+                normalized class images
+        transformation_mat: (a list of items which are an existing file name)
+                Normalization transformation
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.Normalize:
+
+
+.. index:: Normalize
+
+Normalize
+---------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L939>`__
+
+use spm_normalise for warping an image to a template
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=203
+
+Examples
+~~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> norm = spm.Normalize()
+>>> norm.inputs.source = 'functional.nii'
+>>> norm.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        parameter_file: (a file name)
+                normalization parameter file*_sn.mat
+                mutually_exclusive: source, template
+        source: (a list of items which are an existing, uncompressed file
+                 (valid extensions: [.img, .nii, .hdr]))
+                file to normalize to template
+                mutually_exclusive: parameter_file
+        template: (an existing file name)
+                template file to normalize to
+                mutually_exclusive: parameter_file
+
+        [Optional]
+        DCT_period_cutoff: (a float)
+                Cutoff of for DCT bases
+        affine_regularization_type: ('mni' or 'size' or 'none')
+                mni, size, none
+        apply_to_files: (a list of items which are an existing file name or a
+                 list of items which are an existing file name)
+                files to apply transformation to
+        jobtype: ('estwrite' or 'est' or 'write', nipype default value:
+                 estwrite)
+                Estimate, Write or do both
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        nonlinear_iterations: (an integer (int or long))
+                Number of iterations of nonlinear warping
+        nonlinear_regularization: (a float)
+                the amount of the regularization for the nonlinear part of the
+                normalization
+        out_prefix: (a string, nipype default value: w)
+                normalized output prefix
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        source_image_smoothing: (a float)
+                source smoothing
+        source_weight: (a file name)
+                name of weighting image for source
+        template_image_smoothing: (a float)
+                template smoothing
+        template_weight: (a file name)
+                name of weighting image for template
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        write_bounding_box: (a list of from 2 to 2 items which are a list of
+                 from 3 to 3 items which are a float)
+                3x2-element list of lists
+        write_interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        write_preserve: (a boolean)
+                True/False warped images are modulated
+        write_voxel_sizes: (a list of from 3 to 3 items which are a float)
+                3-element list
+        write_wrap: (a list of items which are an integer (int or long))
+                Check if interpolation should wrap in [x,y,z] - list of bools
+
+Outputs::
+
+        normalization_parameters: (a list of items which are an existing file
+                 name)
+                MAT files containing the normalization parameters
+        normalized_files: (a list of items which are an existing file name)
+                Normalized other files
+        normalized_source: (a list of items which are an existing file name)
+                Normalized source files
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.Normalize12:
+
+
+.. index:: Normalize12
+
+Normalize12
+-----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L1160>`__
+
+uses SPM12's new Normalise routine for warping an image to a template.
+Spatial normalisation is now done via the segmentation routine (which was
+known as ``New Segment`` in SPM8). Note that the normalisation in SPM12
+is done towards a file containing multiple tissue probability maps, which
+was not the case in SPM8.
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=49
+
+Examples
+~~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> norm12 = spm.Normalize12()
+>>> norm12.inputs.image_to_align = 'structural.nii'
+>>> norm12.inputs.apply_to_files = 'functional.nii'
+>>> norm12.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        deformation_file: (a uncompressed file (valid extensions: [.img,
+                 .nii, .hdr]))
+                file y_*.nii containing 3 deformation fields for the deformation in
+                x, y and z dimension
+                mutually_exclusive: image_to_align, tpm
+        image_to_align: (an existing, uncompressed file (valid extensions:
+                 [.img, .nii, .hdr]))
+                file to estimate normalization parameters with
+                mutually_exclusive: deformation_file
+
+        [Optional]
+        affine_regularization_type: ('mni' or 'size' or 'none')
+                mni, size, none
+        apply_to_files: (a list of items which are an existing, uncompressed
+                 file (valid extensions: [.img, .nii, .hdr]) or a list of items
+                 which are an existing, uncompressed file (valid extensions: [.img,
+                 .nii, .hdr]))
+                files to apply transformation to
+        bias_fwhm: (30 or 40 or 50 or 60 or 70 or 80 or 90 or 100 or 110 or
+                 120 or 130 or 140 or 150 or 'Inf')
+                FWHM of Gaussian smoothness of bias
+        bias_regularization: (0 or 1e-05 or 0.0001 or 0.001 or 0.01 or 0.1 or
+                 1 or 10)
+                no(0) - extremely heavy (10)
+        jobtype: ('estwrite' or 'est' or 'write', nipype default value:
+                 estwrite)
+                Estimate, Write or do Both
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        out_prefix: (a string, nipype default value: w)
+                Normalized output prefix
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        sampling_distance: (a float)
+                Sampling distance on data for parameter estimation
+        smoothness: (a float)
+                value (in mm) to smooth the data before normalization
+        tpm: (an existing file name)
+                template in form of tissue probablitiy maps to normalize to
+                mutually_exclusive: deformation_file
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        warping_regularization: (a list of from 5 to 5 items which are a
+                 float)
+                controls balance between parameters and data
+        write_bounding_box: (a list of from 2 to 2 items which are a list of
+                 from 3 to 3 items which are a float)
+                3x2-element list of lists representing the bounding box (in mm) to
+                be written
+        write_interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        write_voxel_sizes: (a list of from 3 to 3 items which are a float)
+                3-element list representing the voxel sizes (in mm) of the written
+                normalised images
+
+Outputs::
+
+        deformation_field: (a list of items which are an existing file name)
+                NIfTI file containing 3 deformation fields for the deformation in x,
+                y and z dimension
+        normalized_files: (a list of items which are an existing file name)
+                Normalized other files
+        normalized_image: (a list of items which are an existing file name)
+                Normalized file that needed to be aligned
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.Realign:
+
+
+.. index:: Realign
+
+Realign
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L350>`__
+
+Use spm_realign for estimating within modality rigid body alignment
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=25
+
+Examples
+~~~~~~~~
+
+>>> import nipype.interfaces.spm as spm
+>>> realign = spm.Realign()
+>>> realign.inputs.in_files = 'functional.nii'
+>>> realign.inputs.register_to_mean = True
+>>> realign.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_files: (a list of items which are an existing, uncompressed file
+                 (valid extensions: [.img, .nii, .hdr]) or a list of items which are
+                 an existing, uncompressed file (valid extensions: [.img, .nii,
+                 .hdr]))
+                list of filenames to realign
+
+        [Optional]
+        fwhm: (a floating point number >= 0.0)
+                gaussian smoothing kernel width
+        interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        jobtype: ('estwrite' or 'estimate' or 'write', nipype default value:
+                 estwrite)
+                one of: estimate, write, estwrite
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        out_prefix: (a string, nipype default value: r)
+                realigned output prefix
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        quality: (0.0 <= a floating point number <= 1.0)
+                0.1 = fast, 1.0 = precise
+        register_to_mean: (a boolean)
+                Indicate whether realignment is done to the mean image
+        separation: (a floating point number >= 0.0)
+                sampling separation in mm
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        weight_img: (an existing file name)
+                filename of weighting image
+        wrap: (a list of from 3 to 3 items which are an integer (int or
+                 long))
+                Check if interpolation should wrap in [x,y,z]
+        write_interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        write_mask: (a boolean)
+                True/False mask output image
+        write_which: (a list of items which are a value of class 'int',
+                 nipype default value: [2, 1])
+                determines which images to reslice
+        write_wrap: (a list of from 3 to 3 items which are an integer (int or
+                 long))
+                Check if interpolation should wrap in [x,y,z]
+
+Outputs::
+
+        mean_image: (an existing file name)
+                Mean image file from the realignment
+        modified_in_files: (a list of items which are a list of items which
+                 are an existing file name or an existing file name)
+                Copies of all files passed to in_files. Headers will have been
+                modified to align all images with the first, or optionally to first
+                do that, extract a mean image, and re-align to that mean image.
+        realigned_files: (a list of items which are a list of items which are
+                 an existing file name or an existing file name)
+                If jobtype is write or estwrite, these will be the resliced files.
+                Otherwise, they will be copies of in_files that have had their
+                headers rewritten.
+        realignment_parameters: (a list of items which are an existing file
+                 name)
+                Estimated translation and rotation parameters
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.RealignUnwarp:
+
+
+.. index:: RealignUnwarp
+
+RealignUnwarp
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L586>`__
+
+Use spm_uw_estimate for estimating within subject registration and unwarping
+of time series. Function accepts only one single field map. If in_files is a
+list of files they will be treated as separate sessions but associated to the
+same fieldmap.
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=31
+
+Examples
+~~~~~~~~
+
+>>> import nipype.interfaces.spm as spm
+>>> realignUnwarp = spm.RealignUnwarp()
+>>> realignUnwarp.inputs.in_files = ['functional.nii', 'functional2.nii']
+>>> realignUnwarp.inputs.phase_map = 'voxeldisplacemap.vdm'
+>>> realignUnwarp.inputs.register_to_mean = True
+>>> realignUnwarp.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_files: (a list of items which are an existing, uncompressed file
+                 (valid extensions: [.img, .nii, .hdr]) or a list of items which are
+                 an existing, uncompressed file (valid extensions: [.img, .nii,
+                 .hdr]))
+                list of filenames to realign and unwarp
+
+        [Optional]
+        est_basis_func: (a list of from 2 to 2 items which are an integer
+                 (int or long))
+                Number of basis functions to use for each dimension
+        est_first_order_effects: (a list of from 1 to 6 items which are an
+                 integer (int or long))
+                First order effects should only depend on pitch and roll, i.e. [4 5]
+        est_jacobian_deformations: (a boolean)
+                Jacobian deformations. In theory a good idea to include them, in
+                practice a bad idea. Default: No.
+        est_num_of_interations: (a list of items which are a value of class
+                 'int')
+                Number of iterations.
+        est_re_est_mov_par: (a boolean)
+                Re-estimate movement parameters at each unwarping iteration.
+        est_reg_factor: (a list of items which are a value of class 'int',
+                 nipype default value: [100000])
+                Regularisation factor. Default: 100000 (medium).
+        est_reg_order: (0 <= a long integer <= 3)
+                This parameter determines how to balance the compromise between
+                likelihood maximization and smoothness maximization of the estimated
+                field.
+        est_second_order_effects: (a list of from 1 to 6 items which are an
+                 integer (int or long))
+                List of second order terms to model second derivatives of.
+        est_taylor_expansion_point: (a string, nipype default value: Average)
+                Point in position space to perform Taylor-expansion around.
+        est_unwarp_fwhm: (a floating point number >= 0.0)
+                gaussian smoothing kernel width for unwarp
+        fwhm: (a floating point number >= 0.0)
+                gaussian smoothing kernel width
+        interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        out_prefix: (a string, nipype default value: u)
+                realigned and unwarped output prefix
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        phase_map: (a file name)
+                Voxel displacement map to use in unwarping. Unlike SPM standard
+                behaviour, the same map will be used for all sessions
+        quality: (0.0 <= a floating point number <= 1.0)
+                0.1 = fast, 1.0 = precise
+        register_to_mean: (a boolean)
+                Indicate whether realignment is done to the mean image
+        reslice_interp: (0 <= a long integer <= 7)
+                degree of b-spline used for interpolation
+        reslice_mask: (a boolean)
+                True/False mask output image
+        reslice_which: (a list of items which are a value of class 'int',
+                 nipype default value: [2, 1])
+                determines which images to reslice
+        reslice_wrap: (a list of from 3 to 3 items which are an integer (int
+                 or long))
+                Check if interpolation should wrap in [x,y,z]
+        separation: (a floating point number >= 0.0)
+                sampling separation in mm
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        weight_img: (an existing file name)
+                filename of weighting image
+        wrap: (a list of from 3 to 3 items which are an integer (int or
+                 long))
+                Check if interpolation should wrap in [x,y,z]
+
+Outputs::
+
+        mean_image: (an existing file name)
+                Mean image file from the realignment & unwarping
+        modified_in_files: (a list of items which are a list of items which
+                 are an existing file name or an existing file name)
+                Copies of all files passed to in_files. Headers will have been
+                modified to align all images with the first, or optionally to first
+                do that, extract a mean image, and re-align to that mean image.
+        realigned_unwarped_files: (a list of items which are a list of items
+                 which are an existing file name or an existing file name)
+                Realigned and unwarped files written to disc.
+        realignment_parameters: (a list of items which are an existing file
+                 name)
+                Estimated translation and rotation parameters
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.Segment:
+
+
+.. index:: Segment
+
+Segment
+-------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L1405>`__
+
+use spm_segment to separate structural images into different
+tissue classes.
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=209
+
+Examples
+~~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> seg = spm.Segment()
+>>> seg.inputs.data = 'structural.nii'
+>>> seg.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        data: (a list of items which are an existing, uncompressed file
+                 (valid extensions: [.img, .nii, .hdr]))
+                one scan per subject
+
+        [Optional]
+        affine_regularization: ('mni' or 'eastern' or 'subj' or 'none' or '')
+                Possible options: "mni", "eastern", "subj", "none" (no
+                reguralisation), "" (no affine registration)
+        bias_fwhm: (30 or 40 or 50 or 60 or 70 or 80 or 90 or 100 or 110 or
+                 120 or 130 or 'Inf')
+                FWHM of Gaussian smoothness of bias
+        bias_regularization: (0 or 1e-05 or 0.0001 or 0.001 or 0.01 or 0.1 or
+                 1 or 10)
+                no(0) - extremely heavy (10)
+        clean_masks: ('no' or 'light' or 'thorough')
+                clean using estimated brain mask ('no','light','thorough')
+        csf_output_type: (a list of from 3 to 3 items which are a boolean)
+                 Options to produce CSF images: c3*.img, wc3*.img and mwc3*.img.
+                 None: [False,False,False],
+                 Native Space: [False,False,True],
+                 Unmodulated Normalised: [False,True,False],
+                 Modulated Normalised: [True,False,False],
+                 Native + Unmodulated Normalised: [False,True,True],
+                 Native + Modulated Normalised: [True,False,True],
+                 Native + Modulated + Unmodulated: [True,True,True],
+                 Modulated + Unmodulated Normalised: [True,True,False]
+        gaussians_per_class: (a list of items which are an integer (int or
+                 long))
+                num Gaussians capture intensity distribution
+        gm_output_type: (a list of from 3 to 3 items which are a boolean)
+                Options to produce grey matter images: c1*.img, wc1*.img and
+                mwc1*.img.
+                 None: [False,False,False],
+                 Native Space: [False,False,True],
+                 Unmodulated Normalised: [False,True,False],
+                 Modulated Normalised: [True,False,False],
+                 Native + Unmodulated Normalised: [False,True,True],
+                 Native + Modulated Normalised: [True,False,True],
+                 Native + Modulated + Unmodulated: [True,True,True],
+                 Modulated + Unmodulated Normalised: [True,True,False]
+        mask_image: (an existing file name)
+                Binary image to restrict parameter estimation
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        sampling_distance: (a float)
+                Sampling distance on data for parameter estimation
+        save_bias_corrected: (a boolean)
+                True/False produce a bias corrected image
+        tissue_prob_maps: (a list of items which are an existing file name)
+                list of gray, white & csf prob. (opt,)
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        warp_frequency_cutoff: (a float)
+                Cutoff of DCT bases
+        warping_regularization: (a float)
+                Controls balance between parameters and data
+        wm_output_type: (a list of from 3 to 3 items which are a boolean)
+                 Options to produce white matter images: c2*.img, wc2*.img and
+                mwc2*.img.
+                 None: [False,False,False],
+                 Native Space: [False,False,True],
+                 Unmodulated Normalised: [False,True,False],
+                 Modulated Normalised: [True,False,False],
+                 Native + Unmodulated Normalised: [False,True,True],
+                 Native + Modulated Normalised: [True,False,True],
+                 Native + Modulated + Unmodulated: [True,True,True],
+                 Modulated + Unmodulated Normalised: [True,True,False]
+
+Outputs::
+
+        bias_corrected_image: (a file name)
+                bias-corrected version of input image
+        inverse_transformation_mat: (an existing file name)
+                Inverse normalization info
+        modulated_csf_image: (a file name)
+                modulated, normalized csf probability map
+        modulated_gm_image: (a file name)
+                modulated, normalized grey probability map
+        modulated_input_image: (a file name)
+                bias-corrected version of input image
+        modulated_wm_image: (a file name)
+                modulated, normalized white probability map
+        native_csf_image: (a file name)
+                native space csf probability map
+        native_gm_image: (a file name)
+                native space grey probability map
+        native_wm_image: (a file name)
+                native space white probability map
+        normalized_csf_image: (a file name)
+                normalized csf probability map
+        normalized_gm_image: (a file name)
+                normalized grey probability map
+        normalized_wm_image: (a file name)
+                normalized white probability map
+        transformation_mat: (an existing file name)
+                Normalization transformation
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.SliceTiming:
+
+
+.. index:: SliceTiming
+
+SliceTiming
+-----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L204>`__
+
+Use spm to perform slice timing correction.
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=19
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.spm import SliceTiming
+>>> st = SliceTiming()
+>>> st.inputs.in_files = 'functional.nii'
+>>> st.inputs.num_slices = 32
+>>> st.inputs.time_repetition = 6.0
+>>> st.inputs.time_acquisition = 6. - 6./32.
+>>> st.inputs.slice_order = list(range(32,0,-1))
+>>> st.inputs.ref_slice = 1
+>>> st.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_files: (a list of items which are a list of items which are an
+                 existing, uncompressed file (valid extensions: [.img, .nii, .hdr])
+                 or an existing, uncompressed file (valid extensions: [.img, .nii,
+                 .hdr]))
+                list of filenames to apply slice timing
+        num_slices: (an integer (int or long))
+                number of slices in a volume
+        ref_slice: (an integer (int or long))
+                1-based Number of the reference slice or reference time point if
+                slice_order is in onsets (ms)
+        slice_order: (a list of items which are a float)
+                1-based order or onset (in ms) in which slices are acquired
+        time_acquisition: (a float)
+                time of volume acquisition. usuallycalculated as TR-(TR/num_slices)
+        time_repetition: (a float)
+                time between volume acquisitions(start to start time)
+
+        [Optional]
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        out_prefix: (a string, nipype default value: a)
+                slicetimed output prefix
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+
+Outputs::
+
+        timecorrected_files: (a list of items which are a list of items which
+                 are an existing file name or an existing file name)
+                slice time corrected files
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.Smooth:
+
+
+.. index:: Smooth
+
+Smooth
+------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L1717>`__
+
+Use spm_smooth for 3D Gaussian smoothing of image volumes.
+
+http://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf#page=55
+
+Examples
+~~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> smooth = spm.Smooth()
+>>> smooth.inputs.in_files = 'functional.nii'
+>>> smooth.inputs.fwhm = [4, 4, 4]
+>>> smooth.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_files: (a list of items which are an existing, uncompressed file
+                 (valid extensions: [.img, .nii, .hdr]))
+                list of files to smooth
+
+        [Optional]
+        data_type: (an integer (int or long))
+                Data type of the output images
+        fwhm: (a list of from 3 to 3 items which are a float or a float)
+                3-list of fwhm for each dimension
+        implicit_masking: (a boolean)
+                A mask implied by a particularvoxel value
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        out_prefix: (a string, nipype default value: s)
+                smoothed output prefix
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+
+Outputs::
+
+        smoothed_files: (a list of items which are an existing file name)
+                smoothed files
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')
+
+.. _nipype.interfaces.spm.preprocess.VBMSegment:
+
+
+.. index:: VBMSegment
+
+VBMSegment
+----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/spm/preprocess.py#L2327>`__
+
+Use VBM8 toolbox to separate structural images into different
+tissue classes.
+
+Example
+~~~~~~~
+>>> import nipype.interfaces.spm as spm
+>>> seg = spm.VBMSegment()
+>>> seg.inputs.tissues = 'TPM.nii'
+>>> seg.inputs.dartel_template = 'Template_1_IXI550_MNI152.nii'
+>>> seg.inputs.bias_corrected_native = True
+>>> seg.inputs.gm_native = True
+>>> seg.inputs.wm_native = True
+>>> seg.inputs.csf_native = True
+>>> seg.inputs.pve_label_native = True
+>>> seg.inputs.deformation_field = (True, False)
+>>> seg.run() # doctest: +SKIP
+
+Inputs::
+
+        [Mandatory]
+        in_files: (a list of items which are an existing, uncompressed file
+                 (valid extensions: [.img, .nii, .hdr]))
+                A list of files to be segmented
+
+        [Optional]
+        bias_corrected_affine: (a boolean, nipype default value: False)
+        bias_corrected_native: (a boolean, nipype default value: False)
+        bias_corrected_normalized: (a boolean, nipype default value: True)
+        bias_fwhm: (30 or 40 or 50 or 60 or 70 or 80 or 90 or 100 or 110 or
+                 120 or 130 or 'Inf', nipype default value: 60)
+                FWHM of Gaussian smoothness of bias
+        bias_regularization: (0 or 1e-05 or 0.0001 or 0.001 or 0.01 or 0.1 or
+                 1 or 10, nipype default value: 0.0001)
+                no(0) - extremely heavy (10)
+        cleanup_partitions: (an integer (int or long), nipype default value:
+                 1)
+                0=None,1=light,2=thorough
+        csf_dartel: (0 <= a long integer <= 2, nipype default value: 0)
+                0=None,1=rigid(SPM8 default),2=affine
+        csf_modulated_normalized: (0 <= a long integer <= 2, nipype default
+                 value: 2)
+                0=none,1=affine+non-linear(SPM8 default),2=non-linear only
+        csf_native: (a boolean, nipype default value: False)
+        csf_normalized: (a boolean, nipype default value: False)
+        dartel_template: (an existing, uncompressed file (valid extensions:
+                 [.img, .nii, .hdr]))
+        deformation_field: (a tuple of the form: (a boolean, a boolean),
+                 nipype default value: (0, 0))
+                forward and inverse field
+        display_results: (a boolean, nipype default value: True)
+        gaussians_per_class: (a tuple of the form: (an integer (int or long),
+                 an integer (int or long), an integer (int or long), an integer (int
+                 or long), an integer (int or long), an integer (int or long)),
+                 nipype default value: (2, 2, 2, 3, 4, 2))
+                number of gaussians for each tissue class
+        gm_dartel: (0 <= a long integer <= 2, nipype default value: 0)
+                0=None,1=rigid(SPM8 default),2=affine
+        gm_modulated_normalized: (0 <= a long integer <= 2, nipype default
+                 value: 2)
+                0=none,1=affine+non-linear(SPM8 default),2=non-linear only
+        gm_native: (a boolean, nipype default value: False)
+        gm_normalized: (a boolean, nipype default value: False)
+        jacobian_determinant: (a boolean, nipype default value: False)
+        matlab_cmd: (a unicode string)
+                matlab command to use
+        mfile: (a boolean, nipype default value: True)
+                Run m-code using m-file
+        mrf_weighting: (a float, nipype default value: 0.15)
+        paths: (a list of items which are a directory name)
+                Paths to add to matlabpath
+        pve_label_dartel: (0 <= a long integer <= 2, nipype default value: 0)
+                0=None,1=rigid(SPM8 default),2=affine
+        pve_label_native: (a boolean, nipype default value: False)
+        pve_label_normalized: (a boolean, nipype default value: False)
+        sampling_distance: (a float, nipype default value: 3)
+                Sampling distance on data for parameter estimation
+        spatial_normalization: ('high' or 'low', nipype default value: high)
+        tissues: (an existing, uncompressed file (valid extensions: [.img,
+                 .nii, .hdr]))
+                tissue probability map
+        use_mcr: (a boolean)
+                Run m-code using SPM MCR
+        use_sanlm_denoising_filter: (0 <= a long integer <= 2, nipype default
+                 value: 2)
+                0=No denoising, 1=denoising,2=denoising multi-threaded
+        use_v8struct: (a boolean, nipype default value: True)
+                Generate SPM8 and higher compatible jobs
+        warping_regularization: (a float, nipype default value: 4)
+                Controls balance between parameters and data
+        wm_dartel: (0 <= a long integer <= 2, nipype default value: 0)
+                0=None,1=rigid(SPM8 default),2=affine
+        wm_modulated_normalized: (0 <= a long integer <= 2, nipype default
+                 value: 2)
+                0=none,1=affine+non-linear(SPM8 default),2=non-linear only
+        wm_native: (a boolean, nipype default value: False)
+        wm_normalized: (a boolean, nipype default value: False)
+
+Outputs::
+
+        bias_corrected_images: (a list of items which are an existing file
+                 name)
+                bias corrected images
+        dartel_input_images: (a list of items which are a list of items which
+                 are an existing file name)
+                dartel imported class images
+        forward_deformation_field: (a list of items which are an existing
+                 file name)
+        inverse_deformation_field: (a list of items which are an existing
+                 file name)
+        jacobian_determinant_images: (a list of items which are an existing
+                 file name)
+        modulated_class_images: (a list of items which are a list of items
+                 which are an existing file name)
+                modulated+normalized class images
+        native_class_images: (a list of items which are a list of items which
+                 are an existing file name)
+                native space probability maps
+        normalized_bias_corrected_images: (a list of items which are an
+                 existing file name)
+                bias corrected images
+        normalized_class_images: (a list of items which are a list of items
+                 which are an existing file name)
+                normalized class images
+        pve_label_native_images: (a list of items which are an existing file
+                 name)
+        pve_label_normalized_images: (a list of items which are an existing
+                 file name)
+        pve_label_registered_images: (a list of items which are an existing
+                 file name)
+        transformation_mat: (a list of items which are an existing file name)
+                Normalization transformation
+
+References::
+BibTeX('@book{FrackowiakFristonFrithDolanMazziotta1997,author={R.S.J. Frackowiak, K.J. Friston, C.D. Frith, R.J. Dolan, and J.C. Mazziotta},title={Human Brain Function},publisher={Academic Press USA},year={1997},}', key='FrackowiakFristonFrithDolanMazziotta1997')

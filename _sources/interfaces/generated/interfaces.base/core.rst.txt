@@ -1,0 +1,321 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+interfaces.base.core
+====================
+
+
+.. _nipype.interfaces.base.core.BaseInterface:
+
+
+.. index:: BaseInterface
+
+BaseInterface
+-------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/core.py#L135>`__
+
+Implements common interface functionality.
+
+Implements
+~~~~~~~~~~
+
+* Initializes inputs/outputs from input_spec/output_spec
+* Provides help based on input_spec and output_spec
+* Checks for mandatory inputs before running an interface
+* Runs an interface and returns results
+* Determines which inputs should be copied or linked to cwd
+
+This class does not implement aggregate_outputs, input_spec or
+output_spec. These should be defined by derived classes.
+
+This class cannot be instantiated.
+
+
+Relevant Interface attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``input_spec`` points to the traited class for the inputs
+``output_spec`` points to the traited class for the outputs
+``_redirect_x`` should be set to ``True`` when the interface requires
+  connecting to a ``$DISPLAY`` (default is ``False``).
+``resource_monitor`` if ``False`` prevents resource-monitoring this
+  interface, if ``True`` monitoring will be enabled IFF the general
+  Nipype config is set on (``resource_monitor = true``).
+
+Inputs::
+
+        None
+
+Outputs::
+
+        None
+
+.. _nipype.interfaces.base.core.CommandLine:
+
+
+.. index:: CommandLine
+
+CommandLine
+-----------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/core.py#L864>`__
+
+Wraps command **None**
+
+Implements functionality to interact with command line programs
+class must be instantiated with a command argument
+
+Parameters
+~~~~~~~~~~
+
+command : string
+    define base immutable `command` you wish to run
+
+args : string, optional
+    optional arguments passed to base `command`
+
+
+Examples
+~~~~~~~~
+>>> import pprint
+>>> from nipype.interfaces.base import CommandLine
+>>> cli = CommandLine(command='ls', environ={'DISPLAY': ':1'})
+>>> cli.inputs.args = '-al'
+>>> cli.cmdline
+'ls -al'
+
+# Use get_traitsfree() to check all inputs set
+>>> pprint.pprint(cli.inputs.get_traitsfree())  # doctest:
+{'args': '-al',
+ 'environ': {'DISPLAY': ':1'}}
+
+>>> cli.inputs.get_hashval()[0][0]
+('args', '-al')
+>>> cli.inputs.get_hashval()[1]
+'11c37f97649cd61627f4afe5136af8c0'
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+
+Outputs::
+
+        None
+
+.. _nipype.interfaces.base.core.LibraryBaseInterface:
+
+
+.. index:: LibraryBaseInterface
+
+LibraryBaseInterface
+--------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/core.py#L1300>`__
+
+Inputs::
+
+        None
+
+Outputs::
+
+        None
+
+.. _nipype.interfaces.base.core.MpiCommandLine:
+
+
+.. index:: MpiCommandLine
+
+MpiCommandLine
+--------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/core.py#L1229>`__
+
+Wraps command **None**
+
+Implements functionality to interact with command line programs
+that can be run with MPI (i.e. using 'mpiexec').
+
+Examples
+~~~~~~~~
+>>> from nipype.interfaces.base import MpiCommandLine
+>>> mpi_cli = MpiCommandLine(command='my_mpi_prog')
+>>> mpi_cli.inputs.args = '-v'
+>>> mpi_cli.cmdline
+'my_mpi_prog -v'
+
+>>> mpi_cli.inputs.use_mpi = True
+>>> mpi_cli.inputs.n_procs = 8
+>>> mpi_cli.cmdline
+'mpiexec -n 8 my_mpi_prog -v'
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        n_procs: (an integer (int or long))
+                Num processors to specify to mpiexec. Do not specify if this is
+                managed externally (e.g. through SGE)
+        use_mpi: (a boolean, nipype default value: False)
+                Whether or not to run the command with mpiexec
+
+Outputs::
+
+        None
+
+.. _nipype.interfaces.base.core.SEMLikeCommandLine:
+
+
+.. index:: SEMLikeCommandLine
+
+SEMLikeCommandLine
+------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/core.py#L1260>`__
+
+Wraps command **None**
+
+In SEM derived interface all outputs have corresponding inputs.
+However, some SEM commands create outputs that are not defined in the XML.
+In those cases one has to create a subclass of the autogenerated one and
+overload the _list_outputs method. _outputs_from_inputs should still be
+used but only for the reduced (by excluding those that do not have
+corresponding inputs list of outputs.
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+
+Outputs::
+
+        None
+
+.. _nipype.interfaces.base.core.SimpleInterface:
+
+
+.. index:: SimpleInterface
+
+SimpleInterface
+---------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/core.py#L686>`__
+
+An interface pattern that allows outputs to be set in a dictionary
+called ``_results`` that is automatically interpreted by
+``_list_outputs()`` to find the outputs.
+
+When implementing ``_run_interface``, set outputs with::
+
+    self._results[out_name] = out_value
+
+This can be a way to upgrade a ``Function`` interface to do type checking.
+
+Examples
+~~~~~~~~
+
+>>> from nipype.interfaces.base import (
+...     SimpleInterface, BaseInterfaceInputSpec, TraitedSpec)
+
+>>> def double(x):
+...    return 2 * x
+~~~
+>>> class DoubleInputSpec(BaseInterfaceInputSpec):
+...     x = traits.Float(mandatory=True)
+~~~
+>>> class DoubleOutputSpec(TraitedSpec):
+...     doubled = traits.Float()
+~~~
+>>> class Double(SimpleInterface):
+...     input_spec = DoubleInputSpec
+...     output_spec = DoubleOutputSpec
+~~~
+...     def _run_interface(self, runtime):
+...          self._results['doubled'] = double(self.inputs.x)
+...          return runtime
+
+>>> dbl = Double()
+>>> dbl.inputs.x = 2
+>>> dbl.run().outputs.doubled
+4.0
+
+Inputs::
+
+        None
+
+Outputs::
+
+        None
+
+.. _nipype.interfaces.base.core.StdOutCommandLine:
+
+
+.. index:: StdOutCommandLine
+
+StdOutCommandLine
+-----------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/core.py#L1219>`__
+
+Wraps command **None**
+
+
+Inputs::
+
+        [Mandatory]
+
+        [Optional]
+        args: (a unicode string)
+                Additional parameters to the command
+                flag: %s
+        environ: (a dictionary with keys which are a bytes or None or a value
+                 of class 'str' and with values which are a bytes or None or a value
+                 of class 'str', nipype default value: {})
+                Environment variables
+        out_file: (a file name)
+                flag: > %s, position: -1
+
+Outputs::
+
+        None
+
+.. module:: nipype.interfaces.base.core
+
+
+.. _nipype.interfaces.base.core.run_command:
+
+:func:`run_command`
+-------------------
+
+`Link to code <http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/base/core.py#L735>`__
+
+
+
+Run a command, read stdout and stderr, prefix with timestamp.
+
+The returned runtime contains a merged stdout+stderr log with timestamps
+

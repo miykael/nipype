@@ -1,0 +1,726 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.niftyreg.regutils</a><ul>
+<li><a class="reference internal" href="#regaverage">RegAverage</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#regjacobian">RegJacobian</a><ul>
+<li><a class="reference internal" href="#id2">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#regmeasure">RegMeasure</a><ul>
+<li><a class="reference internal" href="#id4">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#regresample">RegResample</a><ul>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#regtools">RegTools</a><ul>
+<li><a class="reference internal" href="#id8">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#regtransform">RegTransform</a><ul>
+<li><a class="reference internal" href="#id10">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-niftyreg-regutils">
+<h1>interfaces.niftyreg.regutils<a class="headerlink" href="#interfaces-niftyreg-regutils" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-niftyreg-regutils-regaverage"></span><div class="section" id="regaverage">
+<span id="index-0"></span><h2>RegAverage<a class="headerlink" href="#regaverage" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyreg/regutils.py#L437">Link to code</a></p>
+<p>Wraps command <strong>reg_average</strong></p>
+<p>Interface for executable reg_average from NiftyReg platform.</p>
+<p>Compute average matrix or image from a list of matrices or image.
+The tool can be use to resample images given input transformation
+parametrisation as well as to demean transformations in Euclidean or
+log-Euclidean space.</p>
+<p>This interface is different than the others in the way that the options
+will be written in a command file that is given as a parameter.</p>
+<p><a class="reference external" href="https://cmiclab.cs.ucl.ac.uk/mmodat/niftyreg">Source code</a></p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyreg</span><span class="o">.</span><span class="n">RegAverage</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">one_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">two_file</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">three_file</span> <span class="o">=</span> <span class="s1">&#39;im3.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">avg_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">one_file</span><span class="p">,</span> <span class="n">two_file</span><span class="p">,</span> <span class="n">three_file</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>  <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;reg_average --cmd_file .../reg_average_cmd&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+avg_files: (a list of items which are a file name)
+        Averaging of images/affine transformations
+        flag: -avg %s, position: 1
+        mutually_exclusive: avg_lts_files, avg_ref_file, demean1_ref_file,
+         demean2_ref_file, demean3_ref_file, warp_files
+avg_lts_files: (a list of items which are a file name)
+        Robust average of affine transformations
+        flag: -avg_lts %s, position: 1
+        mutually_exclusive: avg_files, avg_ref_file, demean1_ref_file,
+         demean2_ref_file, demean3_ref_file, warp_files
+avg_ref_file: (a file name)
+        All input images are resampled into the space of &lt;reference image&gt;
+        and averaged. A cubic spline interpolation scheme is used for
+        resampling
+        flag: -avg_tran %s, position: 1
+        mutually_exclusive: avg_files, avg_lts_files, demean1_ref_file,
+         demean2_ref_file, demean3_ref_file
+        requires: warp_files
+demean1_ref_file: (a file name)
+        Average images and demean average image that have affine
+        transformations to a common space
+        flag: -demean1 %s, position: 1
+        mutually_exclusive: avg_files, avg_lts_files, avg_ref_file,
+         demean2_ref_file, demean3_ref_file
+        requires: warp_files
+demean2_ref_file: (a file name)
+        Average images and demean average image that have non-rigid
+        transformations to a common space
+        flag: -demean2 %s, position: 1
+        mutually_exclusive: avg_files, avg_lts_files, avg_ref_file,
+         demean1_ref_file, demean3_ref_file
+        requires: warp_files
+demean3_ref_file: (a file name)
+        Average images and demean average image that have linear and non-
+        rigid transformations to a common space
+        flag: -demean3 %s, position: 1
+        mutually_exclusive: avg_files, avg_lts_files, avg_ref_file,
+         demean1_ref_file, demean2_ref_file
+        requires: warp_files
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+omp_core_val: (an integer (int or long), nipype default value: 1)
+        Number of openmp thread to use
+        flag: -omp %i
+out_file: (a file name)
+        Output file name
+        flag: %s, position: 0
+warp_files: (a list of items which are a file name)
+        transformation files and floating image pairs/triplets to the
+        reference space
+        flag: %s, position: -1
+        mutually_exclusive: avg_files, avg_lts_files
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">file</span> <span class="n">name</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyreg-regutils-regjacobian"></span></div>
+</div>
+<div class="section" id="regjacobian">
+<span id="index-1"></span><h2>RegJacobian<a class="headerlink" href="#regjacobian" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyreg/regutils.py#L161">Link to code</a></p>
+<p>Wraps command <strong>reg_jacobian</strong></p>
+<p>Interface for executable reg_resample from NiftyReg platform.</p>
+<p>Tool to generate Jacobian determinant maps from transformation
+parametrisation generated by reg_f3d</p>
+<p><a class="reference external" href="https://cmiclab.cs.ucl.ac.uk/mmodat/niftyreg">Source code</a></p>
+<div class="section" id="id2">
+<h3>Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyreg</span><span class="o">.</span><span class="n">RegJacobian</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">ref_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">trans_file</span> <span class="o">=</span> <span class="s1">&#39;warpfield.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">omp_core_val</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;reg_jacobian -omp 4 -ref im1.nii -trans warpfield.nii -jac warpfield_jac.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+trans_file: (an existing file name)
+        The input non-rigid transformation
+        flag: -trans %s
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+omp_core_val: (an integer (int or long), nipype default value: 1)
+        Number of openmp thread to use
+        flag: -omp %i
+out_file: (a file name)
+        The output jacobian determinant file name
+        flag: %s, position: -1
+ref_file: (an existing file name)
+        Reference/target file (required if specifying CPP transformations.
+        flag: -ref %s
+type: (&#39;jac&#39; or &#39;jacL&#39; or &#39;jacM&#39;, nipype default value: jac)
+        Type of jacobian outcome
+        flag: -%s, position: -2
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyreg-regutils-regmeasure"></span></div>
+</div>
+<div class="section" id="regmeasure">
+<span id="index-2"></span><h2>RegMeasure<a class="headerlink" href="#regmeasure" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyreg/regutils.py#L805">Link to code</a></p>
+<p>Wraps command <strong>reg_measure</strong></p>
+<p>Interface for executable reg_measure from NiftyReg platform.</p>
+<p>Given two input images, compute the specified measure(s) of similarity</p>
+<p><a class="reference external" href="https://cmiclab.cs.ucl.ac.uk/mmodat/niftyreg">Source code</a></p>
+<div class="section" id="id4">
+<h3>Examples<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyreg</span><span class="o">.</span><span class="n">RegMeasure</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">ref_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">flo_file</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">measure_type</span> <span class="o">=</span> <span class="s1">&#39;lncc&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">omp_core_val</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;reg_measure -flo im2.nii -lncc -omp 4 -out im2_lncc.txt -ref im1.nii&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+flo_file: (an existing file name)
+        The input floating/source image
+        flag: -flo %s
+measure_type: (&#39;ncc&#39; or &#39;lncc&#39; or &#39;nmi&#39; or &#39;ssd&#39;)
+        Measure of similarity to compute
+        flag: -%s
+ref_file: (an existing file name)
+        The input reference/target image
+        flag: -ref %s
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+omp_core_val: (an integer (int or long), nipype default value: 1)
+        Number of openmp thread to use
+        flag: -omp %i
+out_file: (a file name)
+        The output text file containing the measure
+        flag: -out %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">text</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">the</span> <span class="n">measure</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyreg-regutils-regresample"></span></div>
+</div>
+<div class="section" id="regresample">
+<span id="index-3"></span><h2>RegResample<a class="headerlink" href="#regresample" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyreg/regutils.py#L88">Link to code</a></p>
+<p>Wraps command <strong>reg_resample</strong></p>
+<p>Interface for executable reg_resample from NiftyReg platform.</p>
+<p>Tool to resample floating image in the space of a defined reference image
+given a transformation parametrisation generated by reg_aladin, reg_f3d or
+reg_transform</p>
+<p><a class="reference external" href="https://cmiclab.cs.ucl.ac.uk/mmodat/niftyreg">Source code</a></p>
+<div class="section" id="id6">
+<h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyreg</span><span class="o">.</span><span class="n">RegResample</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">ref_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">flo_file</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">trans_file</span> <span class="o">=</span> <span class="s1">&#39;warpfield.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inter_val</span> <span class="o">=</span> <span class="s1">&#39;LIN&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">omp_core_val</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;reg_resample -flo im2.nii -inter 1 -omp 4 -ref im1.nii -trans warpfield.nii -res im2_res.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+flo_file: (an existing file name)
+        The input floating/source image
+        flag: -flo %s
+ref_file: (an existing file name)
+        The input reference/target image
+        flag: -ref %s
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+inter_val: (&#39;NN&#39; or &#39;LIN&#39; or &#39;CUB&#39; or &#39;SINC&#39;)
+        Interpolation type
+        flag: -inter %d
+omp_core_val: (an integer (int or long), nipype default value: 1)
+        Number of openmp thread to use
+        flag: -omp %i
+out_file: (a file name)
+        The output filename of the transformed image
+        flag: %s, position: -1
+pad_val: (a float)
+        Padding value
+        flag: -pad %f
+psf_alg: (0 or 1)
+        Minimise the matrix metric (0) or the determinant (1) when
+        estimating the PSF [0]
+        flag: -psf_alg %d
+psf_flag: (a boolean)
+        Perform the resampling in two steps to resample an image to a lower
+        resolution
+        flag: -psf
+tensor_flag: (a boolean)
+        Resample Tensor Map
+        flag: -tensor
+trans_file: (an existing file name)
+        The input transformation file
+        flag: -trans %s
+type: (&#39;res&#39; or &#39;blank&#39;, nipype default value: res)
+        Type of output
+        flag: -%s, position: -2
+verbosity_off_flag: (a boolean)
+        Turn off verbose output
+        flag: -voff
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">transformed</span> <span class="n">image</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyreg-regutils-regtools"></span></div>
+</div>
+<div class="section" id="regtools">
+<span id="index-4"></span><h2>RegTools<a class="headerlink" href="#regtools" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyreg/regutils.py#L306">Link to code</a></p>
+<p>Wraps command <strong>reg_tools</strong></p>
+<p>Interface for executable reg_tools from NiftyReg platform.</p>
+<p>Tool delivering various actions related to registration such as
+resampling the input image to a chosen resolution or remove the nan and
+inf in the input image by a specified value.</p>
+<p><a class="reference external" href="https://cmiclab.cs.ucl.ac.uk/mmodat/niftyreg">Source code</a></p>
+<div class="section" id="id8">
+<h3>Examples<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyreg</span><span class="o">.</span><span class="n">RegTools</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">mul_val</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">omp_core_val</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;reg_tools -in im1.nii -mul 4.0 -omp 4 -out im1_tools.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        The input image file path
+        flag: -in %s
+
+[Optional]
+add_val: (a float or an existing file name)
+        Add to the input image or value
+        flag: -add %s
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+bin_flag: (a boolean)
+        Binarise the input image
+        flag: -bin
+chg_res_val: (a tuple of the form: (a float, a float, a float))
+        Change the resolution of the input image
+        flag: -chgres %f %f %f
+div_val: (a float or an existing file name)
+        Divide the input by image or value
+        flag: -div %s
+down_flag: (a boolean)
+        Downsample the image by a factor of 2
+        flag: -down
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+inter_val: (&#39;NN&#39; or &#39;LIN&#39; or &#39;CUB&#39; or &#39;SINC&#39;)
+        Interpolation order to use to warp the floating image
+        flag: -interp %d
+iso_flag: (a boolean)
+        Make output image isotropic
+        flag: -iso
+mask_file: (an existing file name)
+        Values outside the mask are set to NaN
+        flag: -nan %s
+mul_val: (a float or an existing file name)
+        Multiply the input by image or value
+        flag: -mul %s
+noscl_flag: (a boolean)
+        Set scale, slope to 0 and 1
+        flag: -noscl
+omp_core_val: (an integer (int or long), nipype default value: 1)
+        Number of openmp thread to use
+        flag: -omp %i
+out_file: (a file name)
+        The output file name
+        flag: -out %s
+rms_val: (an existing file name)
+        Compute the mean RMS between the images
+        flag: -rms %s
+smo_g_val: (a tuple of the form: (a float, a float, a float))
+        Smooth the input image using a Gaussian kernel
+        flag: -smoG %f %f %f
+smo_s_val: (a tuple of the form: (a float, a float, a float))
+        Smooth the input image using a cubic spline kernel
+        flag: -smoS %f %f %f
+sub_val: (a float or an existing file name)
+        Add to the input image or value
+        flag: -sub %s
+thr_val: (a float)
+        Binarise the input image with the given threshold
+        flag: -thr %f
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyreg-regutils-regtransform"></span></div>
+</div>
+<div class="section" id="regtransform">
+<span id="index-5"></span><h2>RegTransform<a class="headerlink" href="#regtransform" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyreg/regutils.py#L683">Link to code</a></p>
+<p>Wraps command <strong>reg_transform</strong></p>
+<p>Interface for executable reg_transform from NiftyReg platform.</p>
+<p>Tools to convert transformation parametrisation from one type to another
+as well as to compose, inverse or half transformations.</p>
+<p><a class="reference external" href="https://cmiclab.cs.ucl.ac.uk/mmodat/niftyreg">Source code</a></p>
+<div class="section" id="id10">
+<h3>Examples<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">niftyreg</span><span class="o">.</span><span class="n">RegTransform</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">def_input</span> <span class="o">=</span> <span class="s1">&#39;warpfield.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">omp_core_val</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">cmdline</span>  <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;reg_transform -omp 4 -def warpfield.nii .../warpfield_trans.nii.gz&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+
+[Optional]
+aff_2_rig_input: (an existing file name)
+        Extract the rigid component from affine transformation
+        flag: -aff2rig %s, position: -2
+        mutually_exclusive: def_input, disp_input, flow_input, comp_input,
+         upd_s_form_input, inv_aff_input, inv_nrr_input, half_input,
+         make_aff_input, flirt_2_nr_input
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+comp_input: (an existing file name)
+        compose two transformations
+        flag: -comp %s, position: -3
+        mutually_exclusive: def_input, disp_input, flow_input,
+         upd_s_form_input, inv_aff_input, inv_nrr_input, half_input,
+         make_aff_input, aff_2_rig_input, flirt_2_nr_input
+        requires: comp_input2
+comp_input2: (an existing file name)
+        compose two transformations
+        flag: %s, position: -2
+def_input: (an existing file name)
+        Compute deformation field from transformation
+        flag: -def %s, position: -2
+        mutually_exclusive: disp_input, flow_input, comp_input,
+         upd_s_form_input, inv_aff_input, inv_nrr_input, half_input,
+         make_aff_input, aff_2_rig_input, flirt_2_nr_input
+disp_input: (an existing file name)
+        Compute displacement field from transformation
+        flag: -disp %s, position: -2
+        mutually_exclusive: def_input, flow_input, comp_input,
+         upd_s_form_input, inv_aff_input, inv_nrr_input, half_input,
+         make_aff_input, aff_2_rig_input, flirt_2_nr_input
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+flirt_2_nr_input: (a tuple of the form: (an existing file name, an
+         existing file name, an existing file name))
+        Convert a FLIRT affine transformation to niftyreg affine
+        transformation
+        flag: -flirtAff2NR %s %s %s, position: -2
+        mutually_exclusive: def_input, disp_input, flow_input, comp_input,
+         upd_s_form_input, inv_aff_input, inv_nrr_input, half_input,
+         make_aff_input, aff_2_rig_input
+flow_input: (an existing file name)
+        Compute flow field from spline SVF
+        flag: -flow %s, position: -2
+        mutually_exclusive: def_input, disp_input, comp_input,
+         upd_s_form_input, inv_aff_input, inv_nrr_input, half_input,
+         make_aff_input, aff_2_rig_input, flirt_2_nr_input
+half_input: (an existing file name)
+        Half way to the input transformation
+        flag: -half %s, position: -2
+        mutually_exclusive: def_input, disp_input, flow_input, comp_input,
+         upd_s_form_input, inv_aff_input, inv_nrr_input, make_aff_input,
+         aff_2_rig_input, flirt_2_nr_input
+inv_aff_input: (an existing file name)
+        Invert an affine transformation
+        flag: -invAff %s, position: -2
+        mutually_exclusive: def_input, disp_input, flow_input, comp_input,
+         upd_s_form_input, inv_nrr_input, half_input, make_aff_input,
+         aff_2_rig_input, flirt_2_nr_input
+inv_nrr_input: (a tuple of the form: (an existing file name, an
+         existing file name))
+        Invert a non-linear transformation
+        flag: -invNrr %s %s, position: -2
+        mutually_exclusive: def_input, disp_input, flow_input, comp_input,
+         upd_s_form_input, inv_aff_input, half_input, make_aff_input,
+         aff_2_rig_input, flirt_2_nr_input
+make_aff_input: (a tuple of the form: (a float, a float, a float, a
+         float, a float, a float, a float, a float, a float, a float, a
+         float, a float))
+        Make an affine transformation matrix
+        flag: -makeAff %f %f %f %f %f %f %f %f %f %f %f %f, position: -2
+        mutually_exclusive: def_input, disp_input, flow_input, comp_input,
+         upd_s_form_input, inv_aff_input, inv_nrr_input, half_input,
+         aff_2_rig_input, flirt_2_nr_input
+omp_core_val: (an integer (int or long), nipype default value: 1)
+        Number of openmp thread to use
+        flag: -omp %i
+out_file: (a file name)
+        transformation file to write
+        flag: %s, position: -1
+ref1_file: (an existing file name)
+        The input reference/target image
+        flag: -ref %s, position: 0
+ref2_file: (an existing file name)
+        The input second reference/target image
+        flag: -ref2 %s, position: 1
+        requires: ref1_file
+upd_s_form_input: (an existing file name)
+        Update s-form using the affine transformation
+        flag: -updSform %s, position: -3
+        mutually_exclusive: def_input, disp_input, flow_input, comp_input,
+         inv_aff_input, inv_nrr_input, half_input, make_aff_input,
+         aff_2_rig_input, flirt_2_nr_input
+        requires: upd_s_form_input2
+upd_s_form_input2: (an existing file name)
+        Update s-form using the affine transformation
+        flag: %s, position: -2
+        requires: upd_s_form_input
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">File</span> <span class="p">(</span><span class="n">transformation</span> <span class="ow">in</span> <span class="nb">any</span> <span class="nb">format</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

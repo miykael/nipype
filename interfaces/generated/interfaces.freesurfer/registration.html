@@ -1,0 +1,681 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.freesurfer.registration</a><ul>
+<li><a class="reference internal" href="#emregister">EMRegister</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mprtomni305">MPRtoMNI305</a><ul>
+<li><a class="reference internal" href="#id1">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mricoreg">MRICoreg</a><ul>
+<li><a class="reference internal" href="#id2">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#paint">Paint</a><ul>
+<li><a class="reference internal" href="#id3">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#register">Register</a><ul>
+<li><a class="reference internal" href="#id4">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#registeravitotalairach">RegisterAVItoTalairach</a><ul>
+<li><a class="reference internal" href="#id5">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-freesurfer-registration">
+<h1>interfaces.freesurfer.registration<a class="headerlink" href="#interfaces-freesurfer-registration" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-freesurfer-registration-emregister"></span><div class="section" id="emregister">
+<span id="index-0"></span><h2>EMRegister<a class="headerlink" href="#emregister" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L223">Link to code</a></p>
+<p>Wraps command <strong>mri_em_register</strong></p>
+<p>This program creates a tranform in lta format</p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.freesurfer</span> <span class="k">import</span> <span class="n">EMRegister</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span> <span class="o">=</span> <span class="n">EMRegister</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;norm.mgz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;aseg.mgz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;norm_transform.lta&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">skull</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">nbrspacing</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;mri_em_register -uns 9 -skull norm.mgz aseg.mgz norm_transform.lta&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        in brain volume
+        flag: %s, position: -3
+template: (an existing file name)
+        template gca
+        flag: %s, position: -2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+mask: (an existing file name)
+        use volume as a mask
+        flag: -mask %s
+nbrspacing: (an integer (int or long))
+        align to atlas containing skull setting unknown_nbr_spacing =
+        nbrspacing
+        flag: -uns %d
+num_threads: (an integer (int or long))
+        allows for specifying more threads
+out_file: (a file name)
+        output transform
+        flag: %s, position: -1
+skull: (a boolean)
+        align to atlas containing skull (uns=5)
+        flag: -skull
+subjects_dir: (an existing directory name)
+        subjects directory
+transform: (an existing file name)
+        Previously computed transform
+        flag: -t %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">transform</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-freesurfer-registration-mprtomni305"></span></div>
+</div>
+<div class="section" id="mprtomni305">
+<span id="index-1"></span><h2>MPRtoMNI305<a class="headerlink" href="#mprtomni305" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L43">Link to code</a></p>
+<p>Wraps command <strong>mpr2mni305</strong></p>
+<p>For complete details, see FreeSurfer documentation</p>
+<div class="section" id="id1">
+<h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.freesurfer</span> <span class="k">import</span> <span class="n">MPRtoMNI305</span><span class="p">,</span> <span class="n">Info</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span> <span class="o">=</span> <span class="n">MPRtoMNI305</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;structural.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">reference_dir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span><span class="o">.</span><span class="n">cmdline</span> <span class="c1"># doctest: +SKIP</span>
+<span class="go">&#39;mpr2mni305 output&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;struct_out&#39;</span> <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span><span class="o">.</span><span class="n">cmdline</span> <span class="c1"># doctest: +SKIP</span>
+<span class="go">&#39;mpr2mni305 struct_out&#39; # doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;REFDIR&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Info</span><span class="o">.</span><span class="n">home</span><span class="p">(),</span> <span class="s1">&#39;average&#39;</span><span class="p">)</span> <span class="c1"># doctest: +SKIP</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MPR2MNI305_TARGET&#39;</span><span class="p">]</span> <span class="c1"># doctest: +SKIP</span>
+<span class="go">&#39;structural&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mprtomni305</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+reference_dir: (an existing directory name, nipype default value: )
+        TODO
+target: (a string, nipype default value: )
+        input atlas file
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+in_file: (a file name, nipype default value: )
+        the input file prefix for MPRtoMNI305
+        flag: %s
+subjects_dir: (an existing directory name)
+        subjects directory
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span>
+         <span class="n">output</span><span class="o">.</span><span class="n">nipype</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">log</span>
+<span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">file</span> <span class="s1">&#39;&lt;in_file&gt;_to_&lt;target&gt;_t4_vox2vox.txt&#39;</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-freesurfer-registration-mricoreg"></span></div>
+</div>
+<div class="section" id="mricoreg">
+<span id="index-2"></span><h2>MRICoreg<a class="headerlink" href="#mricoreg" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L538">Link to code</a></p>
+<p>Wraps command <strong>mri_coreg</strong></p>
+<p>This program registers one volume to another</p>
+<p>mri_coreg is a C reimplementation of spm_coreg in FreeSurfer</p>
+<div class="section" id="id2">
+<h3>Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.freesurfer</span> <span class="k">import</span> <span class="n">MRICoreg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span> <span class="o">=</span> <span class="n">MRICoreg</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="s1">&#39;moving1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">reference_file</span> <span class="o">=</span> <span class="s1">&#39;fixed1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">cmdline</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;mri_coreg --lta .../registration.lta --ref fixed1.nii --mov moving1.nii --sd .&#39;</span>
+</pre></div>
+</div>
+<p>If passing a subject ID, the reference mask may be disabled:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span> <span class="o">=</span> <span class="n">MRICoreg</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="s1">&#39;moving1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">=</span> <span class="s1">&#39;fsaverage&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">reference_mask</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">cmdline</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;mri_coreg --s fsaverage --no-ref-mask --lta .../registration.lta --mov moving1.nii --sd .&#39;</span>
+</pre></div>
+</div>
+<p>Spatial scales may be specified as a list of one or two separations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sep</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">cmdline</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;mri_coreg --s fsaverage --no-ref-mask --lta .../registration.lta --sep 4 --mov moving1.nii --sd .&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sep</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">cmdline</span> <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="go">&#39;mri_coreg --s fsaverage --no-ref-mask --lta .../registration.lta --sep 4 --sep 5 --mov moving1.nii --sd .&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+reference_file: (a file name)
+        reference (target) file
+        flag: --ref %s
+        mutually_exclusive: subject_id
+source_file: (a file name)
+        source file to be registered
+        flag: --mov %s
+subject_id: (a unicode string)
+        freesurfer subject ID (implies ``reference_mask == aparc+aseg.mgz``
+        unless otherwise specified)
+        flag: --s %s, position: 1
+        mutually_exclusive: reference_file
+        requires: subjects_dir
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+brute_force_limit: (a float)
+        constrain brute force search to +/- lim
+        flag: --bf-lim %g
+        mutually_exclusive: no_brute_force
+brute_force_samples: (an integer (int or long))
+        number of samples in brute force search
+        flag: --bf-nsamp %d
+        mutually_exclusive: no_brute_force
+conform_reference: (a boolean)
+        conform reference without rescaling
+        flag: --conf-ref
+dof: (6 or 9 or 12)
+        number of transform degrees of freedom
+        flag: --dof %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+ftol: (a float)
+        floating-point tolerance (default=1e-7)
+        flag: --ftol %e
+initial_rotation: (a tuple of the form: (a float, a float, a float))
+        initial rotation in degrees
+        flag: --rot %g %g %g
+initial_scale: (a tuple of the form: (a float, a float, a float))
+        initial scale
+        flag: --scale %g %g %g
+initial_shear: (a tuple of the form: (a float, a float, a float))
+        initial shear (Hxy, Hxz, Hyz)
+        flag: --shear %g %g %g
+initial_translation: (a tuple of the form: (a float, a float, a
+         float))
+        initial translation in mm (implies no_cras0)
+        flag: --trans %g %g %g
+linmintol: (a float)
+        flag: --linmintol %e
+max_iters: (a long integer &gt;= 1)
+        maximum iterations (default: 4)
+        flag: --nitersmax %d
+no_brute_force: (a boolean)
+        do not brute force search
+        flag: --no-bf
+no_coord_dithering: (a boolean)
+        turn off coordinate dithering
+        flag: --no-coord-dither
+no_cras0: (a boolean)
+        do not set translation parameters to align centers of source and
+        reference files
+        flag: --no-cras0
+no_intensity_dithering: (a boolean)
+        turn off intensity dithering
+        flag: --no-intensity-dither
+no_smooth: (a boolean)
+        do not apply smoothing to either reference or source file
+        flag: --no-smooth
+num_threads: (an integer (int or long))
+        number of OpenMP threads
+        flag: --threads %d
+out_lta_file: (a bool or None or a file name, nipype default value:
+         True)
+        output registration file (LTA format)
+        flag: --lta %s
+out_params_file: (a bool or None or a file name)
+        output parameters file
+        flag: --params %s
+out_reg_file: (a bool or None or a file name)
+        output registration file (REG format)
+        flag: --regdat %s
+ref_fwhm: (a float)
+        apply smoothing to reference file
+        flag: --ref-fwhm
+reference_mask: (a bool or None or a unicode string)
+        mask reference volume with given mask, or None if ``False``
+        flag: --ref-mask %s, position: 2
+saturation_threshold: (0.0 &lt;= a floating point number &lt;= 100.0)
+        saturation threshold (default=9.999)
+        flag: --sat %g
+sep: (a list of from 1 to 2 items which are any value)
+        set spatial scales, in voxels (default [2, 4])
+        flag: --sep %s...
+source_mask: (a unicode string)
+        mask source file with given mask
+        flag: --mov-mask
+source_oob: (a boolean)
+        count source voxels that are out-of-bounds as 0
+        flag: --mov-oob
+subjects_dir: (an existing directory name)
+        FreeSurfer SUBJECTS_DIR
+        flag: --sd %s
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_lta_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">LTA</span><span class="o">-</span><span class="n">style</span> <span class="n">registration</span> <span class="n">file</span>
+<span class="n">out_params_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">parameters</span> <span class="n">file</span>
+<span class="n">out_reg_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">output</span> <span class="n">registration</span> <span class="n">file</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-freesurfer-registration-paint"></span></div>
+</div>
+<div class="section" id="paint">
+<span id="index-3"></span><h2>Paint<a class="headerlink" href="#paint" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L372">Link to code</a></p>
+<p>Wraps command <strong>mrisp_paint</strong></p>
+<p>This program is useful for extracting one of the arrays (“a variable”)
+from a surface-registration template file. The output is a file
+containing a surface-worth of per-vertex values, saved in “curvature”
+format. Because the template data is sampled to a particular surface
+mesh, this conjures the idea of “painting to a surface”.</p>
+<div class="section" id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.freesurfer</span> <span class="k">import</span> <span class="n">Paint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paint</span> <span class="o">=</span> <span class="n">Paint</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paint</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_surf</span> <span class="o">=</span> <span class="s1">&#39;lh.pial&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paint</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;aseg.mgz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paint</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">averages</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paint</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;lh.avg_curv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paint</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;mrisp_paint -a 5 aseg.mgz lh.pial lh.avg_curv&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_surf: (an existing file name)
+        Surface file with grid (vertices) onto which the template data is to
+        be sampled or &#39;painted&#39;
+        flag: %s, position: -2
+template: (an existing file name)
+        Template file
+        flag: %s, position: -3
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+averages: (an integer (int or long))
+        Average curvature patterns
+        flag: -a %d
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+out_file: (a file name)
+        File containing a surface-worth of per-vertex values, saved in
+        &#39;curvature&#39; format.
+        flag: %s, position: -1
+subjects_dir: (an existing directory name)
+        subjects directory
+template_param: (an integer (int or long))
+        Frame number of the input template
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">File</span> <span class="n">containing</span> <span class="n">a</span> <span class="n">surface</span><span class="o">-</span><span class="n">worth</span> <span class="n">of</span> <span class="n">per</span><span class="o">-</span><span class="n">vertex</span> <span class="n">values</span><span class="p">,</span> <span class="n">saved</span> <span class="ow">in</span>
+        <span class="s1">&#39;curvature&#39;</span> <span class="nb">format</span><span class="o">.</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-freesurfer-registration-register"></span></div>
+</div>
+<div class="section" id="register">
+<span id="index-4"></span><h2>Register<a class="headerlink" href="#register" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L294">Link to code</a></p>
+<p>Wraps command <strong>mris_register</strong></p>
+<p>This program registers a surface to an average surface template.</p>
+<div class="section" id="id4">
+<h3>Examples<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.freesurfer</span> <span class="k">import</span> <span class="n">Register</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span> <span class="o">=</span> <span class="n">Register</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_surf</span> <span class="o">=</span> <span class="s1">&#39;lh.pial&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_smoothwm</span> <span class="o">=</span> <span class="s1">&#39;lh.pial&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_sulc</span> <span class="o">=</span> <span class="s1">&#39;lh.pial&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;aseg.mgz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="s1">&#39;lh.pial.reg&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">curv</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;mris_register -curv lh.pial aseg.mgz lh.pial.reg&#39;</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_sulc: (an existing file name)
+        Undocumented mandatory input file
+        ${SUBJECTS_DIR}/surf/{hemisphere}.sulc
+in_surf: (an existing file name)
+        Surface to register, often {hemi}.sphere
+        flag: %s, position: -3
+target: (an existing file name)
+        The data to register to. In normal recon-all usage, this is a
+        template file for average surface.
+        flag: %s, position: -2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+curv: (a boolean)
+        Use smoothwm curvature for final alignment
+        flag: -curv
+        requires: in_smoothwm
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+in_smoothwm: (an existing file name)
+        Undocumented input file ${SUBJECTS_DIR}/surf/{hemisphere}.smoothwm
+out_file: (a file name)
+        Output surface file to capture registration
+        flag: %s, position: -1
+subjects_dir: (an existing directory name)
+        subjects directory
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">surface</span> <span class="n">file</span> <span class="n">to</span> <span class="n">capture</span> <span class="n">registration</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-freesurfer-registration-registeravitotalairach"></span></div>
+</div>
+<div class="section" id="registeravitotalairach">
+<span id="index-5"></span><h2>RegisterAVItoTalairach<a class="headerlink" href="#registeravitotalairach" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/freesurfer/registration.py#L141">Link to code</a></p>
+<p>Wraps command <strong>avi2talxfm</strong></p>
+<p>converts the vox2vox from talairach_avi to a talairach.xfm file</p>
+<p>This is a script that converts the vox2vox from talairach_avi to a
+talairach.xfm file. It is meant to replace the following cmd line:</p>
+<p>tkregister2_cmdl         –mov $InVol         –targ $FREESURFER_HOME/average/mni305.cor.mgz         –xfmout ${XFM}         –vox2vox talsrcimg_to_${target}_t4_vox2vox.txt         –noedit         –reg talsrcimg.reg.tmp.dat
+set targ = $FREESURFER_HOME/average/mni305.cor.mgz
+set subject = mgh-02407836-v2
+set InVol = $SUBJECTS_DIR/$subject/mri/orig.mgz
+set vox2vox = $SUBJECTS_DIR/$subject/mri/transforms/talsrcimg_to_711-2C_as_mni_average_305_t4_vox2vox.txt</p>
+<div class="section" id="id5">
+<h3>Examples<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces.freesurfer</span> <span class="k">import</span> <span class="n">RegisterAVItoTalairach</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span> <span class="o">=</span> <span class="n">RegisterAVItoTalairach</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;structural.mgz&#39;</span>                         <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;mni305.cor.mgz&#39;</span>                          <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vox2vox</span> <span class="o">=</span> <span class="s1">&#39;talsrcimg_to_structural_t4_vox2vox.txt&#39;</span> <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">cmdline</span>                                                   <span class="c1"># doctest: +SKIP</span>
+<span class="go">&#39;avi2talxfm structural.mgz mni305.cor.mgz talsrcimg_to_structural_t4_vox2vox.txt talairach.auto.xfm&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">register</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        The input file
+        flag: %s, position: 0
+target: (an existing file name)
+        The target file
+        flag: %s, position: 1
+vox2vox: (an existing file name)
+        The vox2vox file
+        flag: %s, position: 2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+out_file: (a file name, nipype default value: talairach.auto.xfm)
+        The transform output
+        flag: %s, position: 3
+subjects_dir: (an existing directory name)
+        subjects directory
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_file</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">existing</span> <span class="n">file</span> <span class="n">name</span><span class="p">,</span> <span class="n">nipype</span> <span class="n">default</span> <span class="n">value</span><span class="p">:</span>
+         <span class="n">output</span><span class="o">.</span><span class="n">nipype</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">log</span>
+<span class="n">out_file</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="n">file</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">The</span> <span class="n">output</span> <span class="n">file</span> <span class="k">for</span> <span class="n">RegisterAVItoTalairach</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

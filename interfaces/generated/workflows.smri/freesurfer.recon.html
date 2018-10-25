@@ -1,0 +1,3218 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">workflows.smri.freesurfer.recon</a><ul>
+<li><a class="reference internal" href="#create-reconall-workflow"><code class="docutils literal notranslate"><span class="pre">create_reconall_workflow()</span></code></a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#graph">Graph</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-skullstripped-recon-flow"><code class="docutils literal notranslate"><span class="pre">create_skullstripped_recon_flow()</span></code></a><ul>
+<li><a class="reference internal" href="#id1">Example</a></li>
+<li><a class="reference internal" href="#id2">Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-nipype.workflows.smri.freesurfer.recon">
+<span id="workflows-smri-freesurfer-recon"></span><h1>workflows.smri.freesurfer.recon<a class="headerlink" href="#module-nipype.workflows.smri.freesurfer.recon" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="create-reconall-workflow">
+<span id="nipype-workflows-smri-freesurfer-recon-create-reconall-workflow"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">create_reconall_workflow()</span></code><a class="headerlink" href="#create-reconall-workflow" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/workflows/smri/freesurfer/recon.py#L97">Link to code</a></p>
+<p>Creates the ReconAll workflow in Nipype. This workflow is designed to
+run the same commands as FreeSurfer’s reconall script but with the added
+features that a Nipype workflow provides. Before running this workflow, it
+is necessary to have the FREESURFER_HOME environmental variable set to the
+directory containing the version of FreeSurfer to be used in this workflow.</p>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.workflows.smri.freesurfer</span> <span class="k">import</span> <span class="n">create_reconall_workflow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_all</span> <span class="o">=</span> <span class="n">create_reconall_workflow</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_all</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">=</span> <span class="s1">&#39;subj1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_all</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_all</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">T1_files</span> <span class="o">=</span> <span class="s1">&#39;T1.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Inputs::</dt>
+<dd>inputspec.subjects_dir : subjects directory (mandatory)
+inputspec.subject_id : name of subject (mandatory)
+inputspec.T1_files : T1 files (mandatory)
+inputspec.T2_file : T2 file (optional)
+inputspec.FLAIR_file : FLAIR file (optional)
+inputspec.cw256 : Conform inputs to 256 FOV (optional)
+inputspec.num_threads: Number of threads on nodes that utilize OpenMP (default=1)
+plugin_args : Dictionary of plugin args to set to nodes that utilize OpenMP (optional)</dd>
+<dt>Outputs::</dt>
+<dd>postdatasink_outputspec.subject_id : name of the datasinked output folder in the subjects directory</dd>
+</dl>
+<p>Note:
+The input subject_id is not passed to the commands in the workflow. Commands
+that require subject_id are reading implicit inputs from
+{SUBJECTS_DIR}/{subject_id}. For those commands the subject_id is set to the
+default value and SUBJECTS_DIR is set to the node directory. The implicit
+inputs are then copied to the node directory in order to mimic a SUBJECTS_DIR
+structure. For example, if the command implicitly reads in brainmask.mgz, the
+interface would copy that input file to
+{node_dir}/{subject_id}/mri/brainmask.mgz and set SUBJECTS_DIR to node_dir.
+The workflow only uses the input subject_id to datasink the outputs to
+{subjects_dir}/{subject_id}.</p>
+</div>
+<div class="section" id="graph">
+<h3>Graph<a class="headerlink" href="#graph" title="Permalink to this headline">¶</a></h3>
+<div class="graphviz"><img src="../../../_images/graphviz-dead219db8a5f73eb037c3348f33835e8450eebf.png" alt="digraph ReconAll{
+
+  label=&quot;ReconAll&quot;;
+
+  ReconAll_inputspec[label=&quot;inputspec (utility)&quot;];
+
+  ReconAll_PreDataSink_GetTransformPath[label=&quot;PreDataSink_GetTransformPath (utility)&quot;];
+
+  ReconAll_config[label=&quot;config (utility)&quot;];
+
+  ReconAll_outputspec[label=&quot;outputspec (utility)&quot;];
+
+  ReconAll_PreDataSink_Nu[label=&quot;PreDataSink_Nu (freesurfer)&quot;];
+
+  ReconAll_PreDataSink_Orig_Nu[label=&quot;PreDataSink_Orig_Nu (freesurfer)&quot;];
+
+  ReconAll_PreDataSink_Orig[label=&quot;PreDataSink_Orig (freesurfer)&quot;];
+
+  ReconAll_DataSink[label=&quot;DataSink (io)&quot;];
+
+  ReconAll_Completion[label=&quot;Completion (utility)&quot;];
+
+  ReconAll_postdatasink_outputspec[label=&quot;postdatasink_outputspec (utility)&quot;];
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_config;
+
+  ReconAll_inputspec -&gt; ReconAll_PreDataSink_GetTransformPath;
+
+  ReconAll_inputspec -&gt; ReconAll_PreDataSink_GetTransformPath;
+
+  ReconAll_inputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_inputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_inputspec -&gt; ReconAll_Completion;
+
+  ReconAll_PreDataSink_GetTransformPath -&gt; ReconAll_PreDataSink_Orig;
+
+  ReconAll_PreDataSink_GetTransformPath -&gt; ReconAll_PreDataSink_Orig_Nu;
+
+  ReconAll_PreDataSink_GetTransformPath -&gt; ReconAll_PreDataSink_Nu;
+
+  subgraph cluster_ReconAll_AutoRecon1 {
+
+      label=&quot;AutoRecon1&quot;;
+
+    ReconAll_AutoRecon1_inputspec[label=&quot;inputspec (utility)&quot;];
+
+    ReconAll_AutoRecon1_FLAIR_Convert[label=&quot;FLAIR_Convert (utility)&quot;];
+
+    ReconAll_AutoRecon1_T2_Convert[label=&quot;T2_Convert (utility)&quot;];
+
+    ReconAll_AutoRecon1_Check_T1s[label=&quot;Check_T1s (utility)&quot;];
+
+    ReconAll_AutoRecon1_T1_prep[label=&quot;T1_prep (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Robust_Template[label=&quot;Robust_Template (utility)&quot;];
+
+    ReconAll_AutoRecon1_Conform_Template[label=&quot;Conform_Template (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Bias_correction[label=&quot;Bias_correction (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Compute_Transform[label=&quot;Compute_Transform (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Awk[label=&quot;Awk (utility)&quot;];
+
+    ReconAll_AutoRecon1_Detect_Aligment_Failures[label=&quot;Detect_Aligment_Failures (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Copy_Transform[label=&quot;Copy_Transform (utility)&quot;];
+
+    ReconAll_AutoRecon1_Check_Talairach_Alignment[label=&quot;Check_Talairach_Alignment (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Add_Transform_to_Orig_Nu[label=&quot;Add_Transform_to_Orig_Nu (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_EM_Register[label=&quot;EM_Register (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Normalize_T1[label=&quot;Normalize_T1 (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Watershed_Skull_Strip[label=&quot;Watershed_Skull_Strip (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_Copy_Brainmask[label=&quot;Copy_Brainmask (utility)&quot;];
+
+    ReconAll_AutoRecon1_Add_Transform_to_Orig[label=&quot;Add_Transform_to_Orig (freesurfer)&quot;];
+
+    ReconAll_AutoRecon1_outputspec[label=&quot;outputspec (utility)&quot;];
+
+    ReconAll_AutoRecon1_inputspec -&gt; ReconAll_AutoRecon1_Check_T1s;
+
+    ReconAll_AutoRecon1_inputspec -&gt; ReconAll_AutoRecon1_Check_T1s;
+
+    ReconAll_AutoRecon1_inputspec -&gt; ReconAll_AutoRecon1_T2_Convert;
+
+    ReconAll_AutoRecon1_inputspec -&gt; ReconAll_AutoRecon1_FLAIR_Convert;
+
+    ReconAll_AutoRecon1_inputspec -&gt; ReconAll_AutoRecon1_Awk;
+
+    ReconAll_AutoRecon1_inputspec -&gt; ReconAll_AutoRecon1_EM_Register;
+
+    ReconAll_AutoRecon1_inputspec -&gt; ReconAll_AutoRecon1_EM_Register;
+
+    ReconAll_AutoRecon1_inputspec -&gt; ReconAll_AutoRecon1_Watershed_Skull_Strip;
+
+    ReconAll_AutoRecon1_FLAIR_Convert -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_T2_Convert -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Check_T1s -&gt; ReconAll_AutoRecon1_T1_prep;
+
+    ReconAll_AutoRecon1_Check_T1s -&gt; ReconAll_AutoRecon1_T1_prep;
+
+    ReconAll_AutoRecon1_Check_T1s -&gt; ReconAll_AutoRecon1_Conform_Template;
+
+    ReconAll_AutoRecon1_Check_T1s -&gt; ReconAll_AutoRecon1_Conform_Template;
+
+    ReconAll_AutoRecon1_T1_prep -&gt; ReconAll_AutoRecon1_Robust_Template;
+
+    ReconAll_AutoRecon1_T1_prep -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Robust_Template -&gt; ReconAll_AutoRecon1_Conform_Template;
+
+    ReconAll_AutoRecon1_Robust_Template -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Conform_Template -&gt; ReconAll_AutoRecon1_Bias_correction;
+
+    ReconAll_AutoRecon1_Conform_Template -&gt; ReconAll_AutoRecon1_Add_Transform_to_Orig;
+
+    ReconAll_AutoRecon1_Bias_correction -&gt; ReconAll_AutoRecon1_Compute_Transform;
+
+    ReconAll_AutoRecon1_Bias_correction -&gt; ReconAll_AutoRecon1_Add_Transform_to_Orig_Nu;
+
+    ReconAll_AutoRecon1_Compute_Transform -&gt; ReconAll_AutoRecon1_Copy_Transform;
+
+    ReconAll_AutoRecon1_Compute_Transform -&gt; ReconAll_AutoRecon1_Awk;
+
+    ReconAll_AutoRecon1_Compute_Transform -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Awk -&gt; ReconAll_AutoRecon1_Detect_Aligment_Failures;
+
+    ReconAll_AutoRecon1_Copy_Transform -&gt; ReconAll_AutoRecon1_Add_Transform_to_Orig;
+
+    ReconAll_AutoRecon1_Copy_Transform -&gt; ReconAll_AutoRecon1_Add_Transform_to_Orig_Nu;
+
+    ReconAll_AutoRecon1_Copy_Transform -&gt; ReconAll_AutoRecon1_Check_Talairach_Alignment;
+
+    ReconAll_AutoRecon1_Copy_Transform -&gt; ReconAll_AutoRecon1_Normalize_T1;
+
+    ReconAll_AutoRecon1_Copy_Transform -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Add_Transform_to_Orig_Nu -&gt; ReconAll_AutoRecon1_Normalize_T1;
+
+    ReconAll_AutoRecon1_Add_Transform_to_Orig_Nu -&gt; ReconAll_AutoRecon1_EM_Register;
+
+    ReconAll_AutoRecon1_Add_Transform_to_Orig_Nu -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_EM_Register -&gt; ReconAll_AutoRecon1_Watershed_Skull_Strip;
+
+    ReconAll_AutoRecon1_EM_Register -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Normalize_T1 -&gt; ReconAll_AutoRecon1_Watershed_Skull_Strip;
+
+    ReconAll_AutoRecon1_Normalize_T1 -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Watershed_Skull_Strip -&gt; ReconAll_AutoRecon1_Copy_Brainmask;
+
+    ReconAll_AutoRecon1_Watershed_Skull_Strip -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Copy_Brainmask -&gt; ReconAll_AutoRecon1_outputspec;
+
+    ReconAll_AutoRecon1_Add_Transform_to_Orig -&gt; ReconAll_AutoRecon1_outputspec;
+
+  }
+
+  subgraph cluster_ReconAll_AutoRecon2 {
+
+      label=&quot;AutoRecon2&quot;;
+
+    ReconAll_AutoRecon2_inputspec[label=&quot;inputspec (utility)&quot;];
+
+    ReconAll_AutoRecon2_Intensity_Correction[label=&quot;Intensity_Correction (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Add_XForm_to_NU[label=&quot;Add_XForm_to_NU (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Align_Transform[label=&quot;Align_Transform (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_CA_Normalize[label=&quot;CA_Normalize (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_CA_Register[label=&quot;CA_Register (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_CA_Label[label=&quot;CA_Label (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Segment_CorpusCallosum[label=&quot;Segment_CorpusCallosum (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Copy_CCSegmentation[label=&quot;Copy_CCSegmentation (utility)&quot;];
+
+    ReconAll_AutoRecon2_Normalization2[label=&quot;Normalization2 (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Segment_WM[label=&quot;Segment_WM (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Edit_WhiteMatter[label=&quot;Edit_WhiteMatter (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_MRI_Pretess[label=&quot;MRI_Pretess (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Fill[label=&quot;Fill (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Mask_Brain_Final_Surface[label=&quot;Mask_Brain_Final_Surface (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_Remove_Neck[label=&quot;Remove_Neck (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_EM_Register_withSkull[label=&quot;EM_Register_withSkull (freesurfer)&quot;];
+
+    ReconAll_AutoRecon2_outputspec[label=&quot;outputspec (utility)&quot;];
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Intensity_Correction;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Intensity_Correction;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Intensity_Correction;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Add_XForm_to_NU;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Align_Transform;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Align_Transform;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Align_Transform;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_CA_Normalize;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_CA_Normalize;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_CA_Register;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_CA_Register;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_CA_Register;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Remove_Neck;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_EM_Register_withSkull;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_EM_Register_withSkull;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_CA_Label;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_CA_Label;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Normalization2;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_Mask_Brain_Final_Surface;
+
+    ReconAll_AutoRecon2_Intensity_Correction -&gt; ReconAll_AutoRecon2_Add_XForm_to_NU;
+
+    ReconAll_AutoRecon2_Add_XForm_to_NU -&gt; ReconAll_AutoRecon2_Align_Transform;
+
+    ReconAll_AutoRecon2_Add_XForm_to_NU -&gt; ReconAll_AutoRecon2_CA_Normalize;
+
+    ReconAll_AutoRecon2_Add_XForm_to_NU -&gt; ReconAll_AutoRecon2_Remove_Neck;
+
+    ReconAll_AutoRecon2_Add_XForm_to_NU -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Align_Transform -&gt; ReconAll_AutoRecon2_CA_Normalize;
+
+    ReconAll_AutoRecon2_Align_Transform -&gt; ReconAll_AutoRecon2_CA_Register;
+
+    ReconAll_AutoRecon2_Align_Transform -&gt; ReconAll_AutoRecon2_EM_Register_withSkull;
+
+    ReconAll_AutoRecon2_Align_Transform -&gt; ReconAll_AutoRecon2_Fill;
+
+    ReconAll_AutoRecon2_Align_Transform -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_CA_Register;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_CA_Label;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_Segment_CorpusCallosum;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_Normalization2;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_MRI_Pretess;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_CA_Register -&gt; ReconAll_AutoRecon2_Remove_Neck;
+
+    ReconAll_AutoRecon2_CA_Register -&gt; ReconAll_AutoRecon2_CA_Label;
+
+    ReconAll_AutoRecon2_CA_Register -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_CA_Label -&gt; ReconAll_AutoRecon2_Segment_CorpusCallosum;
+
+    ReconAll_AutoRecon2_CA_Label -&gt; ReconAll_AutoRecon2_Fill;
+
+    ReconAll_AutoRecon2_CA_Label -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Segment_CorpusCallosum -&gt; ReconAll_AutoRecon2_Copy_CCSegmentation;
+
+    ReconAll_AutoRecon2_Segment_CorpusCallosum -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Segment_CorpusCallosum -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Copy_CCSegmentation -&gt; ReconAll_AutoRecon2_Normalization2;
+
+    ReconAll_AutoRecon2_Copy_CCSegmentation -&gt; ReconAll_AutoRecon2_Edit_WhiteMatter;
+
+    ReconAll_AutoRecon2_Copy_CCSegmentation -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Normalization2 -&gt; ReconAll_AutoRecon2_Mask_Brain_Final_Surface;
+
+    ReconAll_AutoRecon2_Normalization2 -&gt; ReconAll_AutoRecon2_Segment_WM;
+
+    ReconAll_AutoRecon2_Normalization2 -&gt; ReconAll_AutoRecon2_Edit_WhiteMatter;
+
+    ReconAll_AutoRecon2_Normalization2 -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Segment_WM -&gt; ReconAll_AutoRecon2_Edit_WhiteMatter;
+
+    ReconAll_AutoRecon2_Segment_WM -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Edit_WhiteMatter -&gt; ReconAll_AutoRecon2_MRI_Pretess;
+
+    ReconAll_AutoRecon2_Edit_WhiteMatter -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_MRI_Pretess -&gt; ReconAll_AutoRecon2_Fill;
+
+    ReconAll_AutoRecon2_MRI_Pretess -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Fill -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Fill -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_Mask_Brain_Final_Surface -&gt; ReconAll_AutoRecon2_outputspec;
+
+    subgraph cluster_ReconAll_AutoRecon2_AutoRecon2_Right {
+
+            label=&quot;AutoRecon2_Right&quot;;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec[label=&quot;inputspec (utility)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Pretess2[label=&quot;Pretess2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Tesselation[label=&quot;Tesselation (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Extract_Main_Component[label=&quot;Extract_Main_Component (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Smooth1[label=&quot;Smooth1 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate1[label=&quot;inflate1 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Sphere[label=&quot;Sphere (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Copy_Inflate1[label=&quot;Copy_Inflate1 (utility)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Copy_Orig[label=&quot;Copy_Orig (utility)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Fix_Topology[label=&quot;Fix_Topology (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Euler_Number[label=&quot;Euler_Number (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Remove_Intersection[label=&quot;Remove_Intersection (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces[label=&quot;Make_Surfaces (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Curvature1[label=&quot;Curvature1 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Smooth2[label=&quot;Smooth2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate2[label=&quot;inflate2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Curvature_Stats[label=&quot;Curvature_Stats (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Curvature2[label=&quot;Curvature2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_outputspec[label=&quot;outputspec (utility)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Pretess2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Pretess2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Sphere;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Pretess2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Tesselation;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Tesselation -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Extract_Main_Component;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Extract_Main_Component -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Copy_Orig;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Extract_Main_Component -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Smooth1;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Extract_Main_Component -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Smooth1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inflate1;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Smooth1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Copy_Inflate1;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Sphere;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Sphere -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Sphere -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Copy_Inflate1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Copy_Orig -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Fix_Topology -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Euler_Number;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Euler_Number -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Remove_Intersection;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Remove_Intersection -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Remove_Intersection -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Smooth2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Curvature1;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Curvature_Stats;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Curvature1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Curvature1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Smooth2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inflate2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Smooth2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Curvature_Stats;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Smooth2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Curvature2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_Curvature_Stats;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_inflate2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Curvature_Stats -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Curvature2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Right_Curvature2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_outputspec;
+
+    }
+
+    subgraph cluster_ReconAll_AutoRecon2_AutoRecon2_Left {
+
+            label=&quot;AutoRecon2_Left&quot;;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec[label=&quot;inputspec (utility)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Pretess2[label=&quot;Pretess2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Tesselation[label=&quot;Tesselation (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Extract_Main_Component[label=&quot;Extract_Main_Component (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Smooth1[label=&quot;Smooth1 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate1[label=&quot;inflate1 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Sphere[label=&quot;Sphere (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Copy_Inflate1[label=&quot;Copy_Inflate1 (utility)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Copy_Orig[label=&quot;Copy_Orig (utility)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Fix_Topology[label=&quot;Fix_Topology (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Euler_Number[label=&quot;Euler_Number (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Remove_Intersection[label=&quot;Remove_Intersection (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces[label=&quot;Make_Surfaces (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Curvature1[label=&quot;Curvature1 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Smooth2[label=&quot;Smooth2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate2[label=&quot;inflate2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Curvature_Stats[label=&quot;Curvature_Stats (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Curvature2[label=&quot;Curvature2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_outputspec[label=&quot;outputspec (utility)&quot;];
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Pretess2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Pretess2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Sphere;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Pretess2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Tesselation;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Tesselation -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Extract_Main_Component;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Extract_Main_Component -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Copy_Orig;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Extract_Main_Component -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Smooth1;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Extract_Main_Component -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Smooth1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inflate1;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Smooth1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Copy_Inflate1;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Sphere;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Sphere -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Sphere -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Copy_Inflate1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Copy_Orig -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Fix_Topology;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Fix_Topology -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Euler_Number;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Euler_Number -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Remove_Intersection;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Remove_Intersection -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Remove_Intersection -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Smooth2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Curvature1;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Curvature_Stats;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Make_Surfaces -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Curvature1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Curvature1 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Smooth2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inflate2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Smooth2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Curvature_Stats;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Smooth2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Curvature2;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_Curvature_Stats;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_inflate2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Curvature_Stats -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Curvature2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+        ReconAll_AutoRecon2_AutoRecon2_Left_Curvature2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_outputspec;
+
+    }
+
+    ReconAll_AutoRecon2_Remove_Neck -&gt; ReconAll_AutoRecon2_EM_Register_withSkull;
+
+    ReconAll_AutoRecon2_Remove_Neck -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_EM_Register_withSkull -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inputspec;
+
+    ReconAll_AutoRecon2_inputspec -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inputspec;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inputspec;
+
+    ReconAll_AutoRecon2_CA_Normalize -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inputspec;
+
+    ReconAll_AutoRecon2_Copy_CCSegmentation -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inputspec;
+
+    ReconAll_AutoRecon2_Copy_CCSegmentation -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inputspec;
+
+    ReconAll_AutoRecon2_Normalization2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inputspec;
+
+    ReconAll_AutoRecon2_Normalization2 -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inputspec;
+
+    ReconAll_AutoRecon2_Mask_Brain_Final_Surface -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inputspec;
+
+    ReconAll_AutoRecon2_Mask_Brain_Final_Surface -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inputspec;
+
+    ReconAll_AutoRecon2_MRI_Pretess -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inputspec;
+
+    ReconAll_AutoRecon2_MRI_Pretess -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inputspec;
+
+    ReconAll_AutoRecon2_Fill -&gt; ReconAll_AutoRecon2_AutoRecon2_Left_inputspec;
+
+    ReconAll_AutoRecon2_Fill -&gt; ReconAll_AutoRecon2_AutoRecon2_Right_inputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Left_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+    ReconAll_AutoRecon2_AutoRecon2_Right_outputspec -&gt; ReconAll_AutoRecon2_outputspec;
+
+  }
+
+  subgraph cluster_ReconAll_AutoRecon3 {
+
+      label=&quot;AutoRecon3&quot;;
+
+    ReconAll_AutoRecon3_inputspec[label=&quot;inputspec (utility)&quot;];
+
+    ReconAll_AutoRecon3_Relabel_Hypointensities[label=&quot;Relabel_Hypointensities (freesurfer)&quot;];
+
+    ReconAll_AutoRecon3_Mask_Ribbon[label=&quot;Mask_Ribbon (freesurfer)&quot;];
+
+    ReconAll_AutoRecon3_Aparc2Aseg[label=&quot;Aparc2Aseg (freesurfer)&quot;];
+
+    ReconAll_AutoRecon3_Apas_2_Aseg[label=&quot;Apas_2_Aseg (freesurfer)&quot;];
+
+    ReconAll_AutoRecon3_WM_Parcellation[label=&quot;WM_Parcellation (freesurfer)&quot;];
+
+    ReconAll_AutoRecon3_WM_Segmentation_Statistics[label=&quot;WM_Segmentation_Statistics (freesurfer)&quot;];
+
+    ReconAll_AutoRecon3_Segmentation_Statistics[label=&quot;Segmentation_Statistics (freesurfer)&quot;];
+
+    ReconAll_AutoRecon3_Aparc2Aseg_2009[label=&quot;Aparc2Aseg_2009 (freesurfer)&quot;];
+
+    ReconAll_AutoRecon3_outputspec[label=&quot;outputspec (utility)&quot;];
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Mask_Ribbon;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Mask_Ribbon;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Mask_Ribbon;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Relabel_Hypointensities;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Relabel_Hypointensities;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Relabel_Hypointensities;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_Relabel_Hypointensities -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_Relabel_Hypointensities -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_Relabel_Hypointensities -&gt; ReconAll_AutoRecon3_outputspec;
+
+    subgraph cluster_ReconAll_AutoRecon3_AutoRecon3_Right_1 {
+
+            label=&quot;AutoRecon3_Right_1&quot;;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec[label=&quot;inputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Spherical_Inflation[label=&quot;Spherical_Inflation (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration[label=&quot;Surface_Registration (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation[label=&quot;Cortical_Parcellation (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface[label=&quot;Make_Pial_Surface (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Add_Pial_Area[label=&quot;Add_Pial_Area (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Mid_Pial[label=&quot;Mid_Pial (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Calculate_Volume[label=&quot;Calculate_Volume (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Average_Curvature[label=&quot;Average_Curvature (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Jacobian[label=&quot;Jacobian (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec[label=&quot;outputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Spherical_Inflation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Spherical_Inflation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Spherical_Inflation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Jacobian;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Average_Curvature;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Add_Pial_Area;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Spherical_Inflation -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Spherical_Inflation -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Jacobian;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Average_Curvature;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Surface_Registration -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Cortical_Parcellation -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Add_Pial_Area;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Calculate_Volume;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Add_Pial_Area -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Mid_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Mid_Pial -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_Calculate_Volume;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Mid_Pial -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Calculate_Volume -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Average_Curvature -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_1_Jacobian -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec;
+
+    }
+
+    subgraph cluster_ReconAll_AutoRecon3_AutoRecon3_Left_1 {
+
+            label=&quot;AutoRecon3_Left_1&quot;;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec[label=&quot;inputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Spherical_Inflation[label=&quot;Spherical_Inflation (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration[label=&quot;Surface_Registration (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation[label=&quot;Cortical_Parcellation (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface[label=&quot;Make_Pial_Surface (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Add_Pial_Area[label=&quot;Add_Pial_Area (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Mid_Pial[label=&quot;Mid_Pial (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Calculate_Volume[label=&quot;Calculate_Volume (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Average_Curvature[label=&quot;Average_Curvature (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Jacobian[label=&quot;Jacobian (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec[label=&quot;outputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Spherical_Inflation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Spherical_Inflation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Spherical_Inflation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Jacobian;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Average_Curvature;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Add_Pial_Area;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Spherical_Inflation -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Spherical_Inflation -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Jacobian;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Average_Curvature;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Surface_Registration -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Cortical_Parcellation -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Add_Pial_Area;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Calculate_Volume;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Make_Pial_Surface -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Add_Pial_Area -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Mid_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Mid_Pial -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_Calculate_Volume;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Mid_Pial -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Calculate_Volume -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Average_Curvature -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_1_Jacobian -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec;
+
+    }
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_outputspec;
+
+    subgraph cluster_ReconAll_AutoRecon3_Brodmann_Area_Maps {
+
+            label=&quot;Brodmann_Area_Maps&quot;;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec[label=&quot;inputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject[label=&quot;BA_Maps_rh_srcsubject (io)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge[label=&quot;BA_Maps_rh_Merge (utility)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label[label=&quot;BA_Maps_rh_Label2Label (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_2_Annot[label=&quot;BA_Maps_rh_2_Annot (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats[label=&quot;BA_Maps_rh_Stats (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject[label=&quot;BA_Maps_rh_Thresh_srcsubject (io)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge[label=&quot;BA_Maps_rh_Thresh_Merge (utility)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label[label=&quot;BA_Maps_rh_Thresh_Label2Label (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_2_Annot[label=&quot;BA_Maps_rh_Thresh_2_Annot (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats[label=&quot;BA_Maps_rh_Thresh_Stats (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject[label=&quot;BA_Maps_lh_srcsubject (io)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge[label=&quot;BA_Maps_lh_Merge (utility)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label[label=&quot;BA_Maps_lh_Label2Label (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_2_Annot[label=&quot;BA_Maps_lh_2_Annot (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats[label=&quot;BA_Maps_lh_Stats (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject[label=&quot;BA_Maps_lh_Thresh_srcsubject (io)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge[label=&quot;BA_Maps_lh_Thresh_Merge (utility)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label[label=&quot;BA_Maps_lh_Thresh_Label2Label (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_2_Annot[label=&quot;BA_Maps_lh_Thresh_2_Annot (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats[label=&quot;BA_Maps_lh_Thresh_Stats (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec[label=&quot;outputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Merge -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Label2Label -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_2_Annot -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_2_Annot -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Stats -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Merge -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Label2Label -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_2_Annot -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_2_Annot -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_rh_Thresh_Stats -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Merge -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Label2Label -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_2_Annot -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_2_Annot -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Stats -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_srcsubject -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Merge -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Label2Label -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_2_Annot;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_2_Annot -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_2_Annot -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+        ReconAll_AutoRecon3_Brodmann_Area_Maps_BA_Maps_lh_Thresh_Stats -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec;
+
+    }
+
+    ReconAll_AutoRecon3_Aparc2Aseg -&gt; ReconAll_AutoRecon3_Apas_2_Aseg;
+
+    ReconAll_AutoRecon3_Aparc2Aseg -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_Aparc2Aseg -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Apas_2_Aseg -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_Apas_2_Aseg -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_Apas_2_Aseg -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_WM_Parcellation -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_WM_Parcellation -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_WM_Segmentation_Statistics -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Segmentation_Statistics -&gt; ReconAll_AutoRecon3_outputspec;
+
+    subgraph cluster_ReconAll_AutoRecon3_AutoRecon3_Right_2 {
+
+            label=&quot;AutoRecon3_Right_2&quot;;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec[label=&quot;inputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh[label=&quot;WM_GM_Contrast_rh (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3[label=&quot;Cortical_Parcellation_rh_3 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3[label=&quot;Parcellation_Statistics_rh_3 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2[label=&quot;Cortical_Parcellation_rh_2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2[label=&quot;Parcellation_Statistics_rh_2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial[label=&quot;Parcellation_Stats_rh_Pial (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White[label=&quot;Parcellation_Stats_rh_White (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec[label=&quot;outputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_WM_GM_Contrast_rh -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3 -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_3 -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3 -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_3 -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2 -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Cortical_Parcellation_rh_2 -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2 -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Statistics_rh_2 -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_Pial -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Right_2_Parcellation_Stats_rh_White -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec;
+
+    }
+
+    subgraph cluster_ReconAll_AutoRecon3_AutoRecon3_Left_2 {
+
+            label=&quot;AutoRecon3_Left_2&quot;;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec[label=&quot;inputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh[label=&quot;WM_GM_Contrast_lh (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3[label=&quot;Cortical_Parcellation_lh_3 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3[label=&quot;Parcellation_Statistics_lh_3 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2[label=&quot;Cortical_Parcellation_lh_2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2[label=&quot;Parcellation_Statistics_lh_2 (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial[label=&quot;Parcellation_Stats_lh_Pial (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White[label=&quot;Parcellation_Stats_lh_White (freesurfer)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec[label=&quot;outputspec (utility)&quot;];
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_WM_GM_Contrast_lh -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3 -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_3 -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3 -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_3 -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2 -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Cortical_Parcellation_lh_2 -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2 -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Statistics_lh_2 -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_Pial -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+        ReconAll_AutoRecon3_AutoRecon3_Left_2_Parcellation_Stats_lh_White -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec;
+
+    }
+
+    ReconAll_AutoRecon3_Aparc2Aseg_2009 -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_1_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_inputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_Mask_Ribbon;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_Mask_Ribbon;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_WM_Parcellation;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_WM_Segmentation_Statistics;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_1_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_AutoRecon3_Left_2_inputspec;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_AutoRecon3_Right_2_inputspec;
+
+    ReconAll_AutoRecon3_Mask_Ribbon -&gt; ReconAll_AutoRecon3_Brodmann_Area_Maps_inputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Left_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_Aparc2Aseg_2009;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_AutoRecon3_Right_2_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+    ReconAll_AutoRecon3_Brodmann_Area_Maps_outputspec -&gt; ReconAll_AutoRecon3_outputspec;
+
+  }
+
+  ReconAll_outputspec -&gt; ReconAll_PreDataSink_Orig;
+
+  ReconAll_outputspec -&gt; ReconAll_PreDataSink_Orig_Nu;
+
+  ReconAll_outputspec -&gt; ReconAll_PreDataSink_Nu;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_outputspec -&gt; ReconAll_DataSink;
+
+  ReconAll_PreDataSink_Nu -&gt; ReconAll_DataSink;
+
+  ReconAll_PreDataSink_Orig_Nu -&gt; ReconAll_DataSink;
+
+  ReconAll_PreDataSink_Orig -&gt; ReconAll_DataSink;
+
+  ReconAll_DataSink -&gt; ReconAll_Completion;
+
+  ReconAll_Completion -&gt; ReconAll_postdatasink_outputspec;
+
+  ReconAll_inputspec -&gt; ReconAll_AutoRecon1_inputspec;
+
+  ReconAll_inputspec -&gt; ReconAll_AutoRecon1_inputspec;
+
+  ReconAll_inputspec -&gt; ReconAll_AutoRecon1_inputspec;
+
+  ReconAll_inputspec -&gt; ReconAll_AutoRecon1_inputspec;
+
+  ReconAll_inputspec -&gt; ReconAll_AutoRecon1_inputspec;
+
+  ReconAll_inputspec -&gt; ReconAll_AutoRecon2_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon1_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon1_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon2_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon2_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_config -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_AutoRecon2_inputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_AutoRecon2_inputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_AutoRecon2_inputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon1_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_AutoRecon3_inputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon2_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+  ReconAll_AutoRecon3_outputspec -&gt; ReconAll_outputspec;
+
+}" class="graphviz" /></div>
+</div>
+</div>
+<div class="section" id="create-skullstripped-recon-flow">
+<span id="nipype-workflows-smri-freesurfer-recon-create-skullstripped-recon-flow"></span><h2><code class="xref py py-func docutils literal notranslate"><span class="pre">create_skullstripped_recon_flow()</span></code><a class="headerlink" href="#create-skullstripped-recon-flow" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/workflows/smri/freesurfer/recon.py#L18">Link to code</a></p>
+<p>Performs recon-all on voulmes that are already skull stripped.
+FreeSurfer failes to perform skullstrippig on some volumes (especially
+MP2RAGE). This can be avoided by doing skullstripping before running
+recon-all (using for example SPECTRE algorithm).</p>
+<div class="section" id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.workflows.smri.freesurfer</span> <span class="k">import</span> <span class="n">create_skullstripped_recon_flow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_flow</span> <span class="o">=</span> <span class="n">create_skullstripped_recon_flow</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_flow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">=</span> <span class="s1">&#39;subj1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_flow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputspec</span><span class="o">.</span><span class="n">T1_files</span> <span class="o">=</span> <span class="s1">&#39;T1.nii.gz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Inputs::</dt>
+<dd>inputspec.T1_files : skullstripped T1_files (mandatory)
+inputspec.subject_id : freesurfer subject id (optional)
+inputspec.subjects_dir : freesurfer subjects directory (optional)</dd>
+</dl>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">outputspec</span><span class="o">.</span><span class="n">subject_id</span> <span class="p">:</span> <span class="n">freesurfer</span> <span class="n">subject</span> <span class="nb">id</span>
+<span class="n">outputspec</span><span class="o">.</span><span class="n">subjects_dir</span> <span class="p">:</span> <span class="n">freesurfer</span> <span class="n">subjects</span> <span class="n">directory</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Graph<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="graphviz"><img src="../../../_images/graphviz-dfb76c79681478c9fca51e1c2cb7a6215249237a.png" alt="digraph skullstripped_recon_all{
+
+  label=&quot;skullstripped_recon_all&quot;;
+
+  skullstripped_recon_all_inputspec[label=&quot;inputspec (utility)&quot;];
+
+  skullstripped_recon_all_autorecon1[label=&quot;autorecon1 (freesurfer)&quot;];
+
+  skullstripped_recon_all_link_masks[label=&quot;link_masks (utility)&quot;];
+
+  skullstripped_recon_all_autorecon_resume[label=&quot;autorecon_resume (freesurfer)&quot;];
+
+  skullstripped_recon_all_outputspec[label=&quot;outputspec (utility)&quot;];
+
+  skullstripped_recon_all_inputspec -&gt; skullstripped_recon_all_autorecon1;
+
+  skullstripped_recon_all_inputspec -&gt; skullstripped_recon_all_autorecon1;
+
+  skullstripped_recon_all_inputspec -&gt; skullstripped_recon_all_autorecon1;
+
+  skullstripped_recon_all_autorecon1 -&gt; skullstripped_recon_all_link_masks;
+
+  skullstripped_recon_all_autorecon1 -&gt; skullstripped_recon_all_link_masks;
+
+  skullstripped_recon_all_link_masks -&gt; skullstripped_recon_all_autorecon_resume;
+
+  skullstripped_recon_all_link_masks -&gt; skullstripped_recon_all_autorecon_resume;
+
+  skullstripped_recon_all_autorecon_resume -&gt; skullstripped_recon_all_outputspec;
+
+  skullstripped_recon_all_autorecon_resume -&gt; skullstripped_recon_all_outputspec;
+
+}" class="graphviz" /></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>

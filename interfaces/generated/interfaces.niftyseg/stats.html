@@ -1,0 +1,423 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Neuroimaging in Python - Pipelines and Interfaces &#8212; nipy pipeline and interfaces package</title>
+    <link rel="stylesheet" href="../../../_static/nipype.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<meta name="keywords" content="nipype, neuroimaging, pipeline, workflow, parallel, python, neuroscience">
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-339450-7', 'nipy.org/nipype');
+  ga('send', 'pageview');
+</script>
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: 'nipy/nipype'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  </head><body>
+<div class="header-wrapper">
+    <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+            <a href="../../../index.html">
+            <img src="../../../_static/nipype-banner-bg.png" alt="NIPY logo"  border="0" />
+        <div style="margin-top: 1em;
+                border-top: 1px solid #AAA;
+                border-bottom: 1px solid #AAA;
+                border-radius: 5px;
+                padding: 3px 1em;">
+            <link rel="stylesheet" href="http://www.google.com/cse/style/look/default.css" type="text/css" />
+<style type="text/css">
+    a.navbar {
+    color: ;
+    letter-spacing: .05em;
+    font-weight: bold;
+        }
+</style>
+
+<a class="navbar" href="../../../index.html">Home</a> ·
+<a class="navbar" href="../../../quickstart.html">Quickstart</a> ·
+<a class="navbar" href="../../../documentation.html">Documentation</a> ·
+<a class="navbar" href="../../../about.html">About</a> ·
+<a class="navbar" href="http://nipy.org">Nipy</a>
+
+        </div>
+    </div>
+</div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<style type="text/css">
+    input.gsc-input {
+        border-color: #BCCDF0;
+    }
+    input.gsc-search-button {
+        border-color: #666666;
+        background-color: #CECECE;
+        padding: 0;
+    }
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+    div.sphinxsidebar input[type="text"] {
+        width: 100%;
+    }
+    div.sphinxsidebar input[type="submit"] {
+        width: 100%;
+    }
+</style>
+
+<div class="sidebarblock">
+    <script>
+      (function() {
+        var cx = '010960497803984932957:u8pmqf7fdoq';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+</div>
+
+  <h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">interfaces.niftyseg.stats</a><ul>
+<li><a class="reference internal" href="#binarystats">BinaryStats</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#statscommand">StatsCommand</a></li>
+<li><a class="reference internal" href="#unarystats">UnaryStats</a><ul>
+<li><a class="reference internal" href="#id3">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style type="text/css">
+    div.sphinxsidebar .tile {
+        border: 1px solid #D1DDE2;
+        border-radius: 10px;
+        background-color: #E1E8EC;
+        padding-left: 0.5em;
+        margin: 1em 0;
+    }
+</style>
+<div class="sidebarblock">
+    <h3>Versions</h3>
+
+    <div class="tile">
+        <table style="width: 100%;">
+            <tr style="font-weight: bold;">
+                <td align="left">Release</td><td align="right">Devel</td>
+            </tr>
+            <tr>
+                <td align="left">1.1.3</td><td align="right">1.1.4-dev+g93c475b</td>
+            </tr>
+            <tr>
+                <td align="left"><a href="../../../users/install.html">Download</a></td>
+                <td align="right"><a href="https://github.com/nipy/nipype">Github</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<h3>Links</h3>
+
+<ul>
+    <li>Docs: <a href="http://nipy.org/nipype">Stable</a> · <a href="http://nipype.readthedocs.org/en/latest/">Dev</a></li>
+    <li>Code: <a href="http://github.com/nipy/nipype">Github</a> · <a href="http://github.com/nipy/nipype/issues">Bugs-Requests</a></li>
+    <li>Forum: <a href="https://neurostars.org/search?q=nipype">User</a> · <a href="https://mail.python.org/mailman/listinfo/neuroimaging">Developer</a></li>
+    <li>Chat: <a href="https://gitter.im/nipy/nipype">Gitter</a> · <a href="https://brainhack.slack.com/messages/C1FR76RAL">Slack</a></li>
+    <li><a href="about.html#funding">Funding</a> · <a href="http://nipy.org/software/license/index.html"><img src="https://img.shields.io/pypi/l/nipype.svg" alt="License"></a></li>
+    <li><a href="https://travis-ci.org/nipy/nipype"><img src="https://travis-ci.org/nipy/nipype.png?branch=master" alt="travis"></a> · <a href='https://codecov.io/gh/nipy/nipype'><img src='https://codecov.io/gh/nipy/nipype/branch/master/graph/badge.svg' alt='Coverage Status' /></a></li>
+    <a href='https://pypi.python.org/pypi/nipype/'><img src='https://img.shields.io/pypi/pyversions/nipype.svg' alt='Python Versions' /></a></li>
+</ul>
+
+ 
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces-niftyseg-stats">
+<h1>interfaces.niftyseg.stats<a class="headerlink" href="#interfaces-niftyseg-stats" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="nipype-interfaces-niftyseg-stats-binarystats"></span><div class="section" id="binarystats">
+<span id="index-0"></span><h2>BinaryStats<a class="headerlink" href="#binarystats" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/stats.py#L219">Link to code</a></p>
+<p>Wraps command <strong>seg_stats</strong></p>
+<p>Interface for executable seg_stats from NiftySeg platform.</p>
+<p>Interface to use any binary statistical operations that can be performed</p>
+<p>with the seg_stats command-line program.</p>
+<p>See below for those operations:</p>
+<p>p - &lt;float&gt; - The &lt;float&gt;th percentile of all voxels intensity (float=[0,100])</p>
+<p>sa - &lt;ax&gt; - Average of all voxels</p>
+<p>ss - &lt;ax&gt; - Standard deviation of all voxels</p>
+<p>svp - &lt;ax&gt; - Volume of all probabilsitic voxels (sum(&lt;in&gt;) * &lt;volume per voxel&gt;)</p>
+<p>al - &lt;in2&gt; - Average value in &lt;in&gt; for each label in &lt;in2&gt;</p>
+<p>d - &lt;in2&gt; - Calculate the Dice score between all classes in &lt;in&gt;and &lt;in2&gt;</p>
+<p>ncc - &lt;in2&gt; - Normalized cross correlation between &lt;in&gt; and &lt;in2&gt;</p>
+<p>nmi - &lt;in2&gt; - Normalized Mutual Information between &lt;in&gt; and &lt;in2&gt;</p>
+<p>Vl - &lt;csv&gt; - Volume of each integer label &lt;in&gt;. Save to &lt;csv&gt;file.</p>
+<p>Nl - &lt;csv&gt; - Count of each label &lt;in&gt;. Save to &lt;csv&gt; file.</p>
+<p><a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg">Source code</a> |
+<a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg_documentation">Documentation</a></p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyseg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary</span> <span class="o">=</span> <span class="n">niftyseg</span><span class="o">.</span><span class="n">BinaryStats</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test sa operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sa</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sa</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;sa&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sa</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_value</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sa</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_stats im1.nii -sa 2.00000000&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_sa</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test ncc operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_ncc</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_ncc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;ncc&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_ncc</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_file</span> <span class="o">=</span> <span class="s1">&#39;im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_ncc</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_stats im1.nii -ncc im2.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_ncc</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test Nl operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_nl</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_nl</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;Nl&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_nl</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operand_file</span> <span class="o">=</span> <span class="s1">&#39;output.csv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_nl</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_stats im1.nii -Nl output.csv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binary_nl</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+operand_file: (an existing file name)
+        second image to perform operation with
+        flag: %s, position: 5
+        mutually_exclusive: operand_value
+operand_value: (a float)
+        value to perform operation with
+        flag: %.8f, position: 5
+        mutually_exclusive: operand_file
+operation: (&#39;p&#39; or &#39;sa&#39; or &#39;ss&#39; or &#39;svp&#39; or &#39;al&#39; or &#39;d&#39; or &#39;ncc&#39; or
+         &#39;nmi&#39; or &#39;Vl&#39; or &#39;Nl&#39;)
+        operation to perform
+        flag: -%s, position: 4
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+larger_voxel: (a float)
+        Only estimate statistics if voxel is larger than &lt;float&gt;
+        flag: -t %f, position: -3
+mask_file: (an existing file name)
+        statistics within the masked area
+        flag: -m %s, position: -2
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">array</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">array</span> <span class="kn">from</span> <span class="nn">seg_stats</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyseg-stats-statscommand"></span></div>
+</div>
+<div class="section" id="statscommand">
+<span id="index-1"></span><h2>StatsCommand<a class="headerlink" href="#statscommand" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/stats.py#L40">Link to code</a></p>
+<p>Wraps command <strong>seg_stats</strong></p>
+<p>Base Command Interface for seg_stats interfaces.</p>
+<p>The executable seg_stats enables the estimation of image statistics on
+continuous voxel intensities (average, standard deviation, min/max, robust
+range, percentiles, sum, probabilistic volume, entropy, etc) either over
+the full image or on a per slice basis (slice axis can be specified),
+statistics over voxel coordinates (location of max, min and centre of
+mass, bounding box, etc) and statistics over categorical images (e.g. per
+region volume, count, average, Dice scores, etc). These statistics are
+robust to the presence of NaNs, and can be constrained by a mask and/or
+thresholded at a certain level.</p>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+larger_voxel: (a float)
+        Only estimate statistics if voxel is larger than &lt;float&gt;
+        flag: -t %f, position: -3
+mask_file: (an existing file name)
+        statistics within the masked area
+        flag: -m %s, position: -2
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">array</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">array</span> <span class="kn">from</span> <span class="nn">seg_stats</span>
+</pre></div>
+</div>
+<span class="target" id="nipype-interfaces-niftyseg-stats-unarystats"></span></div>
+<div class="section" id="unarystats">
+<span id="index-2"></span><h2>UnaryStats<a class="headerlink" href="#unarystats" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://github.com/nipy/nipype/tree/93c475b/nipype/interfaces/niftyseg/stats.py#L106">Link to code</a></p>
+<p>Wraps command <strong>seg_stats</strong></p>
+<p>Interface for executable seg_stats from NiftySeg platform.</p>
+<p>Interface to use any unary statistical operations that can be performed</p>
+<p>with the seg_stats command-line program.</p>
+<p>See below for those operations:</p>
+<p>r - The range &lt;min max&gt; of all voxels.</p>
+<p>R - The robust range (assuming 2% outliers on both sides) of all voxels</p>
+<p>a - Average of all voxels</p>
+<p>s - Standard deviation of all voxels</p>
+<p>v - Volume of all voxels above 0 (&lt;# voxels&gt; * &lt;volume per voxel&gt;)</p>
+<p>vl - Volume of each integer label (&lt;# voxels per label&gt; * &lt;volume per voxel&gt;)</p>
+<p>vp - Volume of all probabilsitic voxels (sum(&lt;in&gt;) * &lt;volume per voxel&gt;)</p>
+<p>n - Count of all voxels above 0 (&lt;# voxels&gt;)</p>
+<p>np - Sum of all fuzzy voxels (sum(&lt;in&gt;))</p>
+<p>e - Entropy of all voxels</p>
+<p>ne - Normalized entropy of all voxels</p>
+<p>x - Location (i j k x y z) of the smallest value in the image</p>
+<p>X - Location (i j k x y z) of the largest value in the image</p>
+<p>c - Location (i j k x y z) of the centre of mass of the object</p>
+<p>B - Bounding box of all nonzero voxels [ xmin xsize ymin ysize zmin zsize ]</p>
+<p>xvox - Output the number of voxels in the x direction. Replace x with y/z for other directions.</p>
+<p>xdim - Output the voxel dimention in the x direction. Replace x with y/z for other directions.</p>
+<p><a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg">Source code</a> |
+<a class="reference external" href="http://cmictig.cs.ucl.ac.uk/wiki/index.php/NiftySeg_documentation">Documentation</a></p>
+<div class="section" id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nipype.interfaces</span> <span class="k">import</span> <span class="n">niftyseg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary</span> <span class="o">=</span> <span class="n">niftyseg</span><span class="o">.</span><span class="n">UnaryStats</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;im1.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test v operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_v</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_v</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;v&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_v</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_stats im1.nii -v&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_v</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test vl operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_vl</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_vl</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;vl&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_vl</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_stats im1.nii -vl&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_vl</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Test x operation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_x</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">unary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_x</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">operation</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_x</span><span class="o">.</span><span class="n">cmdline</span>
+<span class="go">&#39;seg_stats im1.nii -x&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unary_x</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</pre></div>
+</div>
+<p>Inputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Mandatory]
+in_file: (an existing file name)
+        image to operate on
+        flag: %s, position: 2
+operation: (&#39;r&#39; or &#39;R&#39; or &#39;a&#39; or &#39;s&#39; or &#39;v&#39; or &#39;vl&#39; or &#39;vp&#39; or &#39;n&#39; or
+         &#39;np&#39; or &#39;e&#39; or &#39;ne&#39; or &#39;x&#39; or &#39;X&#39; or &#39;c&#39; or &#39;B&#39; or &#39;xvox&#39; or
+         &#39;xdim&#39;)
+        operation to perform
+        flag: -%s, position: 4
+
+[Optional]
+args: (a unicode string)
+        Additional parameters to the command
+        flag: %s
+environ: (a dictionary with keys which are a bytes or None or a value
+         of class &#39;str&#39; and with values which are a bytes or None or a value
+         of class &#39;str&#39;, nipype default value: {})
+        Environment variables
+larger_voxel: (a float)
+        Only estimate statistics if voxel is larger than &lt;float&gt;
+        flag: -t %f, position: -3
+mask_file: (an existing file name)
+        statistics within the masked area
+        flag: -m %s, position: -2
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output</span><span class="p">:</span> <span class="p">(</span><span class="n">an</span> <span class="n">array</span><span class="p">)</span>
+        <span class="n">Output</span> <span class="n">array</span> <span class="kn">from</span> <span class="nn">seg_stats</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-18, Neuroimaging in Python team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+<div class="footer">This page uses <a href="http://analytics.google.com/">
+Google Analytics</a> to collect statistics. You can disable it by blocking
+the JavaScript coming from www.google-analytics.com.
+</div>
+
+  </body>
+</html>
